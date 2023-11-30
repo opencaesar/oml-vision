@@ -1,3 +1,9 @@
+---
+output: rmarkdown::github_document
+---
+
+<!-- LICENSE.md is generated from LICENSE.rmd. -->
+
 ### California Institute of Technology Copyright
 Copyright `r format(Sys.Date(), "%Y")`, by the California Institute of Technology. ALL RIGHTS RESERVED. United States Government Sponsorship acknowledged. Any commercial use must be negotiated with the Office of Technology Transfer at the California Institute of Technology.
 
