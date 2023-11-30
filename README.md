@@ -47,3 +47,5 @@ data to compute semantic inference entailments, and then loads that entire datas
 OML Vision application can access it using SPARQL queries.
 
 OML Vision is described by [NTR 52901](https://goto.jpl.nasa.gov/jplntr)
+
+OML Vision's project summary is defined in [openCAESAR](https://www.opencaesar.io/projects/2023-05-29-OML-Vision.html)
