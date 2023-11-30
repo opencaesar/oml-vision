@@ -1,0 +1,112 @@
+.vision-table {
+  border-collapse: collapse;
+  width: fit-content;
+}
+.vision-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.vision-table th {
+  border: solid 1px var(--vscode-panel-border);
+  padding: var(--st-table-th-padding);
+  background: var(--vscode-input-background);
+  font-family: var(--st-table-th-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: 600;
+  line-height: var(--st-table-th-line-height);
+  letter-spacing: var(--st-table-th-letter-spacing);
+  color: var(--vscode-foreground);
+  position: relative;
+  user-select: none;
+}
+
+.vision-table tr {
+  width: fit-content;
+  display: flex;
+  min-height: 2.375rem;
+}
+
+.vision-table th,
+.vision-table td {
+  text-align: left;
+  vertical-align: top;
+  min-width: 100px;
+  word-break: break-all;
+}
+
+.vision-table td * {
+  /* New property */
+  word-break: break-all;
+}
+
+.vision-table td {
+  border: solid 1px var(--vscode-panel-border);
+  padding: var(--st-table-th-padding);
+  font-family: var(--st-table-td-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: 400;
+  line-height: var(--st-table-td-line-height);
+  letter-spacing: var(--st-table-td-letter-spacing);
+}
+
+.vision-table tr:hover {
+  background: var(--vscode-list-hoverBackground);
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+.vision-table tr.row-selected {
+  background: var(--vscode-editor-selectionBackground);
+  color: var(--vscode-list-activeSelectionForeground);
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+.vision-table tr.row-selected td {
+  background: var(--vscode-editor-selectionBackground);
+}
+
+.vision-table td:focus-visible,
+.vision-table td:focus,
+.vision-table td:active {
+  background: var(--vscode-list-activeSelectionBackground);
+}
+
+.vision-table td:focus-visible {
+  outline: none;
+}
+
+.vision-table td:focus-visible ::slotted(*),
+.vision-table td:focus ::slotted(*),
+.vision-table td:hover ::slotted(*) {
+  color: var(--vscode-list-activeSelectionForeground) !important;
+}
+
+.column-resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.column-resizer.isResizing {
+  background: var(--vscode-list-highlightForeground);
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .column-resizer {
+    opacity: 0;
+  }
+
+  *:hover > .column-resizer {
+    opacity: 1;
+  }
+}

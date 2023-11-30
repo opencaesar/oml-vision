@@ -1,0 +1,15 @@
+.vscode/**
+.vscode-test/**
+out/**
+src/**
+.gitignore
+.yarnrc
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
+
+# VSIX file won't compile if node_modules is uncommented
+# What is this file?  https://code.visualstudio.com/api/working-with-extensions/publishing-extension#using-.vscodeignore
+# node_modules/

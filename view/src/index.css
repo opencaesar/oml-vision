@@ -1,0 +1,223 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--vision-gutter-width: 20px;
+	--vision-scrollbar-gutter-width: 10px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+.required label:after {
+  content:" *";
+  font-weight: bold;
+  color: var(--vscode-charts-red);
+}
+
+.modal-wizard-header {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+.custom-box-shadow {
+  box-shadow: 0px 1px 24px rgba(0, 0, 0, 0.6);
+}
+
+.table-container {
+  font-family: var(--vscode-editor-font-family) !important;
+}
+
+.properties-container {
+  /* font-family: var(--vscode-panel-font-family) !important; */
+}
+
+/* Setup Tasks Panel CODE */
+
+.setup-tasks-view {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size) !important;
+  line-height: 1rem;
+  padding: 0;
+}
+
+.setup-tasks-view.scrollable,
+.setup-tasks-view .scrollable {
+  border-color: transparent;
+  transition: border-color 1s linear
+}
+
+.setup-tasks-view.scrollable:hover .scrollable,
+.setup-tasks-view.scrollable:focus-within .scrollable,
+.setup-tasks-view .scrollable:hover,
+.setup-tasks-view .scrollable:focus-within {
+  border-color: var(--vscode-scrollbarSlider-background);
+  transition: none;
+}
+
+.setup-tasks-view.preload .scrollable,
+.setup-tasks-view.preload.scrollable {
+  transition: none;
+}
+
+.setup-tasks-container {
+  max-height: 100vh;
+  overflow: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  font-weight: 500;
+  forced-color-adjust: none;
+  background-color: var(--vscode-sideBar-background);
+}
+
+.setup-tasks-container .p {
+  color: var(--vscode-sideBar-foreground);
+}
+
+.setup-tasks-container [aria-hidden='true'] {
+  display: none;
+}
+
+.setup-tasks-container p,
+.setup-tasks-container h2,
+.setup-tasks-container .nav-label,
+.setup-tasks-container .nav-list__content {
+  padding-left: var(--vision-gutter-width);
+  padding-right: var(--vision-scrollbar-gutter-width);
+}
+
+.nav-label {
+  color: var(--vscode-sideBar-foreground);
+  opacity: 0.5;
+  font-weight: 600;
+  font-size: 10px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.nav-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+	align-items: stretch;
+	margin-bottom: 1.6rem;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+.nav-list__item {
+	padding: 0.2rem 0rem;
+	color: inherit;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+.nav-list__item {
+  position: relative;
+}
+
+.nav-list__content {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+.nav-list__item:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.nav-list__item:hover:before {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+.nav-list__item:hover {
+	background-color: var(--vscode-list-hoverBackground);
+	color: var(--vscode-list-hoverForeground);
+}
+
+.nav-list__item:active {
+	background-color: var(--vscode-list-activeSelectionBackground);
+	color: var(--vscode-list-activeSelectionForeground);
+  outline: none;
+}
+
+.nav-list__item:focus {
+  outline: 1px solid var(--vscode-focusBorder) !important;
+  outline-offset: -1px;
+}
+
+.nav-list__icon {
+	opacity: 0.5;
+}
+
+.nav-list__label {
+	font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-list__title {
+	padding: 0;
+}
+
+.setup-tasks-view ::-webkit-scrollbar-corner {
+  background-color: transparent !important;
+}
+
+.setup-tasks-view ::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-color: inherit;
+  border-right-style: inset;
+  border-right-width: calc(100vw + 100vh);
+  border-radius: unset !important;
+}
+
+.setup-tasks-view ::-webkit-scrollbar-thumb:hover {
+  border-color: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+.setup-tasks-view ::-webkit-scrollbar-thumb:active {
+  border-color: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* END Setup Tasks Panel CODE */
+
+.vscode-input-rounded::part(root) {
+  border-radius: var(--st-react-multiselect-border-radius)
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-3px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(3px);
+  }
+}
+
+.required-field-empty::part(root) {
+  border: 1px solid var(--vscode-charts-red);
+}
+
+.required-field-empty {
+  animation: shake 0.7s cubic-bezier(.36,.07,.19,.97) both;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/*# sourceMappingURL=table.css.map */

@@ -1,0 +1,86 @@
+
+/* React Flow Chart Styling */
+.flow-mini-map {
+  background-color: var(--vscode-editor-background)
+}
+
+.flow-mini-map .react-flow__minimap-mask {
+  fill: var(--vscode-banner-background);
+}
+
+.flow-mini-map .react-flow__minimap-node {
+  /* fill: var(--vscode-editor-foreground); */
+  stroke: none;
+}
+
+.flow-controls button {
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border-bottom: var(--vscode-panel-border);
+}
+
+.flow-controls button:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.flow-controls button path {
+  fill: currentColor;
+}
+
+.react-flow__node-default.selected {
+  box-shadow: 0 0 0 1.5px var(--vscode-foreground) !important;
+  border: none;
+}
+
+.react-flow__node-default.selected::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.3); /* white overlay with 50% opacity */
+}
+
+/* Legend Styling */
+.legend-container {
+  max-height: 100vh;
+  overflow: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+.legend-container.scrollable,
+.legend-container .scrollable {
+  border-color: transparent;
+  transition: border-color 1s linear;
+}
+
+.legend-container.scrollable:hover .scrollable,
+.legend-container.scrollable:focus-within .scrollable,
+.legend-container .scrollable:hover,
+.legend-container .scrollable:focus-within {
+  border-color: var(--vscode-scrollbarSlider-background);
+  transition: none;
+}
+
+.legend-container ::-webkit-scrollbar-corner {
+  background-color: transparent !important;
+}
+
+.legend-container ::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-color: inherit;
+  border-right-style: inset;
+  border-right-width: calc(100vw + 100vh);
+  border-radius: unset !important;
+}
+
+.legend-container ::-webkit-scrollbar-thumb:hover {
+  border-color: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+.legend-container ::-webkit-scrollbar-thumb:active {
+  border-color: var(--vscode-scrollbarSlider-activeBackground);
+}

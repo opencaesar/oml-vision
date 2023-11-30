@@ -1,0 +1,125 @@
+.vision-tree {
+  border-collapse: collapse;
+  width: 100%; /* Updated */
+}
+
+.tree-header {
+  border: solid 1px var(--vscode-panel-border);
+  padding: var(--st-table-th-padding);
+  background: var(--vscode-input-background);
+  font-family: var(--st-table-th-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: 600;
+  line-height: var(--st-table-th-line-height);
+  letter-spacing: var(--st-table-th-letter-spacing);
+  color: var(--vscode-foreground);
+  position: relative;
+  user-select: none;
+}
+
+.vision-tree .node {
+  position: relative;
+  border: solid 1px var(--vscode-panel-border);
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  font-family: var(--st-table-td-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: 400;
+  line-height: var(--st-table-td-line-height);
+  letter-spacing: var(--st-table-td-letter-spacing);
+}
+
+.highlighted-text {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+.highlighted-text::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--vscode-minimap-findMatchHighlight);
+  opacity: 0.4;
+  z-index: -1;
+}
+
+.highlighted-text.currently-selected::before {
+  opacity: 0.7;
+}
+
+.tree-header,
+.vision-tree .node {
+  text-align: left;
+  vertical-align: top;
+  flex: 1; /* Updated */
+  word-break: break-all;
+}
+
+.node:global(.isInternal) {
+  cursor: pointer;
+}
+
+.vision-tree .node * {
+  word-break: break-all;
+}
+
+[role="treeitem"][aria-selected="false"]:has(.node):not(:has(.highlighted-text)):hover {
+  background: var(--vscode-list-hoverBackground);
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+[role="treeitem"][aria-selected="true"]:has(.node) {
+  background: var(--vscode-editor-selectionBackground);
+  color: var(--vscode-list-activeSelectionForeground);
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+.will-receive-drop {
+  background: var(--vscode-list-activeSelectionBackground) !important;
+  border: 1px dashed var(--vscode-charts-blue) !important;
+}
+
+.row:focus-visible [role="treeitem"][aria-selected="false"]:has(.node),
+.row:focus [role="treeitem"][aria-selected="false"]:has(.node),
+.row:active [role="treeitem"][aria-selected="false"]:has(.node) {
+  background: var(--vscode-list-activeSelectionBackground);
+}
+
+.row .node:focus-visible ::slotted(*),
+.row .node:focus ::slotted(*),
+.row .node:hover ::slotted(*) {
+  color: var(--vscode-list-activeSelectionForeground) !important;
+}
+
+.column-resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: rgba(0, 0, 0, 0.5);
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+}
+
+.column-resizer.isResizing {
+  background: var(--vscode-list-highlightForeground);
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .column-resizer {
+    opacity: 0;
+  }
+
+  *:hover > .column-resizer {
+    opacity: 1;
+  }
+}

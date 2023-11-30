@@ -1,0 +1,326 @@
+{
+  "name": "oml-vision",
+  "displayName": "OML Vision",
+  "description": "VSCode based workbench to edit OML models",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.78.2"
+  },
+  "license": "SEE LICENSE IN LICENSE.rmd",
+  "icon": "public/vision128x128.png",
+  "homepage": "https://github.com/opencaesar/oml-vision/tree/master",
+  "bugs": {
+    "url": "https://github.com/opencaesar/oml-vision/issues/new/choose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opencaesar/oml-vision.git"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "OML",
+    "opencaesar",
+    "systems-engineer",
+    "vscode-extension"
+  ],
+  "publisher": "openCAESAR",
+  "activationEvents": [
+    "onCommand:oml-vision.start",
+    "onView:vision-container"
+  ],
+  "main": "./build/controller/src/extension.js",
+  "contributes": {
+    "menus": {
+      "webview/context": [
+        {
+          "submenu": "oml-vision.refactor-row",
+          "group": "oml-vision.table"
+        },
+        {
+          "command": "oml-vision.clone-row",
+          "when": "webviewId == 'tablePanel' && oneRowTypeSelected == true"
+        },
+        {
+          "command": "oml-vision.create-row",
+          "when": "webviewId == 'tablePanel' && oneRowTypeSelected == true && rowType == 'subsystem'"
+        },
+        {
+          "command": "oml-vision.delete-row",
+          "when": "webviewId == 'tablePanel' && shouldAllowDelete == true",
+          "group": "oml-vision.table"
+        },
+        {
+          "command": "oml-vision.create-ref-des-diagram",
+          "when": "webviewId == 'tablePanel' && hasDiagram === true",
+          "group": "oml-vision.diagram"
+        },
+        {
+          "command": "oml-vision.create-assembly-diagram",
+          "when": "webviewId == 'tablePanel' && oneRowTypeSelected == true && rowType === 'assembly' && hasDiagram === true",
+          "group": "oml-vision.diagram"
+        },
+        {
+          "command": "oml-vision.create-fault-containment-region",
+          "when": "webviewId == 'tablePanel' && hasSelection === true",
+          "group": "oml-vision.diagram"
+        }
+      ],
+      "oml-vision.refactor-row": [
+        {
+          "command": "refactor-row.change-lifecycle-state",
+          "when": "webviewId == 'tablePanel' && oneRowTypeSelected == true && (rowType == 'assembly' || rowType == 'functionIdentity')",
+          "group": "oml-vision.table"
+        },
+        {
+          "command": "refactor-row.change-assembly-type",
+          "when": "webviewId == 'tablePanel' && oneRowTypeSelected == true && (rowType == 'assembly' || rowType == 'functionIdentity')",
+          "group": "oml-vision.table"
+        },
+        {
+          "command": "refactor-row.edit-device-properties",
+          "when": "webviewId == 'tablePanel' && oneRowTypeSelected == true && (rowType == 'assembly' || rowType == 'functionIdentity')",
+          "group": "oml-vision.table"
+        },
+        {
+          "command": "refactor-row.move-assemblies",
+          "when": "webviewId == 'tablePanel' && oneRowTypeSelected == true && (rowType == 'assembly' || rowType == 'functionIdentity')",
+          "group": "oml-vision.table"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "oml-vision.refactor-row",
+        "label": "Refactor Row",
+        "icon": "$(pencil)"
+      }
+    ],
+    "commands": [
+      {
+        "command": "oml-vision.home",
+        "title": "Display Home menu",
+        "category": "oml-vision",
+        "icon": {
+          "light": "public/home.svg",
+          "dark": "public/home.svg"
+        }
+      },
+      {
+        "command": "refactor-row.change-lifecycle-state",
+        "title": "Change Lifecycle State",
+        "category": "oml-vision"
+      },
+      {
+        "command": "refactor-row.change-assembly-type",
+        "title": "Change Assembly Type",
+        "category": "oml-vision"
+      },
+      {
+        "command": "refactor-row.edit-device-properties",
+        "title": "Edit Device Properties",
+        "category": "oml-vision"
+      },
+      {
+        "command": "refactor-row.move-assemblies",
+        "title": "Move Assemblies to Different Subsystem",
+        "category": "oml-vision"
+      },
+      {
+        "command": "oml-vision.clone-row",
+        "title": "Clone Row(s)",
+        "category": "oml-vision"
+      },
+      {
+        "command": "oml-vision.create-row",
+        "title": "Create New Assembly"
+      },
+      {
+        "command": "oml-vision.delete-row",
+        "title": "Delete Row(s)",
+        "category": "oml-vision"
+      },
+      {
+        "command": "oml-vision.create-ref-des-diagram",
+        "title": "Create Reference Designators Diagram",
+        "category": "oml-vision"
+      },
+      {
+        "command": "oml-vision.create-assembly-diagram",
+        "title": "Create Assembly Diagram",
+        "category": "oml-vision"
+      },
+      {
+        "command": "oml-vision.create-fault-containment-region",
+        "title": "Create Fault Containment Region (FCR)",
+        "category": "oml-vision"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vision-container",
+          "title": "OML Vision",
+          "icon": "public/icon.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "properties",
+          "title": "OML Vision Properties",
+          "icon": "public/icon.png"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "vision-welcome",
+        "contents": "In order to use OML Vision, open a folder containing an OML model repository or clone from GitHub.\n[Open OML Model](command:vscode.openFolder)\n[Clone OML Model](command:git.clone)\nTo learn more about OML Vision [read our docs](https://github.com/opencaesar/oml-vision/tree/master).",
+        "when": "workbenchState == empty"
+      },
+      {
+        "view": "vision-pages",
+        "contents": "No pages available. Go to 'Setup Tasks' to configure your project, OR confirm that your Vision files are configured in your workspace.",
+        "when": "!vision:hasBuildFolder || !vision:hasLayoutFiles || !vision:hasSparqlConfig"
+      }
+    ],
+    "views": {
+      "vision-container": [
+        {
+          "type": "webview",
+          "id": "vision-setup-tasks",
+          "name": "Setup Tasks",
+          "when": "workbenchState != empty",
+          "icon": "$(wrench)",
+          "initialSize": 2,
+          "visibility": "visible"
+        },
+        {
+          "id": "vision-pages",
+          "name": "Pages",
+          "when": "workbenchState != empty",
+          "icon": "$(three-bars)",
+          "initialSize": 7,
+          "visibility": "visible"
+        },
+        {
+          "id": "vision-welcome",
+          "name": "Welcome",
+          "when": "workbenchState == empty"
+        }
+      ],
+      "properties": [
+        {
+          "type": "webview",
+          "id": "propertyPanel",
+          "name": "OML Vision Properties",
+          "when": "workbenchState != empty"
+        }
+      ]
+    }
+  },
+  "menus": {
+    "view/title": [
+      {
+        "command": "oml-vision.start"
+      }
+    ],
+    "views": {
+      "properties": [
+        {
+          "type": "webview",
+          "id": "propertyPanel",
+          "name": "OML Vision Properties"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "properties",
+          "title": "OML Vision Properties",
+          "icon": "public/icon.png"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "node ./esbuild.js",
+    "build": "yarn install --ignore-engines --frozen-lockfile && npm run compile && npx tailwindcss -o ./build/static/tailwind.css && tsc -p tsconfig.extension.json",
+    "package": "npm run build && vsce package --baseContentUrl https://github.com/opencaesar/oml-vision/tree/master",
+    "test": "jest --coverage"
+  },
+  "dependencies": {
+    "@comunica/query-sparql": "^2.10.0",
+    "@emotion/react": "^11.1.5",
+    "@emotion/styled": "^11.1.5",
+    "@jest/globals": "^29.7.0",
+    "@microsoft/fast-foundation": "^2.49.2",
+    "@nasa-jpl/react-stellar": "^1.1.2",
+    "@svgr/webpack": "^6.5.1",
+    "@tanstack/eslint-plugin-query": "^4.29.9",
+    "@tanstack/react-query": "^4.29.12",
+    "@tanstack/react-table": "^8.9.1",
+    "@tanstack/react-virtual": "^3.0.0-beta.54",
+    "@types/hoist-non-react-statics": "^3.3.5",
+    "@types/jest": "^23.3.13",
+    "@types/jquery": "^3.5.16",
+    "@types/lodash": "^4.14.201",
+    "@types/lodash.escaperegexp": "^4.1.7",
+    "@types/node": "^10.17.60",
+    "@types/ps-node": "^0.1.1",
+    "@types/react": "^18.2.8",
+    "@types/react-dom": "^18.2.4",
+    "@types/react-window": "^1.8.8",
+    "@types/uuid": "^9.0.2",
+    "@types/vscode": "^1.78.1",
+    "@types/vscode-webview": "^1.57.4",
+    "@vscode/codicons": "^0.0.33",
+    "@vscode/test-electron": "^2.3.2",
+    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "elkjs": "^0.8.2",
+    "esbuild": "^0.19.5",
+    "fetch-sparql-endpoint": "^3.3.2",
+    "framer-motion": "^3.7.0",
+    "html-to-image": "^1.11.11",
+    "jexpr": "^1.0.0-pre.4",
+    "jquery": "^3.7.0",
+    "lodash": "^4.17.21",
+    "lodash.escaperegexp": "^4.1.2",
+    "prism-react-renderer": "^1.2.0",
+    "ps-node": "^0.1.6",
+    "rc-tree": "^5.7.8",
+    "react": "^18.2.0",
+    "react-arborist": "^3.1.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.44.3",
+    "react-icons": "^4.10.1",
+    "react-markdown": "^5.0.3",
+    "react-router-dom": "^6.12.1",
+    "reactflow": "^11.7.4",
+    "stream": "^0.0.2",
+    "tailwindcss": "^3.3.2",
+    "terser": "^5.17.7",
+    "tree-model-improved": "^2.0.1",
+    "ts-jest": "^29.1.1",
+    "typescript": "^4.9.5",
+    "use-resize-observer": "^9.1.0",
+    "uuid": "^9.0.0",
+    "uuidv4": "^6.2.13",
+    "vscode-gradle": "^3.10.1"
+  },
+  "overrides": {
+    "react-scripts": {
+      "@svgr/webpack": "^6.5.1"
+    }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
