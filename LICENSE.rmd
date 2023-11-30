@@ -1,5 +1,7 @@
 ---
-output: rmarkdown::github_document
+output: 
+    rmarkdown::github_document:
+        html_preview: false
 ---
 
 <!-- LICENSE.md is generated from LICENSE.rmd. -->
