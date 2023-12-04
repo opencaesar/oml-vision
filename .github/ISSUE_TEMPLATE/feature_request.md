@@ -2,14 +2,14 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: ''
+labels: 'feature'
 assignees: ''
 
 ---
 
 ## Checklist before submitting a feature request
 
-- [ ] I have reviewed `CONTRIBUTING.md` document
+- [ ] I have reviewed [CONTRIBUTING.md](CONTRIBUTING.md) document
 - [ ] I have done a quick search on the issue tracker to check if the feature request is not redundant
 
 ## Is your feature request related to a problem? If yes, describe the problem
@@ -23,5 +23,3 @@ assignees: ''
 ## Additional context
 
 [Any additional context]
-
-/label ~"feature" 

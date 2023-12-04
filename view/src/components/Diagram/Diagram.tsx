@@ -23,8 +23,13 @@ import ReactFlow, {
   useNodesInitialized,
   NodeProps,
 } from "reactflow";
+
+// Icons
 import { IconDownload } from "@nasa-jpl/react-stellar";
-import { toPng } from "html-to-image";
+import LockIcon from "./Icons/Lock"
+import UnlockIcon from "./Icons/Unlock"
+
+import { toPng, toSvg } from "html-to-image";
 import Loader from "../shared/Loader";
 import ITableData from "../../interfaces/ITableData";
 import { LegendItem } from "../../interfaces/LegendItemType";
@@ -97,7 +102,7 @@ function Diagram({
     return node.style?.backgroundColor || "var(--vscode-editor-foreground)";
   };
 
-  const downloadDiagram = React.useCallback(() => {
+  const pngDownloadDiagram = React.useCallback(() => {
     if (diagramRef.current === null) return;
     fitView();
     toPng(diagramRef.current, {
@@ -110,6 +115,24 @@ function Diagram({
     }).then((dataUrl: any) => {
       const a = document.createElement("a");
       a.setAttribute("download", `${tablePath}.png`);
+      a.setAttribute("href", dataUrl);
+      a.click();
+    });
+  }, [diagramRef]);
+
+  const svgDownloadDiagram = React.useCallback(() => {
+    if (diagramRef.current === null) return;
+    fitView();
+    toSvg(diagramRef.current, {
+      filter: (node: any) =>
+        !(
+          node?.classList?.contains("react-flow__minimap") ||
+          node?.classList?.contains("react-flow__controls") ||
+          node?.classList?.contains("flow-panel")
+        ),
+    }).then((dataUrl: any) => {
+      const a = document.createElement("a");
+      a.setAttribute("download", `${tablePath}.svg`);
       a.setAttribute("href", dataUrl);
       a.click();
     });
@@ -203,19 +226,49 @@ function Diagram({
             title="toggle interactivity"
             aria-label="toggle interactivity"
           >
-            { <VSCodeCheckbox checked={isInteractive}></VSCodeCheckbox> }
+            {isInteractive ? <UnlockIcon /> : <LockIcon />}
           </ControlButton>
           <ControlButton
-            onClick={downloadDiagram}
+            onClick={pngDownloadDiagram}
             title="download diagram"
             aria-label="download diagram"
           >
-            <IconDownload
-              className="flex-shrink-0 flex-grow-0"
-              color="var(--vscode-button-secondaryForeground)"
-              width="16"
-              height="16"
-            />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <IconDownload
+                className="flex-shrink-0 flex-grow-0"
+                color="var(--vscode-button-secondaryForeground)"
+                width="16"
+                height="16"
+              />
+              <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>PNG</span>
+            </div>
+          </ControlButton>
+          <ControlButton
+            onClick={svgDownloadDiagram}
+            title="download diagram"
+            aria-label="download diagram"
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <IconDownload
+                className="flex-shrink-0 flex-grow-0"
+                color="var(--vscode-button-secondaryForeground)"
+                width="16"
+                height="16"
+              />
+              <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>SVG</span>
+            </div>
           </ControlButton>
         </Controls>
         <MiniMap
