@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: ''
+labels: 'feature'
 assignees: ''
 
 ---
@@ -23,5 +23,3 @@ assignees: ''
 ## Additional context
 
 [Any additional context]
-
-/label ~"feature" 

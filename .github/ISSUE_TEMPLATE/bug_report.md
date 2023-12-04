@@ -41,5 +41,3 @@ assignees: ''
 - Operating system: [What is the OS]
 - Version of the repo: [What is the release version or a commit of the repo]
 - VSCode version: [What is the VSCode version]
-
-/label ~"bug" 
