@@ -6,6 +6,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [0.2.0]
 
+### Fixed
+- Tree View shows VSCode error popup with Tree UI bugs https://github.com/opencaesar/oml-vision/pull/5
+
 ### Added
 - Add export to SVG for diagrams https://github.com/opencaesar/oml-vision/pull/3
 

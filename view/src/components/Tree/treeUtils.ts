@@ -98,3 +98,45 @@ export const getLifecycleStateStyles = (state: CMState) => {
       return '';
   }
 }
+
+export const areArraysOfObjectsEqual = (
+  ...arrays: [{ [x: string]: ITableData[] }] | any[]
+) => {
+    // Check if lengths are equal
+    const lengthCheck = arrays.every((arr) => arr.length === arrays[0].length);
+    if (!lengthCheck) {
+      return false;
+    }
+
+    // Helper function to compare two objects
+    const areObjectsEqual = (
+      obj1: { [x: string]: { toString: () => any } },
+      obj2: { [x: string]: { toString: () => any } }
+    ) => {
+      const keys1 = Object.keys(obj1);
+      const keys2 = Object.keys(obj2);
+
+      // Check if number of keys is the same
+      if (keys1.length !== keys2.length) {
+        return false;
+      }
+
+      // Check if values for each key are the same
+      return keys1.every(
+        (key) => obj1[key].toString() === obj2[key].toString()
+      );
+    };
+
+    // Check if every object in the first array is present in the other arrays
+    const areArraysEqual = Object.values(arrays[0]).every((obj: any) =>
+      arrays
+        .slice(1)
+        .every((arr) =>
+          arr.some((arrObj: { [x: string]: { toString: () => any } }) =>
+            areObjectsEqual(obj, arrObj)
+          )
+        )
+    );
+
+    return areArraysEqual;
+};
