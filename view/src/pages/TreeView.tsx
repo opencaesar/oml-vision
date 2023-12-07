@@ -4,7 +4,7 @@ import { CommandStructures, Commands } from "../../../commands/src/commands";
 import Tree from '../components/Tree/Tree';
 import Loader from '../components/shared/Loader';
 import ITableData from '../interfaces/ITableData';
-import { mapTreeValueData } from '../components/Tree/treeUtils';
+import { mapTreeValueData, areArraysOfObjectsEqual } from '../components/Tree/treeUtils';
 import { TreeLayout } from '../interfaces/DataLayoutsType';
 import { LayoutPaths, useLayoutData } from '../contexts/LayoutProvider';
 import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
@@ -56,7 +56,21 @@ const TreeView: React.FC = () => {
       let specificMessage;
       switch (message.command) {
         case Commands.LOADED_TABLE_DATA:
-          specificMessage = message as CommandStructures[Commands.LOADED_TABLE_DATA];
+          specificMessage =
+            message as CommandStructures[Commands.LOADED_TABLE_DATA];
+          // This prevents UI bugs in the tree view by looking at the queries & subViewMappings in the treeLayouts.json
+          if (
+            areArraysOfObjectsEqual({ ...specificMessage.payload }) &&
+            Object.keys({ ...specificMessage.payload }).length > 2
+          ) {
+            console.error(
+              "2 identical keys.  Fix queries & subRowMappings treeLayouts.json"
+            );
+            postMessage({
+              command: Commands.ALERT,
+              text: "2 identical keys.  Fix queries & subRowMappings treeLayouts.json",
+            });
+          }
           if (specificMessage.errorMessage) {
             console.error(specificMessage.errorMessage);
             postMessage({
@@ -68,22 +82,22 @@ const TreeView: React.FC = () => {
             return;
           }
 
-        const results = specificMessage.payload;
-        const queryResults = results || {};
-        setData(queryResults);
+          const results = specificMessage.payload;
+          const queryResults = results || {};
+          setData(queryResults);
 
-        setIsLoading(false);
-        break;
+          setIsLoading(false);
+          break;
 
-      case Commands.UPDATE_LOCAL_VALUE:
-        postMessage({
-          command: Commands.GENERATE_TABLE_DATA,
-          payload: {
-            tablePath: tablePath,
-            queries: layout.queries,
-          }
-        })
-        break;
+        case Commands.UPDATE_LOCAL_VALUE:
+          postMessage({
+            command: Commands.GENERATE_TABLE_DATA,
+            payload: {
+              tablePath: tablePath,
+              queries: layout.queries,
+            },
+          });
+          break;
       }
     };
     window.addEventListener('message', handler);
