@@ -1,8 +1,8 @@
 ## Checklist before submitting a merge request
 
-- [ ] I have reviewed `CONTRIBUTING.md` document
-- [ ] All commits have been signed-off for the Developer Certificate of Origin. See [here](/CONTRIBUTING.md#developer-certificate-of-origin).
-- [ ] I have added my contribution to `CHANGELOG.md`
+- [ ] I have reviewed [CONTRIBUTING.md](https://github.com/opencaesar/oml-vision/blob/master/CONTRIBUTING.md) document
+- [ ] All commits have been signed-off for the Developer Certificate of Origin. See [here](https://github.com/opencaesar/oml-vision/blob/master/CONTRIBUTING.md#developer-certificate-of-origin).
+- [ ] I have added my contribution to [CHANGELOG.md](https://github.com/opencaesar/oml-vision/blob/master/CHANGELOG.md)
 
 ## Description of contribution
 
