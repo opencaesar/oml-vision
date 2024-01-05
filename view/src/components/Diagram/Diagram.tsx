@@ -39,6 +39,9 @@ import Legend from "./Legend";
 import "reactflow/dist/style.css";
 import "./Diagram.css";
 
+//Cursors
+import { handleMouseMove } from "./Cursor/Cursor"
+
 const nodeTypes = {
   overlay: OverlayNode,
 };
@@ -177,6 +180,7 @@ function Diagram({
         "hasSelection": ${selectedNodes.length > 0},
         "iri": ${JSON.stringify(iriArray)}
       }`}
+      onMouseMove={handleMouseMove}
     >
       <ReactFlow
         ref={diagramRef}
