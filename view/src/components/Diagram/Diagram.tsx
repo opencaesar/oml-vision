@@ -40,7 +40,7 @@ import "reactflow/dist/style.css";
 import "./Diagram.css";
 
 //Cursors
-import { handleMouseMove } from "./Cursor/Cursor"
+import { handlePointerMove } from "./Cursor/Cursor"
 
 const nodeTypes = {
   overlay: OverlayNode,
@@ -180,7 +180,7 @@ function Diagram({
         "hasSelection": ${selectedNodes.length > 0},
         "iri": ${JSON.stringify(iriArray)}
       }`}
-      onMouseMove={handleMouseMove}
+      onPointerMove={handlePointerMove}
     >
       <ReactFlow
         ref={diagramRef}
