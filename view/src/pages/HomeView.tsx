@@ -7,14 +7,18 @@ import { IconVisibleShow, IconSearch } from "@nasa-jpl/react-stellar";
 import Loader from "../components/shared/Loader";
 import { SubmenuData } from "../interfaces/SubmenuData";
 import { LayoutPaths, useLayoutData } from "../contexts/LayoutProvider";
+import packageJson from "../../../package.json"
 
 const MAX_SEARCH_SUGGESTIONS = 4;
+const SETTINGS = packageJson
 
 const HomeView: React.FC<{}> = () => {
   const { layouts, isLoadingLayoutContext } = useLayoutData();
   const [ submenuData, setSubmenuData ] = useState<SubmenuData[]>([]);
   const [ isLoading, setIsLoading ] = useState<boolean>(true);
   const [ selectedResult, selectResult ] = useState(0);
+  const [ title, setTitle ] = useState<string>('');
+  const [ version, setVersion ] = useState<string>('');
 
   useEffect(() => {
     if (isLoadingLayoutContext) return;
@@ -23,6 +27,12 @@ const HomeView: React.FC<{}> = () => {
     setSubmenuData(tableLayouts.filter((item: any) => ('title' in item && 'children' in item && 'iconUrl' in item)));
     setIsLoading(false);
   }, [layouts, isLoadingLayoutContext]);
+
+  // Set the Title and Version to the displayName and version in the package.json file
+  useEffect(() => {
+    setTitle(SETTINGS.displayName)
+    setVersion(SETTINGS.version)
+  }, [])
 
   if (isLoading || isLoadingLayoutContext) {
     return (
@@ -70,8 +80,8 @@ const HomeView: React.FC<{}> = () => {
         </div>
 
         {/* top-right text */}
-        <h1 className="absolute top-0 right-2.5 text-lg text-[color:var(--vscode-settings-textInputForeground)]">OML Vision</h1><br/>
-        <h3 className="absolute bottom-0 right-2.5 text-xs text-[color:var(--vscode-settings-textInputForeground)]"><IconVisibleShow className="inline" /> v0.1.0</h3>
+        <h1 className="absolute top-0 right-2.5 text-lg text-[color:var(--vscode-settings-textInputForeground)]">{title}</h1><br/>
+        <h3 className="absolute bottom-0 right-2.5 text-xs text-[color:var(--vscode-settings-textInputForeground)]"><IconVisibleShow className="inline" /> v{version}</h3>
       </div>
 
       {/* Links for each view */}
