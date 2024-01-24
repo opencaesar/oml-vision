@@ -2,7 +2,7 @@
   "name": "oml-vision",
   "displayName": "OML Vision",
   "description": "VSCode based workbench to edit OML models",
-  "version": "0.1.0",
+  "version": "v0.2.0",
   "engines": {
     "vscode": "^1.78.2"
   },
