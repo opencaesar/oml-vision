@@ -11,7 +11,7 @@ RUN apt-get update && \
 RUN apt-get install -y openjdk-17-jdk
 
 # Install TypeScript and npm
-RUN npm install -g typescript
+RUN npm install -g typescript yarn
 
 # Install Docker
 RUN apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release && \
