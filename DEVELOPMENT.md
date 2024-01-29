@@ -60,12 +60,13 @@ code --install-extension vscjava.vscode-gradle
 1. Go to the the home page of the OML Vision Github repo located [here](https://github.com/opencaesar/oml-vision)
 2. Open the repo in a code space.  Read more [here](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository?tool=webui#creating-a-codespace-for-a-repository)
 3. **IMPORTANT** Github Codespaces are not free indefinitely for a personal account under the Github Free tier.  Typically Github Codespaces can be used for free for a certain amount of hours per month before a user is billed.  Read more [here](https://docs.github.com/en/billing/managing-billing-for-github-codespaces/about-billing-for-github-codespaces)
-4. Press F5 on your Keyboard or Ctrl+Shift+D (Windows) or Cmd+Shift+D (macOS) and click the green play button in the upper left that says `Run Extension`.  This takes care of building the application in Dev Mode. 
-5. If you get a popup that asks for permission to open the debugger in a new tab or window, click `Continue`.
-6. Open the OML model repo in Dev mode of OML Vision.  Read more [here](http://www.opencaesar.io/oml-vision-docs/docs/intro#use-existing-oml-model)
-7. **IMPORTANT** you can’t have the same OML repo open in another instance of vscode. If you try to open a folder in the vision app that is already open in another instance of vscode it just quietly does nothing.
-8. Click the eye in the left hand side which corresponds to OML Vision or click the ellipsis at the bottom of the sidebar which will expand a selection menu.  Select `OML Vision` from there.
-9. If the eye does not appear, refresh the browser
+4. In the terminal, run `git switch master` and `git pull`.  This will get the latest changes from OML Vision into the codespace.
+5. Press F5 on your Keyboard or Ctrl+Shift+D (Windows) or Cmd+Shift+D (macOS) and click the green play button in the upper left that says `Run Extension`.  This takes care of building the application in Dev Mode. 
+6. If you get a popup that asks for permission to open the debugger in a new tab or window, click `Continue`.
+7. Open the OML model repo in Dev mode of OML Vision.  Read more [here](http://www.opencaesar.io/oml-vision-docs/docs/intro#use-existing-oml-model)
+8. **IMPORTANT** you can’t have the same OML repo open in another instance of vscode. If you try to open a folder in the vision app that is already open in another instance of vscode it just quietly does nothing.
+9. Click the eye in the left hand side which corresponds to OML Vision or click the ellipsis at the bottom of the sidebar which will expand a selection menu.  Select `OML Vision` from there.
+10. If the eye does not appear, refresh the browser
 
 ## Troubleshooting
 Known issues:
