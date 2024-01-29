@@ -1,8 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import ITableData from "../../interfaces/ITableData";
 import {
-  IRowMapping,
-  DataLayoutsType,
   DiagramLayout,
   IDiagramRowMapping,
   IDiagramEdgeMapping,
@@ -11,7 +9,6 @@ import {
 import {
   Edge,
   MarkerType,
-  Node,
   ReactFlowState,
   useStoreApi,
   Position,
@@ -267,7 +264,11 @@ export const mapDiagramValueData = (
         (node: ITableData) => node.data.edgeKey === edge[edgeMapping.targetKey]
       );
       let flow = edge.flow || "=";
-      let colorIdentifier = edge[edgeMapping.colorKey] || "";
+      let colorIdentifier = edge[edgeMapping.targetKey] || "";
+
+      // get the animated from the layout file and default the animated to false 
+      const animated = edgeMapping.animated || false;
+
       const label = edgeMapping.labelFormat.replace(
         /{([^}]+)}/g,
         (match, placeholder) => {
@@ -293,6 +294,7 @@ export const mapDiagramValueData = (
         let newEdge: Edge = {
           id: edgeId,
           label: label,
+          animated: animated,
           source: sourceNode.id,
           target: targetNode.id,
           style: { stroke: color },
@@ -608,6 +610,7 @@ export const getLayoutedElements = (nodes: ITableData, edges: Edge[]) => {
     edges: edges.map((edge) => ({
       ...edge,
       id: edge.id,
+      animated: edge.animated,
       sources: [edge.source],
       targets: [edge.target],
     })),
@@ -617,12 +620,12 @@ export const getLayoutedElements = (nodes: ITableData, edges: Edge[]) => {
     .layout(graph)
     .then((layoutedGraph) => {
       const flattenedNodes = flattenNodes(layoutedGraph.children);
-      const edges = (layoutedGraph.edges || []).map((edge) => ({
+      const edges = (layoutedGraph.edges || []).map((edge: any) => ({
         ...edge,
         id: edge.id,
         source: edge.sources[0],
         target: edge.targets[0],
-        animated: false,
+        animated: edge.animated,
         type: "smoothstep",
         zIndex: 10,
       }));
