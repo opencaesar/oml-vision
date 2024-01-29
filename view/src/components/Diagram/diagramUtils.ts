@@ -21,6 +21,8 @@ import "reactflow/dist/style.css";
 import "./Diagram.css";
 import ELK from "elkjs/lib/elk.bundled";
 import { LegendItem } from "../../interfaces/LegendItemType";
+import { colors } from "../shared/colors";
+import { pSBC } from "../../utils/pSBC";
 
 const DEFAULT_NODE_COLORS = "#FFFFFF";
 const DEFAULT_NODE_TEXT_COLORS = "#000000";
@@ -130,7 +132,18 @@ export const mapDiagramValueData = (
     const nodeTextColor = rowMapping.nodeTextColor || DEFAULT_NODE_TEXT_COLORS;
 
     // @ts-ignore
-    const nodeType = rowMapping.nodeType || undefined;
+    const nodeType = rowMapping.nodeType.replace(
+      /{([^}]+)}/g,
+      (match: any, placeholder: any) => {
+        const entry_placeholder = entry[placeholder];
+        // Remove double quotes from string literal
+        const format_entry_placeholder =
+          typeof entry_placeholder === "string"
+            ? entry[placeholder].replace(/['"]+/g, "")
+            : entry[placeholder];
+        return format_entry_placeholder || "";
+      }
+    );
 
     // Contained entries should be concatenated with a comma (see getFaultContainmentRegions query)
     // @ts-ignore
@@ -150,7 +163,7 @@ export const mapDiagramValueData = (
         containmentId,
         containedEntries,
         nodeColor,
-        nodeTextColor
+        nodeTextColor,
       },
     };
 
@@ -420,15 +433,51 @@ const calculateNodeSize = (node: any, isHorizontal: boolean) => {
   };
 };
 
+// A helper function that changes the shade of a color based on shade (light or dark)
+const changeColor = (hexColor: any, shade?: string) => {
+  // Looks through the colors JSON object to find the string hex color pair
+  hexColor = colors.filter((color) => {
+    // allows for colors to be Pascal Case, Upper Case, Lower Case, or Hex
+    if (
+      color.name === hexColor ||
+      color.name.toLowerCase() === hexColor ||
+      color.name.toUpperCase() === hexColor ||
+      color.hex === hexColor
+    )
+      return true;
+  });
+  
+  // [0] to return the items in the list
+  // .hex to get the hex value. look in view/src/components/shared/colors.ts
+
+  // 25% darker color log blend with black #000000
+  if (shade === "dark") return pSBC(0.25, hexColor[0].hex, "#000000", false);
+
+  // 25% lighter color log blend with white #ffffff
+  else if (shade === "light") return pSBC(-0.25, hexColor[0].hex, "#ffffff", false);
+
+  // Return original color
+  else return hexColor[0].hex
+};
+
 // A helper function that assigns a color to a node based on node and node text colors.
 const assignNodeColor = (
   nodeColor: string | string[],
   nodeTextColor: string | string[],
+  nodeType: string,
   isOverlay: boolean = false
 ) => {
   // Define colors for each layer. Extend this list for more layers.
   let backgroundColor = nodeColor;
   let color = nodeTextColor;
+
+  if (nodeType === "Subsystem") {
+    // Change subsystem node to be darker
+    backgroundColor = changeColor(nodeColor, "dark");
+  } else if (nodeType === "Assembly") {
+    // Change assembly node to be lighter
+    backgroundColor = changeColor(nodeColor, "light");
+  }
 
   if (isOverlay) {
     color = "var(--vscode-banner-foreground)";
@@ -459,13 +508,10 @@ const processNodes = (
       style: assignNodeColor(
         node.data.nodeColor,
         node.data.nodeTextColor,
+        node.type,
         node.data.isOverlay || node.type === "overlay"
       ),
     };
-
-    console.log("Node data: ");
-    console.log(node.data);
-    console.log(node);
 
     if (node.children) {
       processedNode.children = processNodes(
