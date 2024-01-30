@@ -8,7 +8,13 @@ We thank you for taking time to contribute! We appreciate your help with feature
 
 ## Environment details
 
-Details on how to build and set up the project are available in the [README.md](README.md#developer-instructions).
+Details on how to build and set up the project are available in the [DEVELOPMENT.md](DEVELOPMENT.md).
+
+## API Documentation
+
+API documentation is available in the [OML Vision Docs](http://www.opencaesar.io/oml-vision-docs/).  
+
+**New features and bug fixes must be added to this documentation before new code is merged.**
 
 ## Testing
 
