@@ -264,7 +264,12 @@ export const mapDiagramValueData = (
         (node: ITableData) => node.data.edgeKey === edge[edgeMapping.targetKey]
       );
       let flow = edge.flow || "=";
-      let colorIdentifier = edge[edgeMapping.targetKey] || "";
+      let legendItems = edgeMapping.legendItems.replace(
+        /{([^}]+)}/g,
+        (match, placeholder) => {
+          return edge[placeholder] || "";
+        }
+      );
 
       // get the animated from the layout file and default the animated to false 
       const animated = edgeMapping.animated || false;
@@ -279,16 +284,16 @@ export const mapDiagramValueData = (
       if (sourceNode && targetNode) {
         let edgeId = `${sourceNode.id}-${targetNode.id}`;
 
-        // Only add color to the map aka Legend if it exists, otherwise default and don't add to legend.
-        if (colorIdentifier && !colorMap.has(colorIdentifier)) {
-          colorMap.set(colorIdentifier, {
-            color: stringToColor(colorIdentifier),
+        // Only automatically generate color to the map aka Legend if it exists, otherwise default and don't add to legend.
+        if (legendItems && !colorMap.has(legendItems)) {
+          colorMap.set(legendItems, {
+            color: stringToColor(legendItems),
             isEdge: true,
           });
         }
 
-        let color = colorIdentifier
-          ? colorMap.get(colorIdentifier).color
+        let color = legendItems
+          ? colorMap.get(legendItems).color
           : "var(--vscode-banner-foreground)";
 
         let newEdge: Edge = {

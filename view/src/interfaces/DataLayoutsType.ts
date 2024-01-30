@@ -24,7 +24,7 @@ export interface IDiagramEdgeMapping {
   name: string;
   labelFormat: string;
   animated: boolean;
-  colorKey: string;
+  legendItems: string;
   sourceKey: string;
   targetKey: string;
 }
