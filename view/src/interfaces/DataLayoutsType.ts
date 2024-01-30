@@ -8,7 +8,8 @@ export interface IRowMapping {
 }
 
 export interface IDiagramRowMapping extends IRowMapping {
-  colorKey: string;
+  nodeColor: string;
+  nodeTextColor: string;
   nodeType?: string;
   edgeMatchKey?: string;
   subRowMappings?: IDiagramRowMapping[];
@@ -22,7 +23,8 @@ export interface IDiagramEdgeMapping {
   id: string;
   name: string;
   labelFormat: string;
-  colorKey: string;
+  animated: boolean;
+  legendItems: string;
   sourceKey: string;
   targetKey: string;
 }
