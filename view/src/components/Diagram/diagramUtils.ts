@@ -116,7 +116,10 @@ export const mapDiagramValueData = (
     );
     const iri = entry["iri"] || "";
     // @ts-ignore
-    const edgeKey = rowMapping.edgeMatchKey ? entry[rowMapping.edgeMatchKey] || "" : null;
+    const edgeKey = rowMapping.edgeMatchKey
+    // @ts-ignore
+      ? entry[rowMapping.edgeMatchKey] || ""
+      : null;
     // @ts-ignore
     const containmentId = rowMapping.attachesTo || null;
 
@@ -144,7 +147,10 @@ export const mapDiagramValueData = (
 
     // Contained entries should be concatenated with a comma (see getFaultContainmentRegions query)
     // @ts-ignore
-    const containedEntries = rowMapping.attachesTo ? entry[rowMapping.attachesTo].split(",") : null;
+    const containedEntries = rowMapping.attachesTo
+    // @ts-ignore
+      ? entry[rowMapping.attachesTo].split(",")
+      : null;
 
     // TODO: handle colorKey here from diagramLayouts, add to legend
     let processedEntry: ITableData = {
@@ -271,7 +277,7 @@ export const mapDiagramValueData = (
         }
       );
 
-      // get the animated from the layout file and default the animated to false 
+      // get the animated from the layout file and default the animated to false
       const animated = edgeMapping.animated || false;
 
       const label = edgeMapping.labelFormat.replace(
@@ -416,7 +422,7 @@ const elk = new ELK({
   defaultLayoutOptions: elkOptions,
 });
 
-const calculateNodeSize = (node: any, isHorizontal: boolean) => {
+const calculateNodeSize = (node: any) => {
   if (!node.children || node.children.length === 0) {
     return { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
   }
@@ -425,7 +431,7 @@ const calculateNodeSize = (node: any, isHorizontal: boolean) => {
   let totalHeight = 0;
 
   for (const child of node.children) {
-    const childSize = calculateNodeSize(child, isHorizontal);
+    const childSize = calculateNodeSize(child);
     totalWidth += childSize.width;
     totalHeight += childSize.height;
   }
@@ -453,18 +459,17 @@ const changeColor = (hexColor: any, shade?: string) => {
     )
       return true;
   });
-  
+
   // [0] to return the items in the list
   // .hex to get the hex value. look in view/src/components/shared/colors.ts
 
   // 25% darker color log blend with black #000000
   if (shade === "dark") return pSBC(0.25, hexColor[0].hex, "#000000", false);
-
   // 25% lighter color log blend with white #ffffff
-  else if (shade === "light") return pSBC(-0.25, hexColor[0].hex, "#ffffff", false);
-
+  else if (shade === "light")
+    return pSBC(-0.25, hexColor[0].hex, "#ffffff", false);
   // Return original color
-  else return hexColor[0].hex
+  else return hexColor[0].hex;
 };
 
 // A helper function that assigns a color to a node based on node and node text colors.
@@ -496,18 +501,53 @@ const assignNodeColor = (
 const processNodes = (
   nodes: ITableData,
   parentNodeId = null,
-  isHorizontal = false
+  autoLayout: string
 ) => {
   return nodes.map((node: any) => {
     // Calculate size before processing node
-    const { width, height } = calculateNodeSize(node, isHorizontal);
+    const { width, height } = calculateNodeSize(node);
+    let targetPosition = null;
+    let sourcePosition = null;
+
+    console.log(autoLayout)
+
+    switch (autoLayout) {
+      case "left": {
+        sourcePosition = Position.Left;
+        targetPosition = Position.Right;
+        break;
+      }
+      case "right": {
+        sourcePosition = Position.Right;
+        targetPosition = Position.Left;
+        break;
+      }
+      case "top": {
+        sourcePosition = Position.Top;
+        targetPosition = Position.Bottom;
+        break;
+      }
+      case "bottom": {
+        sourcePosition = Position.Bottom;
+        targetPosition = Position.Top;
+        break;
+      }
+      default: {
+        // Default sourcePosition to Position Left & targetPosition to Position Right
+        sourcePosition = Position.Left;
+        targetPosition = Position.Right;
+        break;
+      }
+    }
+    console.log(sourcePosition)
+    console.log(targetPosition)
 
     const processedNode: any = {
       id: node.id,
       data: node.data,
       type: node.type,
-      targetPosition: isHorizontal ? Position.Left : Position.Top,
-      sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
+      sourcePosition: sourcePosition,
+      targetPosition: targetPosition,
       parentNode: parentNodeId,
       extent: parentNodeId ? "parent" : undefined,
       width,
@@ -524,7 +564,7 @@ const processNodes = (
       processedNode.children = processNodes(
         node.children,
         node.id,
-        isHorizontal
+        autoLayout
       );
     } else {
       // Don't let edges overlap leaf nodes
@@ -604,9 +644,8 @@ const getOverlayBoundingBoxes = (
  * @param {Edge[]} edges - Array of edges data.
  * @returns {Promise} - Returns a promise that resolves to an object containing the layouted nodes and edges.
  */
-export const getLayoutedElements = (nodes: ITableData, edges: Edge[]) => {
-  const isHorizontal = elkOptions["elk.direction"] === "DOWN";
-  const processedNodes = processNodes(nodes, null, isHorizontal);
+export const getLayoutedElements = (nodes: ITableData, edges: Edge[], autoLayout: string) => {
+  const processedNodes = processNodes(nodes, null, autoLayout);
 
   const graph = {
     id: "root",
