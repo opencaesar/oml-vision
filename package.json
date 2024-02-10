@@ -2,7 +2,7 @@
   "name": "oml-vision",
   "displayName": "OML Vision",
   "description": "VSCode based workbench to edit OML models",
-  "version": "0.1.0",
+  "version": "v0.2.0",
   "engines": {
     "vscode": "^1.78.2"
   },
@@ -178,7 +178,7 @@
     "viewsWelcome": [
       {
         "view": "vision-welcome",
-        "contents": "In order to use OML Vision, open a folder containing an OML model repository or clone from GitHub.\n[Open OML Model](command:vscode.openFolder)\n[Clone OML Model](command:git.clone)\nTo learn more about OML Vision [read our docs](https://github.com/opencaesar/oml-vision/tree/master).",
+        "contents": "In order to use OML Vision, open a folder containing an OML model repository or clone from GitHub.\n[Open OML Model](command:vscode.openFolder)\n[Clone OML Model](command:git.clone)\n[Read the official docs](http://www.opencaesar.io/oml-vision-docs/).",
         "when": "workbenchState == empty"
       },
       {

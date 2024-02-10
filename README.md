@@ -4,7 +4,7 @@
 https://www.futureengineers.org/nametherover/gallery/23269
 
 ## User Documentation
-TBD - In Progress
+Link to [User Documentation](http://www.opencaesar.io/oml-vision-docs/)
 
 ## Development Guide
 Link to [DEVELOPMENT.md](DEVELOPMENT.md)

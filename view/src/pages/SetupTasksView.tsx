@@ -42,6 +42,7 @@ const SetupTasksView: React.FC = () => {
     <div className={`setup-tasks-view ${isPreloading ?? "preload"}`}>
       <div className="setup-tasks-container scrollable">
         <div className="setup-tasks-container__none">
+          <p className="my-[13px]"><a className="no-underline text-[#3792fa] hover:underline active:text-[#cccccc] underline" href="http://www.opencaesar.io/oml-vision-docs/">Read the official docs</a></p>
           <p className="my-[13px]">Run the proper Gradle tasks to setup the OML Vision environment:</p>
           <nav className="nav-list">
             <h2 className="nav-list__title nav-label">Gradle Tasks</h2>

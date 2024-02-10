@@ -13,21 +13,21 @@ import ReactFlow, {
   ControlButton,
   MiniMap,
   Panel,
-  Position,
-  Connection,
   useNodesState,
   useEdgesState,
   useReactFlow,
-  ReactFlowState,
   useOnSelectionChange,
   useNodesInitialized,
   NodeProps,
+  getIncomers,
+  getOutgoers,
+  getConnectedEdges,
 } from "reactflow";
 
 // Icons
 import { IconDownload } from "@nasa-jpl/react-stellar";
-import LockIcon from "./Icons/Lock"
-import UnlockIcon from "./Icons/Unlock"
+import LockIcon from "./Icons/Lock";
+import UnlockIcon from "./Icons/Unlock";
 
 import { toPng, toSvg } from "html-to-image";
 import Loader from "../shared/Loader";
@@ -81,6 +81,76 @@ function Diagram({
       }
     },
   });
+
+  const highlightPath = (
+    selectedNodes: Node[],
+    nodes: Node[],
+    edges: Edge[]
+  ) => {
+
+    // Empty Node[] to capture all selected incoming and outgoing nodes
+    let allIncomers: Node[] = [];
+    let allOutgoers: Node[] = [];
+
+    // Loop over selected nodes to find all incoming and outgoing nodes.  Push to empty lists
+    for (const n of selectedNodes) {
+      const incomers = getIncomers(n, nodes, edges);
+      const outgoers = getOutgoers(n, nodes, edges);
+      allIncomers.push(...incomers)
+      allOutgoers.push(...outgoers)
+    }
+    
+    // Find the connected edges to the incoming and outgoing nodes
+    const in_connected = getConnectedEdges(allIncomers, edges);
+    const out_connected = getConnectedEdges(allOutgoers, edges);
+
+    // Determine the edges that are not connected to any incoming or outgoing selected nodes
+    let notConnected = edges.filter(e => !in_connected.some(in_e => in_e.id === e.id));
+    notConnected = edges.filter(e => !out_connected.some(out_e => out_e.id === e.id));
+
+    // Set the opacity of those edges to 25%
+    notConnected.map(n => {
+      n.style = {
+        ...n.style,
+        opacity: 0.25,
+      }
+    })
+
+    // Set the opacity of incoming edges to 25%
+    in_connected.map(i => {
+      i.style = {
+        ...i.style,
+        opacity: 1,
+      }
+    })
+
+    // Set the opacity of outgoing edges to 25%
+    out_connected.map(o => {
+      o.style = {
+        ...o.style,
+        opacity: 1,
+      }
+    })
+
+    // Combine the arrays while ensuring uniqueness based on the 'id' property
+    const combinedArray = Array.from(new Set([...notConnected, ...out_connected, ...in_connected]));
+
+    setEdges([...combinedArray]);
+  };
+
+  const unHighlightPath = (
+    edges: Edge[]
+  ) => {
+    // Set the opacity of all edges to 100%
+    edges.map(e => {
+      e.style = {
+        ...e.style,
+        opacity: 1,
+      }
+    })
+
+    setEdges([...edges]);
+  };
 
   const onLayout = useCallback(
     ({ useInitialNodes = true }: { useInitialNodes?: boolean }) => {
@@ -188,6 +258,14 @@ function Diagram({
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onSelectionChange={(selectedElements) => {
+          setSelectedNodes(selectedElements.nodes)
+          if (selectedNodes.length > 0) highlightPath(selectedNodes, nodes, edges)
+        }}
+        onPaneClick={() => {
+          setSelectedNodes([])
+          unHighlightPath(edges)
+        }}
         proOptions={{ hideAttribution: true }}
         nodeTypes={nodeTypes}
         nodesConnectable={false}
