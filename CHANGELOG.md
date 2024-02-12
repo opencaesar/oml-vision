@@ -16,6 +16,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Diagram View: Add ability to animate edges https://github.com/opencaesar/oml-vision/pull/23
 - Diagram View: Add ability to highlight/unlight connected edges to selected nodes https://github.com/opencaesar/oml-vision/pull/24
 - Diagram View: Add ability to automatically apply a position layout to nodes and edges https://github.com/opencaesar/oml-vision/pull/24
+- Diagram View: Add ability to apply a layout algorithm to nodes and edges https://github.com/opencaesar/oml-vision/pull/27
 
 ## [0.1.0]
 
