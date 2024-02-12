@@ -117,8 +117,8 @@ export const mapDiagramValueData = (
     const iri = entry["iri"] || "";
     // @ts-ignore
     const edgeKey = rowMapping.edgeMatchKey
-    // @ts-ignore
-      ? entry[rowMapping.edgeMatchKey] || ""
+      ? // @ts-ignore
+        entry[rowMapping.edgeMatchKey] || ""
       : null;
     // @ts-ignore
     const containmentId = rowMapping.attachesTo || null;
@@ -148,8 +148,8 @@ export const mapDiagramValueData = (
     // Contained entries should be concatenated with a comma (see getFaultContainmentRegions query)
     // @ts-ignore
     const containedEntries = rowMapping.attachesTo
-    // @ts-ignore
-      ? entry[rowMapping.attachesTo].split(",")
+      ? // @ts-ignore
+        entry[rowMapping.attachesTo].split(",")
       : null;
 
     // TODO: handle colorKey here from diagramLayouts, add to legend
@@ -395,32 +395,63 @@ const DEFAULT_HEIGHT = 70;
 const MARGIN = 10;
 const PADDING = 25;
 
-const elkOptions = {
-  "elk.padding": "[left=50, top=75, right=50, bottom=50]",
-  "elk.direction": "DOWN",
-  "elk.algorithm": "layered",
-  // "elk.hierarchyHandling": "SEPARATE_CHILDREN",
-  // "elk.separateConnectedComponents": "false",
-  "org.eclipse.elk.spacing.componentComponent": "50",
-  "elk.spacing.nodeNode": "150",
-  "elk.layered.spacing.nodeNodeBetweenLayers": "120",
-  "elk.spacing.edgeEdge": "20",
-  "elk.spacing.edgeNode": "20",
-  "elk.spacing.edgeEdgeBetweenLayers": "50",
-  "elk.edgeRouting": "ORTHOGONAL",
-  // "elk.portAlignment.default": "DISTRIBUTED",
-  // "elk.layered.layering.strategy": "NETWORK_SIMPLEX",
-  // "elk.layered.layering.coffmanGraham.layerBound": "4",
-  // "elk.layered.cycleBreaking.strategy": "DEPTH_FIRST",
-  // "elk.layered.crossingMinimization.strategy": "INTERACTIVE",
-  // "elk.layered.nodePlacement.favorStraightEdges": "true",
-  // "elk.layered.nodePlacement.bk.edgeStraightening": "IMPROVE_STRAIGHTNESS",
-  // "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+const elkDirection = (autoLayout: string) => {
+  let direction = "";
+  switch (autoLayout) {
+    case "left": {
+      direction = "LEFT";
+      break;
+    }
+    case "right": {
+      direction = "RIGHT";
+      break;
+    }
+    case "top": {
+      direction = "UP";
+      break;
+    }
+    case "bottom": {
+      direction = "DOWN";
+      break;
+    }
+    default: {
+      // Default elk direction Left
+      direction = "LEFT";
+      break;
+    }
+  }
+  return direction;
 };
 
-const elk = new ELK({
-  defaultLayoutOptions: elkOptions,
-});
+const elkOptions = (autoLayout: string) => {
+  return {
+    "elk.padding": "[left=50, top=75, right=50, bottom=50]",
+    "elk.direction": elkDirection(autoLayout),
+    "elk.algorithm": "layered",
+    // "elk.hierarchyHandling": "SEPARATE_CHILDREN",
+    // "elk.separateConnectedComponents": "false",
+    "org.eclipse.elk.spacing.componentComponent": "50",
+    "elk.spacing.nodeNode": "150",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "120",
+    "elk.spacing.edgeEdge": "20",
+    "elk.spacing.edgeNode": "20",
+    "elk.spacing.edgeEdgeBetweenLayers": "50",
+    "elk.edgeRouting": "ORTHOGONAL",
+    // "elk.portAlignment.default": "DISTRIBUTED",
+    // "elk.layered.layering.strategy": "NETWORK_SIMPLEX",
+    // "elk.layered.layering.coffmanGraham.layerBound": "4",
+    // "elk.layered.cycleBreaking.strategy": "DEPTH_FIRST",
+    // "elk.layered.crossingMinimization.strategy": "INTERACTIVE",
+    // "elk.layered.nodePlacement.favorStraightEdges": "true",
+    // "elk.layered.nodePlacement.bk.edgeStraightening": "IMPROVE_STRAIGHTNESS",
+    // "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+  };
+};
+
+const elk = (autoLayout: string) =>
+  new ELK({
+    defaultLayoutOptions: elkOptions(autoLayout),
+  });
 
 const calculateNodeSize = (node: any) => {
   if (!node.children || node.children.length === 0) {
@@ -509,8 +540,6 @@ const processNodes = (
     let targetPosition = null;
     let sourcePosition = null;
 
-    console.log(autoLayout)
-
     switch (autoLayout) {
       case "left": {
         sourcePosition = Position.Left;
@@ -539,8 +568,6 @@ const processNodes = (
         break;
       }
     }
-    console.log(sourcePosition)
-    console.log(targetPosition)
 
     const processedNode: any = {
       id: node.id,
@@ -561,11 +588,7 @@ const processNodes = (
     };
 
     if (node.children) {
-      processedNode.children = processNodes(
-        node.children,
-        node.id,
-        autoLayout
-      );
+      processedNode.children = processNodes(node.children, node.id, autoLayout);
     } else {
       // Don't let edges overlap leaf nodes
       processedNode.zIndex = 11;
@@ -644,7 +667,11 @@ const getOverlayBoundingBoxes = (
  * @param {Edge[]} edges - Array of edges data.
  * @returns {Promise} - Returns a promise that resolves to an object containing the layouted nodes and edges.
  */
-export const getLayoutedElements = (nodes: ITableData, edges: Edge[], autoLayout: string) => {
+export const getLayoutedElements = (
+  nodes: ITableData,
+  edges: Edge[],
+  autoLayout: string
+): Promise<any> => {
   const processedNodes = processNodes(nodes, null, autoLayout);
 
   const graph = {
@@ -660,7 +687,7 @@ export const getLayoutedElements = (nodes: ITableData, edges: Edge[], autoLayout
     })),
   };
 
-  return elk
+  return elk(autoLayout)
     .layout(graph)
     .then((layoutedGraph) => {
       const flattenedNodes = flattenNodes(layoutedGraph.children);

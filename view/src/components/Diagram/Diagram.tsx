@@ -4,6 +4,7 @@ import React, {
   useState,
   useRef,
   useLayoutEffect,
+  ChangeEvent,
 } from "react";
 import ReactFlow, {
   Node,
@@ -64,6 +65,7 @@ function Diagram({
   clearFilter: Function;
   onNodeSelected?: Function;
 }) {
+  // Vanilla React Hooks
   const [isLoading, setIsLoading] = useState(true);
   const [autoLayout, setAutoLayout] = useState("");
   const diagramRef = useRef<HTMLDivElement>(null);
@@ -173,7 +175,7 @@ function Diagram({
         }
       });
     },
-    [initData, nodes, edges]
+    [initData, nodes, edges, autoLayout]
   );
 
   const getNodeColor = (node: Node) => {
@@ -247,6 +249,115 @@ function Diagram({
     );
   }
 
+  // References the setAutoLayout function
+  // https://stackoverflow.com/questions/7969088/when-do-i-use-parentheses-and-when-do-i-not
+  const handleSetAutoLayout = (e: ChangeEvent<HTMLSelectElement>) => {
+    setAutoLayout(e.target.value);
+  };
+
+  const selectedAutoLayout = (autoLayout: string) => {
+    let dropDownOptions = null;
+    switch (autoLayout) {
+      case "left": {
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption selected value="left">
+                Left
+              </VSCodeOption>
+              <VSCodeOption value="right">Right</VSCodeOption>
+              <VSCodeOption value="top">Top</VSCodeOption>
+              <VSCodeOption value="bottom">Bottom</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      case "right": {
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption value="left">Left</VSCodeOption>
+              <VSCodeOption selected value="right">
+                Right
+              </VSCodeOption>
+              <VSCodeOption value="top">Top</VSCodeOption>
+              <VSCodeOption value="bottom">Bottom</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      case "top": {
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption value="left">Left</VSCodeOption>
+              <VSCodeOption value="right">Right</VSCodeOption>
+              <VSCodeOption selected value="top">
+                Top
+              </VSCodeOption>
+              <VSCodeOption value="bottom">Bottom</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      case "bottom": {
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption value="left">Left</VSCodeOption>
+              <VSCodeOption value="right">Right</VSCodeOption>
+              <VSCodeOption value="top">Top</VSCodeOption>
+              <VSCodeOption selected value="bottom">
+                Bottom
+              </VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      default: {
+        // Default dropDownOptions to select position as "left"
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption selected value="left">
+                Left
+              </VSCodeOption>
+              <VSCodeOption value="right">Right</VSCodeOption>
+              <VSCodeOption value="top">Top</VSCodeOption>
+              <VSCodeOption value="bottom">Bottom</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+    }
+    return dropDownOptions;
+  };
+
   return (
     <div
       className="w-screen h-screen"
@@ -306,20 +417,7 @@ function Diagram({
           </div>
         </Panel>
         <Panel className="flow-panel" position="top-center">
-          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
-            <span slot="auto-layout">Auto Layout</span>
-            <VSCodeDropdown
-              // @ts-ignore
-              onChange={(select: React.FormEvent<HTMLInputElement>) =>
-                setAutoLayout(select.currentTarget.value)
-              }
-            >
-              <VSCodeOption value="left">Left</VSCodeOption>
-              <VSCodeOption value="right">Right</VSCodeOption>
-              <VSCodeOption value="top">Top</VSCodeOption>
-              <VSCodeOption value="bottom">Bottom</VSCodeOption>
-            </VSCodeDropdown>
-          </div>
+          {selectedAutoLayout(autoLayout)}
         </Panel>
         <Controls className="flow-controls" showInteractive={false}>
           {/* Implemented custom interactive button to avoid disabling selection in diagram */}
