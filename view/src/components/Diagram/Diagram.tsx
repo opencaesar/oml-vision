@@ -68,6 +68,7 @@ function Diagram({
   // Vanilla React Hooks
   const [isLoading, setIsLoading] = useState(true);
   const [autoLayout, setAutoLayout] = useState("");
+  const [algorithmLayout, setAlgorithmLayout] = useState("");
   const diagramRef = useRef<HTMLDivElement>(null);
   const nodesInitialized = useNodesInitialized();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -165,17 +166,19 @@ function Diagram({
       const ns = useInitialNodes ? initData.nodes : nodes;
       const es = useInitialNodes ? initData.edges : edges;
 
-      getLayoutedElements(ns, es, autoLayout).then((layoutedGraph) => {
-        if (layoutedGraph) {
-          setNodes(layoutedGraph.nodes || []);
-          setEdges(layoutedGraph.edges || []);
-          // This defaults nodesDraggable to false.
-          setInteractivity(false);
-          setIsLoading(false);
+      getLayoutedElements(ns, es, autoLayout, algorithmLayout).then(
+        (layoutedGraph) => {
+          if (layoutedGraph) {
+            setNodes(layoutedGraph.nodes || []);
+            setEdges(layoutedGraph.edges || []);
+            // This defaults nodesDraggable to false.
+            setInteractivity(false);
+            setIsLoading(false);
+          }
         }
-      });
+      );
     },
-    [initData, nodes, edges, autoLayout]
+    [initData, nodes, edges, autoLayout, algorithmLayout]
   );
 
   const getNodeColor = (node: Node) => {
@@ -221,7 +224,7 @@ function Diagram({
   // Calculate the initial layout on mount.
   useLayoutEffect(() => {
     onLayout({});
-  }, [initData, autoLayout]);
+  }, [initData, autoLayout, algorithmLayout]);
 
   useEffect(() => {
     if (nodesInitialized) {
@@ -260,7 +263,7 @@ function Diagram({
     switch (autoLayout) {
       case "left": {
         dropDownOptions = (
-          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+          <div className="outline outline-offset-0 outline-white flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
             <span slot="auto-layout">Auto Layout</span>
             <VSCodeDropdown
               // @ts-ignore
@@ -279,7 +282,7 @@ function Diagram({
       }
       case "right": {
         dropDownOptions = (
-          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+          <div className="outline outline-offset-0 outline-white flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
             <span slot="auto-layout">Auto Layout</span>
             <VSCodeDropdown
               // @ts-ignore
@@ -298,7 +301,7 @@ function Diagram({
       }
       case "top": {
         dropDownOptions = (
-          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+          <div className="outline outline-offset-0 outline-white flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
             <span slot="auto-layout">Auto Layout</span>
             <VSCodeDropdown
               // @ts-ignore
@@ -317,7 +320,7 @@ function Diagram({
       }
       case "bottom": {
         dropDownOptions = (
-          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+          <div className="outline outline-offset-0 outline-white flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
             <span slot="auto-layout">Auto Layout</span>
             <VSCodeDropdown
               // @ts-ignore
@@ -337,7 +340,7 @@ function Diagram({
       default: {
         // Default dropDownOptions to select position as "left"
         dropDownOptions = (
-          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+          <div className="outline outline-offset-0 outline-white flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
             <span slot="auto-layout">Auto Layout</span>
             <VSCodeDropdown
               // @ts-ignore
@@ -349,6 +352,92 @@ function Diagram({
               <VSCodeOption value="right">Right</VSCodeOption>
               <VSCodeOption value="top">Top</VSCodeOption>
               <VSCodeOption value="bottom">Bottom</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+    }
+    return dropDownOptions;
+  };
+
+  // References the setAlgorithmLayout function
+  // https://stackoverflow.com/questions/7969088/when-do-i-use-parentheses-and-when-do-i-not
+  const handleSetAlgorithmLayout = (e: ChangeEvent<HTMLSelectElement>) => {
+    setAlgorithmLayout(e.target.value);
+  };
+
+  const selectedAlgorithmLayout = (algorithmLayout: string) => {
+    let dropDownOptions = null;
+    switch (algorithmLayout) {
+      case "layered": {
+        dropDownOptions = (
+          <div className="outline outline-offset-0 outline-white flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="algorithm">Algorithm</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAlgorithmLayout}
+            >
+              <VSCodeOption selected value="layered">
+                Layered
+              </VSCodeOption>
+              <VSCodeOption value="mrtree">Mr.Tree</VSCodeOption>
+              <VSCodeOption value="force">Force</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      case "mrtree": {
+        dropDownOptions = (
+          <div className="outline outline-offset-0 outline-white flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="algorithm">Algorithm</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAlgorithmLayout}
+            >
+              <VSCodeOption value="layered">Layered</VSCodeOption>
+              <VSCodeOption selected value="mrtree">
+                Mr.Tree
+              </VSCodeOption>
+              <VSCodeOption value="force">Force</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      case "force": {
+        dropDownOptions = (
+          <div className="outline outline-offset-0 outline-white flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="algorithm">Algorithm</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAlgorithmLayout}
+            >
+              <VSCodeOption value="layered">Layered</VSCodeOption>
+              <VSCodeOption value="mrtree">Mr.Tree</VSCodeOption>
+              <VSCodeOption selected value="force">
+                Force
+              </VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      default: {
+        // Default dropDownOptions to select position as "left"
+        dropDownOptions = (
+          <div className="outline outline-offset-0 outline-white flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="algorithm">Algorithm</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAlgorithmLayout}
+            >
+              <VSCodeOption selected value="layered">
+                Layered
+              </VSCodeOption>
+              <VSCodeOption value="mrtree">Mr.Tree</VSCodeOption>
+              <VSCodeOption value="force">Force</VSCodeOption>
             </VSCodeDropdown>
           </div>
         );
@@ -394,7 +483,7 @@ function Diagram({
           </Panel>
         )}
         <Panel className="flow-panel" position="top-right">
-          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+          <div className="flex-col items-center z-10 space-y-2 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
             <VSCodeButton appearance="secondary" onClick={() => fitView()}>
               Fit View
               <span slot="start" className="codicon codicon-zoom-in"></span>
@@ -414,10 +503,9 @@ function Diagram({
                 <span slot="start" className="codicon codicon-filter"></span>
               </VSCodeButton>
             )}
+            {selectedAutoLayout(autoLayout)}
+            {selectedAlgorithmLayout(algorithmLayout)}
           </div>
-        </Panel>
-        <Panel className="flow-panel" position="top-center">
-          {selectedAutoLayout(autoLayout)}
         </Panel>
         <Controls className="flow-controls" showInteractive={false}>
           {/* Implemented custom interactive button to avoid disabling selection in diagram */}

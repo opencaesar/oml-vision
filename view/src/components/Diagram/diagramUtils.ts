@@ -423,11 +423,35 @@ const elkDirection = (autoLayout: string) => {
   return direction;
 };
 
-const elkOptions = (autoLayout: string) => {
+const elkAlgorithm = (algorithmLayout: string) => {
+  let algorithm = "";
+  switch (algorithmLayout) {
+    case "layered": {
+      algorithm = "layered";
+      break;
+    }
+    case "mrtree": {
+      algorithm = "mrtree";
+      break;
+    }
+    case "force": {
+      algorithm = "force";
+      break;
+    }
+    default: {
+      // Default elk algorithm layered
+      algorithm = "layered";
+      break;
+    }
+  }
+  return algorithm;
+};
+
+const elkOptions = (autoLayout: string, algorithmLayout: string) => {
   return {
     "elk.padding": "[left=50, top=75, right=50, bottom=50]",
     "elk.direction": elkDirection(autoLayout),
-    "elk.algorithm": "layered",
+    "elk.algorithm": elkAlgorithm(algorithmLayout),
     // "elk.hierarchyHandling": "SEPARATE_CHILDREN",
     // "elk.separateConnectedComponents": "false",
     "org.eclipse.elk.spacing.componentComponent": "50",
@@ -448,9 +472,9 @@ const elkOptions = (autoLayout: string) => {
   };
 };
 
-const elk = (autoLayout: string) =>
+const elk = (autoLayout: string, algorithmLayout: string) =>
   new ELK({
-    defaultLayoutOptions: elkOptions(autoLayout),
+    defaultLayoutOptions: elkOptions(autoLayout, algorithmLayout),
   });
 
 const calculateNodeSize = (node: any) => {
@@ -670,7 +694,8 @@ const getOverlayBoundingBoxes = (
 export const getLayoutedElements = (
   nodes: ITableData,
   edges: Edge[],
-  autoLayout: string
+  autoLayout: string,
+  algorithmLayout: string
 ): Promise<any> => {
   const processedNodes = processNodes(nodes, null, autoLayout);
 
@@ -687,7 +712,7 @@ export const getLayoutedElements = (
     })),
   };
 
-  return elk(autoLayout)
+  return elk(autoLayout, algorithmLayout)
     .layout(graph)
     .then((layoutedGraph) => {
       const flattenedNodes = flattenNodes(layoutedGraph.children);
