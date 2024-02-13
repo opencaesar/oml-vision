@@ -18,7 +18,7 @@ assignees: ''
 
 ## Steps to reproduce the bug
 
-[List of the steps to reproduce the bug. If relevant, you may add SysMLv2 or KerML code snippets or files that exhibit the bug.]
+[List of the steps to reproduce the bug. If relevant, you may add OML Vision code snippets or files that exhibit the bug.]
 
 ## Current result
 
