@@ -4,6 +4,7 @@ import React, {
   useState,
   useRef,
   useLayoutEffect,
+  ChangeEvent,
 } from "react";
 import ReactFlow, {
   Node,
@@ -33,7 +34,11 @@ import { toPng, toSvg } from "html-to-image";
 import Loader from "../shared/Loader";
 import ITableData from "../../interfaces/ITableData";
 import { LegendItem } from "../../interfaces/LegendItemType";
-import { VSCodeButton, VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react";
+import {
+  VSCodeButton,
+  VSCodeDropdown,
+  VSCodeOption,
+} from "@vscode/webview-ui-toolkit/react";
 import { getLayoutedElements, useCanvasInteractivity } from "./diagramUtils";
 import Legend from "./Legend";
 import "reactflow/dist/style.css";
@@ -60,7 +65,9 @@ function Diagram({
   clearFilter: Function;
   onNodeSelected?: Function;
 }) {
+  // Vanilla React Hooks
   const [isLoading, setIsLoading] = useState(true);
+  const [autoLayout, setAutoLayout] = useState("");
   const diagramRef = useRef<HTMLDivElement>(null);
   const nodesInitialized = useNodesInitialized();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -84,7 +91,6 @@ function Diagram({
     nodes: Node[],
     edges: Edge[]
   ) => {
-
     // Empty Node[] to capture all selected incoming and outgoing nodes
     let allIncomers: Node[] = [];
     let allOutgoers: Node[] = [];
@@ -93,58 +99,62 @@ function Diagram({
     for (const n of selectedNodes) {
       const incomers = getIncomers(n, nodes, edges);
       const outgoers = getOutgoers(n, nodes, edges);
-      allIncomers.push(...incomers)
-      allOutgoers.push(...outgoers)
+      allIncomers.push(...incomers);
+      allOutgoers.push(...outgoers);
     }
-    
+
     // Find the connected edges to the incoming and outgoing nodes
     const in_connected = getConnectedEdges(allIncomers, edges);
     const out_connected = getConnectedEdges(allOutgoers, edges);
 
     // Determine the edges that are not connected to any incoming or outgoing selected nodes
-    let notConnected = edges.filter(e => !in_connected.some(in_e => in_e.id === e.id));
-    notConnected = edges.filter(e => !out_connected.some(out_e => out_e.id === e.id));
+    let notConnected = edges.filter(
+      (e) => !in_connected.some((in_e) => in_e.id === e.id)
+    );
+    notConnected = edges.filter(
+      (e) => !out_connected.some((out_e) => out_e.id === e.id)
+    );
 
     // Set the opacity of those edges to 25%
-    notConnected.map(n => {
+    notConnected.map((n) => {
       n.style = {
         ...n.style,
         opacity: 0.25,
-      }
-    })
+      };
+    });
 
     // Set the opacity of incoming edges to 25%
-    in_connected.map(i => {
+    in_connected.map((i) => {
       i.style = {
         ...i.style,
         opacity: 1,
-      }
-    })
+      };
+    });
 
     // Set the opacity of outgoing edges to 25%
-    out_connected.map(o => {
+    out_connected.map((o) => {
       o.style = {
         ...o.style,
         opacity: 1,
-      }
-    })
+      };
+    });
 
     // Combine the arrays while ensuring uniqueness based on the 'id' property
-    const combinedArray = Array.from(new Set([...notConnected, ...out_connected, ...in_connected]));
+    const combinedArray = Array.from(
+      new Set([...notConnected, ...out_connected, ...in_connected])
+    );
 
     setEdges([...combinedArray]);
   };
 
-  const unHighlightPath = (
-    edges: Edge[]
-  ) => {
+  const unHighlightPath = (edges: Edge[]) => {
     // Set the opacity of all edges to 100%
-    edges.map(e => {
+    edges.map((e) => {
       e.style = {
         ...e.style,
         opacity: 1,
-      }
-    })
+      };
+    });
 
     setEdges([...edges]);
   };
@@ -155,7 +165,7 @@ function Diagram({
       const ns = useInitialNodes ? initData.nodes : nodes;
       const es = useInitialNodes ? initData.edges : edges;
 
-      getLayoutedElements(ns, es).then((layoutedGraph) => {
+      getLayoutedElements(ns, es, autoLayout).then((layoutedGraph) => {
         if (layoutedGraph) {
           setNodes(layoutedGraph.nodes || []);
           setEdges(layoutedGraph.edges || []);
@@ -165,7 +175,7 @@ function Diagram({
         }
       });
     },
-    [initData, nodes, edges]
+    [initData, nodes, edges, autoLayout]
   );
 
   const getNodeColor = (node: Node) => {
@@ -211,7 +221,7 @@ function Diagram({
   // Calculate the initial layout on mount.
   useLayoutEffect(() => {
     onLayout({});
-  }, [initData]);
+  }, [initData, autoLayout]);
 
   useEffect(() => {
     if (nodesInitialized) {
@@ -239,6 +249,115 @@ function Diagram({
     );
   }
 
+  // References the setAutoLayout function
+  // https://stackoverflow.com/questions/7969088/when-do-i-use-parentheses-and-when-do-i-not
+  const handleSetAutoLayout = (e: ChangeEvent<HTMLSelectElement>) => {
+    setAutoLayout(e.target.value);
+  };
+
+  const selectedAutoLayout = (autoLayout: string) => {
+    let dropDownOptions = null;
+    switch (autoLayout) {
+      case "left": {
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption selected value="left">
+                Left
+              </VSCodeOption>
+              <VSCodeOption value="right">Right</VSCodeOption>
+              <VSCodeOption value="top">Top</VSCodeOption>
+              <VSCodeOption value="bottom">Bottom</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      case "right": {
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption value="left">Left</VSCodeOption>
+              <VSCodeOption selected value="right">
+                Right
+              </VSCodeOption>
+              <VSCodeOption value="top">Top</VSCodeOption>
+              <VSCodeOption value="bottom">Bottom</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      case "top": {
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption value="left">Left</VSCodeOption>
+              <VSCodeOption value="right">Right</VSCodeOption>
+              <VSCodeOption selected value="top">
+                Top
+              </VSCodeOption>
+              <VSCodeOption value="bottom">Bottom</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      case "bottom": {
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption value="left">Left</VSCodeOption>
+              <VSCodeOption value="right">Right</VSCodeOption>
+              <VSCodeOption value="top">Top</VSCodeOption>
+              <VSCodeOption selected value="bottom">
+                Bottom
+              </VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+      default: {
+        // Default dropDownOptions to select position as "left"
+        dropDownOptions = (
+          <div className="flex items-center z-10 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
+            <span slot="auto-layout">Auto Layout</span>
+            <VSCodeDropdown
+              // @ts-ignore
+              onChange={handleSetAutoLayout}
+            >
+              <VSCodeOption selected value="left">
+                Left
+              </VSCodeOption>
+              <VSCodeOption value="right">Right</VSCodeOption>
+              <VSCodeOption value="top">Top</VSCodeOption>
+              <VSCodeOption value="bottom">Bottom</VSCodeOption>
+            </VSCodeDropdown>
+          </div>
+        );
+        break;
+      }
+    }
+    return dropDownOptions;
+  };
+
   return (
     <div
       className="w-screen h-screen"
@@ -255,12 +374,13 @@ function Diagram({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onSelectionChange={(selectedElements) => {
-          setSelectedNodes(selectedElements.nodes)
-          if (selectedNodes.length > 0) highlightPath(selectedNodes, nodes, edges)
+          setSelectedNodes(selectedElements.nodes);
+          if (selectedNodes.length > 0)
+            highlightPath(selectedNodes, nodes, edges);
         }}
         onPaneClick={() => {
-          setSelectedNodes([])
-          unHighlightPath(edges)
+          setSelectedNodes([]);
+          unHighlightPath(edges);
         }}
         proOptions={{ hideAttribution: true }}
         nodeTypes={nodeTypes}
@@ -295,6 +415,9 @@ function Diagram({
               </VSCodeButton>
             )}
           </div>
+        </Panel>
+        <Panel className="flow-panel" position="top-center">
+          {selectedAutoLayout(autoLayout)}
         </Panel>
         <Controls className="flow-controls" showInteractive={false}>
           {/* Implemented custom interactive button to avoid disabling selection in diagram */}

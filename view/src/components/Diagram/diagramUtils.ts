@@ -116,7 +116,10 @@ export const mapDiagramValueData = (
     );
     const iri = entry["iri"] || "";
     // @ts-ignore
-    const edgeKey = rowMapping.edgeMatchKey ? entry[rowMapping.edgeMatchKey] || "" : null;
+    const edgeKey = rowMapping.edgeMatchKey
+      ? // @ts-ignore
+        entry[rowMapping.edgeMatchKey] || ""
+      : null;
     // @ts-ignore
     const containmentId = rowMapping.attachesTo || null;
 
@@ -144,7 +147,10 @@ export const mapDiagramValueData = (
 
     // Contained entries should be concatenated with a comma (see getFaultContainmentRegions query)
     // @ts-ignore
-    const containedEntries = rowMapping.attachesTo ? entry[rowMapping.attachesTo].split(",") : null;
+    const containedEntries = rowMapping.attachesTo
+      ? // @ts-ignore
+        entry[rowMapping.attachesTo].split(",")
+      : null;
 
     // TODO: handle colorKey here from diagramLayouts, add to legend
     let processedEntry: ITableData = {
@@ -271,7 +277,7 @@ export const mapDiagramValueData = (
         }
       );
 
-      // get the animated from the layout file and default the animated to false 
+      // get the animated from the layout file and default the animated to false
       const animated = edgeMapping.animated || false;
 
       const label = edgeMapping.labelFormat.replace(
@@ -389,34 +395,65 @@ const DEFAULT_HEIGHT = 70;
 const MARGIN = 10;
 const PADDING = 25;
 
-const elkOptions = {
-  "elk.padding": "[left=50, top=75, right=50, bottom=50]",
-  "elk.direction": "DOWN",
-  "elk.algorithm": "layered",
-  // "elk.hierarchyHandling": "SEPARATE_CHILDREN",
-  // "elk.separateConnectedComponents": "false",
-  "org.eclipse.elk.spacing.componentComponent": "50",
-  "elk.spacing.nodeNode": "150",
-  "elk.layered.spacing.nodeNodeBetweenLayers": "120",
-  "elk.spacing.edgeEdge": "20",
-  "elk.spacing.edgeNode": "20",
-  "elk.spacing.edgeEdgeBetweenLayers": "50",
-  "elk.edgeRouting": "ORTHOGONAL",
-  // "elk.portAlignment.default": "DISTRIBUTED",
-  // "elk.layered.layering.strategy": "NETWORK_SIMPLEX",
-  // "elk.layered.layering.coffmanGraham.layerBound": "4",
-  // "elk.layered.cycleBreaking.strategy": "DEPTH_FIRST",
-  // "elk.layered.crossingMinimization.strategy": "INTERACTIVE",
-  // "elk.layered.nodePlacement.favorStraightEdges": "true",
-  // "elk.layered.nodePlacement.bk.edgeStraightening": "IMPROVE_STRAIGHTNESS",
-  // "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+const elkDirection = (autoLayout: string) => {
+  let direction = "";
+  switch (autoLayout) {
+    case "left": {
+      direction = "LEFT";
+      break;
+    }
+    case "right": {
+      direction = "RIGHT";
+      break;
+    }
+    case "top": {
+      direction = "UP";
+      break;
+    }
+    case "bottom": {
+      direction = "DOWN";
+      break;
+    }
+    default: {
+      // Default elk direction Left
+      direction = "LEFT";
+      break;
+    }
+  }
+  return direction;
 };
 
-const elk = new ELK({
-  defaultLayoutOptions: elkOptions,
-});
+const elkOptions = (autoLayout: string) => {
+  return {
+    "elk.padding": "[left=50, top=75, right=50, bottom=50]",
+    "elk.direction": elkDirection(autoLayout),
+    "elk.algorithm": "layered",
+    // "elk.hierarchyHandling": "SEPARATE_CHILDREN",
+    // "elk.separateConnectedComponents": "false",
+    "org.eclipse.elk.spacing.componentComponent": "50",
+    "elk.spacing.nodeNode": "150",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "120",
+    "elk.spacing.edgeEdge": "20",
+    "elk.spacing.edgeNode": "20",
+    "elk.spacing.edgeEdgeBetweenLayers": "50",
+    "elk.edgeRouting": "ORTHOGONAL",
+    // "elk.portAlignment.default": "DISTRIBUTED",
+    // "elk.layered.layering.strategy": "NETWORK_SIMPLEX",
+    // "elk.layered.layering.coffmanGraham.layerBound": "4",
+    // "elk.layered.cycleBreaking.strategy": "DEPTH_FIRST",
+    // "elk.layered.crossingMinimization.strategy": "INTERACTIVE",
+    // "elk.layered.nodePlacement.favorStraightEdges": "true",
+    // "elk.layered.nodePlacement.bk.edgeStraightening": "IMPROVE_STRAIGHTNESS",
+    // "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
+  };
+};
 
-const calculateNodeSize = (node: any, isHorizontal: boolean) => {
+const elk = (autoLayout: string) =>
+  new ELK({
+    defaultLayoutOptions: elkOptions(autoLayout),
+  });
+
+const calculateNodeSize = (node: any) => {
   if (!node.children || node.children.length === 0) {
     return { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
   }
@@ -425,7 +462,7 @@ const calculateNodeSize = (node: any, isHorizontal: boolean) => {
   let totalHeight = 0;
 
   for (const child of node.children) {
-    const childSize = calculateNodeSize(child, isHorizontal);
+    const childSize = calculateNodeSize(child);
     totalWidth += childSize.width;
     totalHeight += childSize.height;
   }
@@ -453,18 +490,17 @@ const changeColor = (hexColor: any, shade?: string) => {
     )
       return true;
   });
-  
+
   // [0] to return the items in the list
   // .hex to get the hex value. look in view/src/components/shared/colors.ts
 
   // 25% darker color log blend with black #000000
   if (shade === "dark") return pSBC(0.25, hexColor[0].hex, "#000000", false);
-
   // 25% lighter color log blend with white #ffffff
-  else if (shade === "light") return pSBC(-0.25, hexColor[0].hex, "#ffffff", false);
-
+  else if (shade === "light")
+    return pSBC(-0.25, hexColor[0].hex, "#ffffff", false);
   // Return original color
-  else return hexColor[0].hex
+  else return hexColor[0].hex;
 };
 
 // A helper function that assigns a color to a node based on node and node text colors.
@@ -496,18 +532,49 @@ const assignNodeColor = (
 const processNodes = (
   nodes: ITableData,
   parentNodeId = null,
-  isHorizontal = false
+  autoLayout: string
 ) => {
   return nodes.map((node: any) => {
     // Calculate size before processing node
-    const { width, height } = calculateNodeSize(node, isHorizontal);
+    const { width, height } = calculateNodeSize(node);
+    let targetPosition = null;
+    let sourcePosition = null;
+
+    switch (autoLayout) {
+      case "left": {
+        sourcePosition = Position.Left;
+        targetPosition = Position.Right;
+        break;
+      }
+      case "right": {
+        sourcePosition = Position.Right;
+        targetPosition = Position.Left;
+        break;
+      }
+      case "top": {
+        sourcePosition = Position.Top;
+        targetPosition = Position.Bottom;
+        break;
+      }
+      case "bottom": {
+        sourcePosition = Position.Bottom;
+        targetPosition = Position.Top;
+        break;
+      }
+      default: {
+        // Default sourcePosition to Position Left & targetPosition to Position Right
+        sourcePosition = Position.Left;
+        targetPosition = Position.Right;
+        break;
+      }
+    }
 
     const processedNode: any = {
       id: node.id,
       data: node.data,
       type: node.type,
-      targetPosition: isHorizontal ? Position.Left : Position.Top,
-      sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
+      sourcePosition: sourcePosition,
+      targetPosition: targetPosition,
       parentNode: parentNodeId,
       extent: parentNodeId ? "parent" : undefined,
       width,
@@ -521,11 +588,7 @@ const processNodes = (
     };
 
     if (node.children) {
-      processedNode.children = processNodes(
-        node.children,
-        node.id,
-        isHorizontal
-      );
+      processedNode.children = processNodes(node.children, node.id, autoLayout);
     } else {
       // Don't let edges overlap leaf nodes
       processedNode.zIndex = 11;
@@ -604,9 +667,12 @@ const getOverlayBoundingBoxes = (
  * @param {Edge[]} edges - Array of edges data.
  * @returns {Promise} - Returns a promise that resolves to an object containing the layouted nodes and edges.
  */
-export const getLayoutedElements = (nodes: ITableData, edges: Edge[]) => {
-  const isHorizontal = elkOptions["elk.direction"] === "DOWN";
-  const processedNodes = processNodes(nodes, null, isHorizontal);
+export const getLayoutedElements = (
+  nodes: ITableData,
+  edges: Edge[],
+  autoLayout: string
+): Promise<any> => {
+  const processedNodes = processNodes(nodes, null, autoLayout);
 
   const graph = {
     id: "root",
@@ -621,7 +687,7 @@ export const getLayoutedElements = (nodes: ITableData, edges: Edge[]) => {
     })),
   };
 
-  return elk
+  return elk(autoLayout)
     .layout(graph)
     .then((layoutedGraph) => {
       const flattenedNodes = flattenNodes(layoutedGraph.children);

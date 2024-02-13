@@ -15,10 +15,11 @@
 
 - [ ] I have added unit tests to cover additional functionality
 
+## How to Test Expected functionality changes
 
-## Expected functionality changes
+[Describe expected behaviour changes in steps]
 
-[Describe expected behaviour changes]
+- [ ] I have added the steps needed to test these changes
 
 ## Additional context
 
