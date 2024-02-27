@@ -30,7 +30,7 @@ const TreeView: React.FC = () => {
       setIsLoading(false);
       return;
     } else if (Object.keys(treeLayouts).length === 0) {
-      setErrorMessage("Tree layouts not found in `src/vision/layouts`");
+      setErrorMessage("Tree layouts not found in `src/vision/layouts/trees`");
       setIsLoading(false);
       return;
     } else if (!treeLayouts.hasOwnProperty(tablePath)) {

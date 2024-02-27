@@ -24,6 +24,8 @@ const DiagramView: React.FC = () => {
     if (isLoadingLayoutContext) return;
 
     const diagramLayouts = layouts[LayoutPaths.DiagramPanel] ?? {};
+    console.log("diagramLayouts")
+    console.log(diagramLayouts)
     const root = document.getElementById("root");
     let tablePath = root?.getAttribute("data-table-path") || "";
 
@@ -32,7 +34,7 @@ const DiagramView: React.FC = () => {
       setIsLoading(false);
       return;
     } else if (Object.keys(diagramLayouts).length === 0) {
-      setErrorMessage("Diagram layouts not found in `src/vision/layouts`");
+      setErrorMessage("Diagram layouts not found in `src/vision/layouts/diagrams`");
       setIsLoading(false);
       return;
     } else if (!diagramLayouts.hasOwnProperty(tablePath)) {
@@ -42,6 +44,8 @@ const DiagramView: React.FC = () => {
     }
 
     const layout = diagramLayouts[tablePath] as DiagramLayout;
+    console.log("layout");
+    console.log(layout);
     setDiagramLayout(layout);
     setTablePath(tablePath);
 

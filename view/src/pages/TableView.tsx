@@ -31,7 +31,7 @@ const TableView: React.FC = () => {
       setIsLoading(false);
       return;
     } else if (Object.keys(tableLayouts).length === 0) {
-      setErrorMessage("Table layouts not found in `src/vision/layouts`");
+      setErrorMessage("Table layouts not found in `src/vision/layouts/tables`");
       setIsLoading(false);
       return;
     } else if (!tableLayouts.hasOwnProperty(tablePath)) {

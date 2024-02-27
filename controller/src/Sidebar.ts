@@ -54,25 +54,25 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeItem> {
 
   updateHasBuildFolder(hasBuildFolder: boolean) {
     this._hasBuildFolder = hasBuildFolder;
-    // This will refresh the tree view.
+    // This will refresh the sidebar pages view.
     this._onDidChangeTreeData.fire(undefined);
   }
 
   updateHasPageLayout(hasPageLayout: boolean) {
     this._hasPageLayout = hasPageLayout;
-    // This will refresh the tree view.
+    // This will refresh the sidebar pages view.
     this._onDidChangeTreeData.fire(undefined);
   }
 
   updateHasSparqlConfig(hasSparqlConfig: boolean) {
     this._hasSparqlConfig = hasSparqlConfig;
-    // This will refresh the tree view.
+    // This will refresh the sidebar pages view.
     this._onDidChangeTreeData.fire(undefined);
   }
 
   updateLayouts(pageLayout: (ITableType | ITableCategory)[]) {
     this.data = buildTreeItems(pageLayout);
-    // This will refresh the tree view.
+    // This will refresh the sidebar pages view.
     this._onDidChangeTreeData.fire(undefined);
   }
 }
