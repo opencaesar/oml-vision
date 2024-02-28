@@ -114,8 +114,8 @@ export class TablePanel {
     );
 
     // TODO: Change is{Type} in ITableType interface to tablePath itself (this works for now, just feels redundant)
-    let panelRoute = "/table-panel";
-    if (tableType.path === "/") panelRoute = "/";
+    let panelRoute = "/";
+    if (tableType.isTable) panelRoute = "/table-panel";
     else if (tableType.isTree) panelRoute = "/tree-panel";
     else if (tableType.isDiagram) panelRoute = "/diagram-panel";
 

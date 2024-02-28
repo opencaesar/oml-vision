@@ -2,24 +2,49 @@ import { workspace, Uri, commands, window, FileType } from "vscode";
 import { SidebarProvider } from "../../Sidebar";
 import { TablePanel } from "../../panels/TablePanel";
 import { PropertyPanelProvider } from "../../panels/PropertyPanelProvider";
-// TODO: handle multiple workspaces (currently assumes model is in the 1st)export
-export async function loadLayoutFiles(globalLayoutContents: {
+// TODO: handle multiple workspaces (currently assumes model is in the 1st)
+
+/**
+ * Loads JSON files that are stored in the layouts folder of the model.
+ *
+ * @remarks
+ * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ * @param layoutContents - content of the layout object
+ *
+ */
+export const loadLayoutFiles = async (layoutContents: {
   [file: string]: any;
-}) {
+}) => {
   commands.executeCommand("setContext", "vision:hasPageLayout", false);
   SidebarProvider.getInstance().updateHasPageLayout(false);
 
   const workspaceFolders = workspace.workspaceFolders;
   if (workspaceFolders) {
     const uri = workspaceFolders[0].uri;
-    loadPageFile(uri);
-    loadTableFiles(uri, globalLayoutContents);
-    loadTreeFiles(uri, globalLayoutContents);
-    loadDiagramFiles(uri, globalLayoutContents);
+    loadPageFile(uri, layoutContents);
+    loadTableFiles(uri, layoutContents);
+    loadTreeFiles(uri, layoutContents);
+    loadDiagramFiles(uri, layoutContents);
   }
-}
+};
 
-const loadPageFile = async (uri: Uri) => {
+/**
+ * Loads pages.json file.
+ *
+ * @remarks
+ * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
+ * @param layoutContents - content of the layout object
+ *
+ */
+const loadPageFile = async (
+  uri: Uri,
+  layoutContents: {
+    [file: string]: any;
+  }
+) => {
   // Uri is required for VSCode extension to determine path to file or folder
   const pageFolderUri = Uri.joinPath(uri, "src", "vision", "layouts");
 
@@ -30,8 +55,16 @@ const loadPageFile = async (uri: Uri) => {
         const fileUri = Uri.joinPath(pageFolderUri, file);
         const buffer = await workspace.fs.readFile(fileUri);
         const content = JSON.parse(buffer.toString());
-        SidebarProvider.getInstance().updateLayouts(content);
-        SidebarProvider.getInstance().updateHasPageLayout(true);
+        try {
+          SidebarProvider.getInstance().updateLayouts(content);
+          SidebarProvider.getInstance().updateHasPageLayout(true);
+          layoutContents[file] = content;
+        } catch (parseErr) {
+          layoutContents = {};
+          throw new Error(
+            `Error parsing table layout file ${file}: ${parseErr}`
+          );
+        }
       }
     }
   } catch (err) {
@@ -46,9 +79,19 @@ const loadPageFile = async (uri: Uri) => {
   }
 };
 
+/**
+ * Loads table layouts from the tables directory.
+ *
+ * @remarks
+ * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
+ * @param layoutContents - content of the layout object
+ *
+ */
 const loadTableFiles = async (
   uri: Uri,
-  globalLayoutContents: {
+  layoutContents: {
     [file: string]: any;
   }
 ) => {
@@ -64,18 +107,8 @@ const loadTableFiles = async (
   try {
     const files = await workspace.fs.readDirectory(tableFolderUri);
     for (const [file, type] of files) {
-      if (file.endsWith("json") && type === FileType.File) {
-        const fileUri = Uri.joinPath(tableFolderUri, file);
-        const buffer = await workspace.fs.readFile(fileUri);
-        const content = JSON.parse(buffer.toString());
-        try {
-          globalLayoutContents[file] = content;
-        } catch (parseErr) {
-          globalLayoutContents = {};
-          throw new Error(
-            `Error parsing table layout file ${file}: ${parseErr}`
-          );
-        }
+      if (file.endsWith(".json") && type === FileType.File) {
+        setLayoutContent(tableFolderUri, file, layoutContents);
       }
     }
     if (files.length > 0) {
@@ -100,9 +133,19 @@ const loadTableFiles = async (
   }
 };
 
+/**
+ * Loads tree layouts from the trees directory.
+ *
+ * @remarks
+ * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
+ * @param layoutContents - content of the layout object
+ *
+ */
 const loadTreeFiles = async (
   uri: Uri,
-  globalLayoutContents: {
+  layoutContents: {
     [file: string]: any;
   }
 ) => {
@@ -112,18 +155,8 @@ const loadTreeFiles = async (
   try {
     const files = await workspace.fs.readDirectory(treeFolderUri);
     for (const [file, type] of files) {
-      if (file.endsWith("json") && type === FileType.File) {
-        const fileUri = Uri.joinPath(treeFolderUri, file);
-        const buffer = await workspace.fs.readFile(fileUri);
-        const content = JSON.parse(buffer.toString());
-        try {
-          globalLayoutContents[file] = content;
-        } catch (parseErr) {
-          globalLayoutContents = {};
-          throw new Error(
-            `Error parsing tree layout file ${file}: ${parseErr}`
-          );
-        }
+      if (file.endsWith(".json") && type === FileType.File) {
+        setLayoutContent(treeFolderUri, file, layoutContents);
       }
     }
     if (files.length > 0) {
@@ -148,9 +181,19 @@ const loadTreeFiles = async (
   }
 };
 
+/**
+ * Loads diagram layouts from the diagrams directory.
+ *
+ * @remarks
+ * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
+ * @param layoutContents - content of the layout object
+ *
+ */
 const loadDiagramFiles = async (
   uri: Uri,
-  globalLayoutContents: {
+  layoutContents: {
     [file: string]: any;
   }
 ) => {
@@ -160,24 +203,14 @@ const loadDiagramFiles = async (
     "src",
     "vision",
     "layouts",
-    "tables"
+    "diagrams"
   );
 
   try {
     const files = await workspace.fs.readDirectory(diagramFolderUri);
     for (const [file, type] of files) {
-      if (file.endsWith("json") && type === FileType.File) {
-        const fileUri = Uri.joinPath(diagramFolderUri, file);
-        const buffer = await workspace.fs.readFile(fileUri);
-        const content = JSON.parse(buffer.toString());
-        try {
-          globalLayoutContents[file] = content;
-        } catch (parseErr) {
-          globalLayoutContents = {};
-          throw new Error(
-            `Error parsing diagram layout file ${file}: ${parseErr}`
-          );
-        }
+      if (file.endsWith(".json") && type === FileType.File) {
+        setLayoutContent(diagramFolderUri, file, layoutContents);
       }
     }
     if (files.length > 0) {
@@ -189,17 +222,33 @@ const loadDiagramFiles = async (
       window.showWarningMessage("Diagram Layout files not found.");
     }
   } catch (err) {
-    if (
-      err instanceof Error &&
-      err.message.startsWith("Error parsing diagram layout file")
-    )
-      window.showErrorMessage(err.message);
-    else {
-      window.showErrorMessage(`Error reading diagram layout files: ${err}`);
-    }
+    window.showErrorMessage(`Error reading diagram layout files: ${err}`);
   } finally {
     // Send updated global layouts to TablePanels & PropertyPanel
     TablePanel.updateLayouts();
     PropertyPanelProvider.updateLayouts();
+  }
+};
+
+/**
+ * Set the Layout Content.
+ *
+ * @remarks
+ * This method uses the URI class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
+ * @param file - The file name.
+ * @param layouts - The layouts object which will be set.
+ *
+ */
+const setLayoutContent = async (uri: Uri, file: string, layouts: any) => {
+  const fileUri = Uri.joinPath(uri, file);
+  const buffer = await workspace.fs.readFile(fileUri);
+  const content = JSON.parse(buffer.toString());
+  try {
+    layouts[file] = content;
+  } catch (parseErr) {
+    layouts = {};
+    throw new Error(`Error parsing table layout file ${file}: ${parseErr}`);
   }
 };
