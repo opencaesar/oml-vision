@@ -7,7 +7,7 @@ import {
   Disposable,
   ViewColumn,
 } from "vscode";
-import ITableType from "../../../commands/src/interfaces/ITableType";
+import IWebviewType from "../../../commands/src/interfaces/IWebviewType";
 import { getHtmlForWebview } from "../utilities/getters/getHtmlForWebview";
 import { handleTablePanelMessage } from "../../../commands/src/tablePanelMessageHandler";
 import {
@@ -15,7 +15,6 @@ import {
   Commands,
 } from "../../../commands/src/commands";
 import { globalLayoutContents } from "../extension";
-import { queryEngine } from "../database/queryEngine";
 
 /**
  * Manages react-based webview panels for a Table
@@ -30,7 +29,7 @@ export class TablePanel {
 
   private readonly _panel: WebviewPanel;
   private readonly _extensionPath: string;
-  private readonly _tableType: ITableType;
+  private readonly _webviewType: IWebviewType;
   private _pendingPayload: any = "";
 
   public setPendingPayload(payload: any) {
@@ -41,22 +40,22 @@ export class TablePanel {
     return this._pendingPayload;
   }
 
-  public getTableType(): ITableType {
-    return this._tableType;
+  public getWebviewType(): IWebviewType {
+    return this._webviewType;
   }
 
   private _disposables: Disposable[] = [];
 
   public static createOrShow(
     extensionPath: string,
-    tableType: ITableType,
+    webviewType: IWebviewType,
     pendingPayload: any = null
   ) {
     const column = window.activeTextEditor
       ? window.activeTextEditor.viewColumn
       : undefined;
-    const homeType = { title: "OML Vision Home", path: "/", treeIcon: "home" };
-    const typeToUse = tableType.path === "/" ? homeType : tableType;
+    const homeType = { title: "OML Vision Home", path: "/", type: "home" };
+    const typeToUse = webviewType.path === "/" ? homeType : webviewType;
 
     // If we already have a panel for this table type, show it.
     // Otherwise, create a new panel.
@@ -76,11 +75,11 @@ export class TablePanel {
   private constructor(
     extensionPath: string,
     column: ViewColumn,
-    tableType: ITableType,
+    webviewType: IWebviewType,
     pendingPayload: any
   ) {
     this._extensionPath = extensionPath;
-    this._tableType = tableType;
+    this._webviewType = webviewType;
 
     /* If a diagram is created with a filter, we need to store the pending filter as a payload
 		so the webview panel can receive it on 'generateTableData' call. */
@@ -89,7 +88,7 @@ export class TablePanel {
     // Create and show a new webview panel
     this._panel = window.createWebviewPanel(
       TablePanel.viewType,
-      tableType.title,
+      webviewType.title,
       column,
       {
         // Enable javascript in the webview
@@ -113,18 +112,18 @@ export class TablePanel {
       }
     );
 
-    // TODO: Change is{Type} in ITableType interface to tablePath itself (this works for now, just feels redundant)
-    let panelRoute = "/table-panel";
-    if (tableType.path === "/") panelRoute = "/";
-    else if (tableType.isTree) panelRoute = "/tree-panel";
-    else if (tableType.isDiagram) panelRoute = "/diagram-panel";
-
+    // Set the route to the panel that is rendered in the webview.  By default go to the home page route.
+    let panelRoute = "/";
+    if (webviewType.type === "table") panelRoute = "/table-panel";
+    else if (webviewType.type === "tree") panelRoute = "/tree-panel";
+    else if (webviewType.type === "diagram") panelRoute = "/diagram-panel";
+    
     // Set the webview's initial html content
     this._panel.webview.html = getHtmlForWebview(
       this._panel.webview,
       this._extensionPath,
       panelRoute,
-      tableType.path
+      webviewType.path
     );
 
     // Listen for when the panel is disposed
@@ -167,7 +166,7 @@ export class TablePanel {
 
   public dispose() {
     // Remove panel from map
-    TablePanel.currentPanels.delete(this._tableType.path);
+    TablePanel.currentPanels.delete(this._webviewType.path);
 
     // Clean up our resources
     this._panel.dispose();

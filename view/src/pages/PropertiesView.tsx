@@ -25,7 +25,7 @@ const PropertiesView: React.FC<{layout: PropertyLayout}> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { tableType: { path }, rowIri, tableRowTypes, isAvailable } = usePropertiesData();
+  const { webviewType: { path }, rowIri, tableRowTypes, isAvailable } = usePropertiesData();
   const [displayPages, setDisplayPages] = useState<IDisplayGroup[]>([]);
 
   const PropertyLayouts: PropertyPage[] = layout.pages;

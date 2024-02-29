@@ -75,7 +75,7 @@ const HomeView: React.FC<{}> = () => {
           </div>
           {/* Suggestions dropdown */}
           <div id="search-dropdown" className="relative -translate-x-1/2 left-1/2 w-64 h-fit rounded-b-xl border border-t-0 border-[color:var(--vscode-menu-border)] z-10 overflow-hidden hidden bg-[color:var(--vscode-editor-background)]">
-            {searchList.map(searchItem => createSearchResultBtn(searchItem.title, searchItem.parent.title, searchItem.path))}
+            {searchList.map(searchItem => createSearchResultBtn(searchItem.title, searchItem.parent.title, searchItem.path, searchItem.type))}
           </div>
         </div>
 
@@ -88,7 +88,7 @@ const HomeView: React.FC<{}> = () => {
       <div className="table clear-both w-full h-full p-4 overflow-auto">
         {submenuData.map(submenu => (
           <ExpandingMenu title={submenu.title} icon={{url: submenu.iconUrl}} buttons={submenu.children.map(child => {
-            return { text: child.title, redirect: { title: child.title, path: child.path ? child.path : child.title } };
+            return { text: child.title, redirect: { title: child.title, path: child.path ? child.path : child.title, type: child.type } };
           })} />
         ))}
       </div>
@@ -177,14 +177,15 @@ const HomeView: React.FC<{}> = () => {
   }
 
   // creates the buttons seen within the search dropdown
-  function createSearchResultBtn(header: string, subtext: string, path: string): React.ReactElement {
+  function createSearchResultBtn(header: string, subtext: string, path: string, type: string): React.ReactElement {
     return (
       <button onKeyDown={selectDropdownItem} style={{ outline: "none" }} className="w-full h-fit p-0.5 px-1.5 border-0 hidden bg-transparent hover:bg-[color:var(--vscode-welcomePage-tileHoverBackground)] focus:bg-[color:var(--vscode-welcomePage-tileHoverBackground)] transition" onClick={() => {
         postMessage({
           command: Commands.CREATE_TABLE,
           payload: {
             title: header,
-            path: path
+            path: path,
+            type: type
           }
         });
       }} onBlur={searchFocusChanged}>

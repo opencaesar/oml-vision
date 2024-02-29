@@ -1,7 +1,7 @@
-import ITableType from "../../../commands/src/interfaces/ITableType";
+import IWebviewType from "../../../commands/src/interfaces/IWebviewType";
 
 export default interface IPropertiesData {
-  tableType: ITableType;
+  webviewType: IWebviewType;
   rowIri: string;
   tableRowTypes: string[];
 }

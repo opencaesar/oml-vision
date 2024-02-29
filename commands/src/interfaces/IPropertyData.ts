@@ -1,7 +1,7 @@
-import ITableType from "./ITableType";
+import IWebviewType from "./IWebviewType";
 
 export interface IPropertyData {
-  tableType: ITableType;
+  webviewType: IWebviewType;
   rowIri: string;
   tableRowTypes: string[];
 }

@@ -2,7 +2,7 @@ import React, { SVGProps } from "react";
 import { postMessage } from "../utils/postMessage";
 import { Commands } from "../../../commands/src/commands";
 
-export default function ExpandingMenu({ title, icon, buttons: links }: { title: string, icon: ((props: SVGProps<SVGSVGElement>) => any) | { url: string }, buttons: { text: string, redirect?: { title: string, path: string }, onClick?: Function }[] }): JSX.Element {
+export default function ExpandingMenu({ title, icon, buttons: links }: { title: string, icon: ((props: SVGProps<SVGSVGElement>) => any) | { url: string }, buttons: { text: string, redirect?: { title: string, path: string, type: string }, onClick?: Function }[] }): JSX.Element {
 
   const linkElements: JSX.Element[] = links.map(btn => <button className="float-left w-full h-fit p-1.5 pl-4 text-base text-left text-[color:var(--vscode-settings-textInputForeground)] rounded-sm bg-transparent hover:bg-[color:var(--vscode-welcomePage-tileHoverBackground)]" onClick={(event) => {
     if (btn.redirect) {
@@ -10,7 +10,8 @@ export default function ExpandingMenu({ title, icon, buttons: links }: { title: 
         command: Commands.CREATE_TABLE,
         payload: {
           title: btn.redirect.title,
-          path: btn.redirect.path
+          path: btn.redirect.path,
+          type: btn.redirect.type
         }
       });
     }

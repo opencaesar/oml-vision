@@ -10,11 +10,11 @@ import * as path from "path";
    * @param webview A reference to the extension webview
    * @param extensionPath The path of the directory containing the extension
    * @param panelRoute The path of the panel rendered in the webview
-   * @param {string} [tablePath=""] The OPTIONAL path to the table rendered in the webview
+   * @param {string} [webviewPath=""] The OPTIONAL path to the table rendered in the webview
    * @returns A template string literal containing the HTML that should be
    * rendered within the webview panel
    */
-export function getHtmlForWebview(webview: Webview, extensionPath: string, panelRoute: string, tablePath: string = "") {
+export function getHtmlForWebview(webview: Webview, extensionPath: string, panelRoute: string, webviewPath: string = "") {
 
 	// Find the VSCode URI from the path
     const scriptPathOnDisk = Uri.file(path.join(extensionPath, 'build', 'static', 'index.js'));
@@ -52,7 +52,7 @@ export function getHtmlForWebview(webview: Webview, extensionPath: string, panel
 		</head>
 		<body>
 			<noscript>You need to enable JavaScript to run this app.</noscript>
-			<div id="root" data-initial-route="${panelRoute}" data-table-path="${tablePath}"></div>
+			<div id="root" data-initial-route="${panelRoute}" data-webview-path="${webviewPath}"></div>
 			<script type="module" nonce="${nonce}" src="${scriptUri}"></script>
 		</body>
 		</html>`;

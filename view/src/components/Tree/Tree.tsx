@@ -37,13 +37,13 @@ function flattenRows(data: ITableData[]) {
 function Tree({
   className,
   rowData,
-  tablePath,
+  webviewPath,
   layout,
   onClickRow = () => { }
 }: {
   className?: string
   rowData: ITableData[]
-  tablePath: string
+  webviewPath: string
   layout: TreeLayout
   onClickRow?: Function
 }) {

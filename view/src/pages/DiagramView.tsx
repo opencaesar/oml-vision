@@ -1,21 +1,26 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { postMessage } from '../utils/postMessage';
-import { CommandStructures, Commands } from '../../../commands/src/commands';
-import Diagram from '../components/Diagram/Diagram';
-import Loader from '../components/shared/Loader';
-import ITableData from '../interfaces/ITableData';
-import { mapDiagramValueData } from '../components/Diagram/diagramUtils';
-import { DiagramLayout } from '../interfaces/DataLayoutsType';
-import { ReactFlowProvider } from 'reactflow';
-import { LayoutPaths, useLayoutData } from '../contexts/LayoutProvider';
-import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
+import React, { useState, useEffect, useMemo } from "react";
+import { postMessage } from "../utils/postMessage";
+import { CommandStructures, Commands } from "../../../commands/src/commands";
+import Diagram from "../components/Diagram/Diagram";
+import Loader from "../components/shared/Loader";
+import ITableData from "../interfaces/ITableData";
+import { mapDiagramValueData } from "../components/Diagram/diagramUtils";
+import { DiagramLayout } from "../interfaces/DataLayoutsType";
+import { ReactFlowProvider } from "reactflow";
+import { LayoutPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 
 const DiagramView: React.FC = () => {
   const { layouts, isLoadingLayoutContext } = useLayoutData();
-  const [tablePath, setTablePath] = useState<string>("");
-  const [diagramLayout, setDiagramLayout] = useState<DiagramLayout | null>(null);
-  const [data, setData] = useState<{[key: string]: ITableData[]}>({});
-  const [filter, setFilter] = useState<{ iris: string[], filterObject: Record<string, string[]> | null }>({ iris: [], filterObject: null });
+  const [webviewPath, setWebviewPath] = useState<string>("");
+  const [diagramLayout, setDiagramLayout] = useState<DiagramLayout | null>(
+    null
+  );
+  const [data, setData] = useState<{ [key: string]: ITableData[] }>({});
+  const [filter, setFilter] = useState<{
+    iris: string[];
+    filterObject: Record<string, string[]> | null;
+  }>({ iris: [], filterObject: null });
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -23,34 +28,49 @@ const DiagramView: React.FC = () => {
     // Only start fetching data when context is loaded
     if (isLoadingLayoutContext) return;
 
-    const diagramLayouts = layouts[LayoutPaths.DiagramPanel] ?? {};
-    const root = document.getElementById("root");
-    let tablePath = root?.getAttribute("data-table-path") || "";
+    let diagramLayouts: any = {};
 
-    if (!tablePath) {
+    // layouts[LayoutPaths.Pages][1]["children"] comes from pages.json file structure and key-value pairs
+    layouts[LayoutPaths.Pages][1]["children"].forEach((diagram: any) => {
+      if (diagram.type === "diagram") {
+        // Locally scoped variable which is used to set the key of the JSON object
+        let _path = "";
+        // Path comes from the pages.json file with the .json file identifier
+        _path = diagram.path + ".json";
+        // Use object spread to merge all diagrams into diagramLayouts object
+        diagramLayouts = {...diagramLayouts, ...layouts[_path]};
+      }
+    });
+
+    const root = document.getElementById("root");
+    let webviewPath = root?.getAttribute("data-webview-path") || "";
+
+    if (!webviewPath) {
       setErrorMessage("No diagram path specified");
       setIsLoading(false);
       return;
     } else if (Object.keys(diagramLayouts).length === 0) {
-      setErrorMessage("Diagram layouts not found in `src/vision/layouts`");
+      setErrorMessage(
+        "Diagram layouts not found in `src/vision/layouts/diagrams`"
+      );
       setIsLoading(false);
       return;
-    } else if (!diagramLayouts.hasOwnProperty(tablePath)) {
-      setErrorMessage("No JSON layout found for diagram path: " + tablePath);
+    } else if (!diagramLayouts.hasOwnProperty(webviewPath)) {
+      setErrorMessage("No JSON layout found for diagram path: " + webviewPath);
       setIsLoading(false);
       return;
     }
 
-    const layout = diagramLayouts[tablePath] as DiagramLayout;
+    const layout = diagramLayouts[webviewPath] as DiagramLayout;
     setDiagramLayout(layout);
-    setTablePath(tablePath);
+    setWebviewPath(webviewPath);
 
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: layout.queries,
-      }
+      },
     });
     const handler = (event: MessageEvent) => {
       const message = event.data;
@@ -58,7 +78,8 @@ const DiagramView: React.FC = () => {
       let specificMessage;
       switch (message.command) {
         case Commands.LOADED_TABLE_DATA:
-          specificMessage = message as CommandStructures[Commands.LOADED_TABLE_DATA];
+          specificMessage =
+            message as CommandStructures[Commands.LOADED_TABLE_DATA];
           if (specificMessage.errorMessage) {
             console.error(specificMessage.errorMessage);
             postMessage({
@@ -77,7 +98,8 @@ const DiagramView: React.FC = () => {
           setIsLoading(false);
           break;
         case Commands.CREATE_FILTERED_DIAGRAM:
-          specificMessage = message as CommandStructures[Commands.CREATE_FILTERED_DIAGRAM]
+          specificMessage =
+            message as CommandStructures[Commands.CREATE_FILTERED_DIAGRAM];
           /* Hacky way to prevent this command from preemptively setting isLoading
             to false before loadedTableData finishes processing */
           let shouldShowLoader = !isLoading;
@@ -87,34 +109,37 @@ const DiagramView: React.FC = () => {
           const filteredIris = filterResults.iriArray || [];
           const filterObject = filterResults.rowTypesObject || null;
           setFilter({ iris: filteredIris, filterObject });
-          
+
           if (shouldShowLoader) setIsLoading(false);
           break;
-        case 'updateLocalValue':
+        case "updateLocalValue":
           postMessage({
             command: Commands.GENERATE_TABLE_DATA,
             payload: {
-              tablePath: tablePath,
+              webviewPath: webviewPath,
               queries: layout.queries,
-            }
+            },
           });
           break;
       }
     };
-    window.addEventListener('message', handler);
+    window.addEventListener("message", handler);
     return () => {
-      window.removeEventListener('message', handler);
+      window.removeEventListener("message", handler);
     };
   }, [layouts, isLoadingLayoutContext]);
 
   const createPageContent = useMemo(() => {
     if (!diagramLayout || Object.keys(data).length === 0) {
-        return { nodes: [], edges: [], legendItems: [] };
+      return { nodes: [], edges: [], legendItems: [] };
     }
-    return mapDiagramValueData(diagramLayout, data, filter.iris, filter.filterObject);
-  },
-    [data, filter, diagramLayout],
-  );
+    return mapDiagramValueData(
+      diagramLayout,
+      data,
+      filter.iris,
+      filter.filterObject
+    );
+  }, [data, filter, diagramLayout]);
 
   const handleClickRow = (tableRow: ITableData) => {
     // Every row should have an IRI, but if somehow it doesn't,
@@ -124,13 +149,13 @@ const DiagramView: React.FC = () => {
         command: Commands.HIDE_PROPERTIES,
       });
       return;
-    };
+    }
 
     postMessage({
       command: Commands.ROW_CLICKED,
       payload: tableRow.data.iri,
     });
-  }
+  };
 
   const refreshData = () => {
     setIsLoading(true);
@@ -138,36 +163,41 @@ const DiagramView: React.FC = () => {
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: diagramLayout?.queries ?? {},
-      }
+      },
     });
-  }
+  };
 
   if (isLoading || isLoadingLayoutContext) {
     return (
       <div className="table-container h-screen flex justify-center">
         <Loader message={"Loading diagram..."} />
       </div>
-    )
+    );
   }
 
   return (
-    <div className="table-container" data-vscode-context={`{"tablePath": "${tablePath}"}`}>
-      { /* We don't check if edges exist in case of edgeless graph w*/}
+    <div
+      className="table-container"
+      data-vscode-context={`{"webviewPath": "${webviewPath}"}`}
+    >
+      {/* We don't check if edges exist in case of edgeless graph w*/}
       {createPageContent.nodes.length > 0 ? (
         <ReactFlowProvider>
           <Diagram
             initData={createPageContent}
-            tablePath={tablePath}
+            webviewPath={webviewPath}
             hasFilter={filter.iris.length > 0}
             clearFilter={() => setFilter({ iris: [], filterObject: null })}
             onNodeSelected={handleClickRow}
           />
         </ReactFlowProvider>
       ) : (
-        <div className='h-screen flex flex-col text-center space-y-4 justify-center items-center'>
-          <p className='text-[color:var(--vscode-foreground)]'>{errorMessage ? errorMessage : "No data found"}</p>
+        <div className="h-screen flex flex-col text-center space-y-4 justify-center items-center">
+          <p className="text-[color:var(--vscode-foreground)]">
+            {errorMessage ? errorMessage : "No data found"}
+          </p>
           <VSCodeButton onClick={refreshData}>
             Refresh
             <span slot="start" className="codicon codicon-refresh"></span>

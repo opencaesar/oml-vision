@@ -17,7 +17,7 @@ export function handleTablePanelMessage(
     case Commands.CREATE_TABLE:
       specificMessage = message as CommandStructures[Commands.CREATE_TABLE];
       vscode.commands.executeCommand(
-        "oml-vision.createTable",
+        "oml-vision.createWebview",
         specificMessage.payload
       );
       break;
@@ -37,7 +37,7 @@ export function handleTablePanelMessage(
       vscode.commands.executeCommand(
         "oml-vision.showProperties",
         specificMessage.payload,
-        TablePanelInstance.getTableType()
+        TablePanelInstance.getWebviewType()
       );
       break;
 
@@ -48,15 +48,15 @@ export function handleTablePanelMessage(
     case Commands.ASK_FOR_LAYOUTS:
       vscode.commands.executeCommand(
         "oml-vision.sendLayouts",
-        TablePanel.currentPanels.get(TablePanelInstance.getTableType().path)
+        TablePanel.currentPanels.get(TablePanelInstance.getWebviewType().path)
       );
       break;
 
     case Commands.GENERATE_TABLE_DATA:
       specificMessage =
         message as CommandStructures[Commands.GENERATE_TABLE_DATA];
-      const { tablePath = "", queries = {} } = specificMessage.payload;
-      generateTableData(tablePath, queries);
+      const { webviewPath = "", queries = {} } = specificMessage.payload;
+      generateTableData(webviewPath, queries);
       const pendingFilter = TablePanelInstance.getPendingPayload();
       if (pendingFilter) {
         const payload =
@@ -83,7 +83,7 @@ export function handleTablePanelMessage(
       specificMessage =
         message as CommandStructures[Commands.GET_ELEMENT_DEPENDENCIES];
       const {
-        tablePath: depTablePath,
+        webviewPath: depWebviewPath,
         iriArray = [],
         labelArray = [],
       } = specificMessage.payload;
@@ -92,7 +92,7 @@ export function handleTablePanelMessage(
     case Commands.EXECUTE_DELETE_ELEMENTS:
       specificMessage =
         message as CommandStructures[Commands.EXECUTE_DELETE_ELEMENTS];
-      const { tablePath: delTablePath, IRIsToDelete = [] } =
+      const { webviewPath: delWebviewPath, IRIsToDelete = [] } =
         specificMessage.payload;
       break;
 

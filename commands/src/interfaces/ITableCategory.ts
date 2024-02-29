@@ -1,10 +1,10 @@
-import ITableType from "./ITableType";
+import IWebviewType from "./IWebviewType";
 
 export default interface ITableCategory {
     title: string;
-    children: ITableType[];
+    children: IWebviewType[];
     iconUrl: string;
-    treeIcon?: string;
+    type?: string;
     subCategories?: ITableCategory[];
     parent?: ITableCategory;
 }

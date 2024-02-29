@@ -11,7 +11,7 @@ const UUID_REGEX = new RegExp(
 );
 
 export const generateTableData = async (
-  tablePath: string,
+  webviewPath: string,
   queries: Record<string, string>
 ) => {
   try {
@@ -29,7 +29,7 @@ export const generateTableData = async (
         })
       );
 
-      TablePanel.currentPanels.get(tablePath)?.sendMessage({
+      TablePanel.currentPanels.get(webviewPath)?.sendMessage({
         command: Commands.LOADED_TABLE_DATA,
         payload: sparqlData,
       });
@@ -39,14 +39,14 @@ export const generateTableData = async (
   } catch (error) {
     if (error instanceof Error) {
       vscode.window.showErrorMessage(`Error: ${error.message}`);
-      TablePanel.currentPanels.get(tablePath)?.sendMessage({
+      TablePanel.currentPanels.get(webviewPath)?.sendMessage({
         command: Commands.LOADED_TABLE_DATA,
         payload: {},
         errorMessage: `Error: ${error.message}`,
       });
     } else {
       vscode.window.showErrorMessage(`An unknown error occurred: ${error}`);
-      TablePanel.currentPanels.get(tablePath)?.sendMessage({
+      TablePanel.currentPanels.get(webviewPath)?.sendMessage({
         command: Commands.LOADED_TABLE_DATA,
         payload: {},
         errorMessage: `An unknown error occurred: ${error}`,

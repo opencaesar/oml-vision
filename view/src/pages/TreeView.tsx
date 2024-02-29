@@ -1,18 +1,21 @@
-import React, { useState, useEffect, useMemo, MouseEvent } from 'react';
+import React, { useState, useEffect, useMemo, MouseEvent } from "react";
 import { postMessage } from "../utils/postMessage";
 import { CommandStructures, Commands } from "../../../commands/src/commands";
-import Tree from '../components/Tree/Tree';
-import Loader from '../components/shared/Loader';
-import ITableData from '../interfaces/ITableData';
-import { mapTreeValueData, areArraysOfObjectsEqual } from '../components/Tree/treeUtils';
-import { TreeLayout } from '../interfaces/DataLayoutsType';
-import { LayoutPaths, useLayoutData } from '../contexts/LayoutProvider';
-import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
+import Tree from "../components/Tree/Tree";
+import Loader from "../components/shared/Loader";
+import ITableData from "../interfaces/ITableData";
+import {
+  mapTreeValueData,
+  areArraysOfObjectsEqual,
+} from "../components/Tree/treeUtils";
+import { TreeLayout } from "../interfaces/DataLayoutsType";
+import { LayoutPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 
 const TreeView: React.FC = () => {
   const { layouts, isLoadingLayoutContext } = useLayoutData();
-  const [tablePath, setTablePath] = useState<string>("");
-  const [data, setData] = useState<{[key: string]: ITableData[]}>({});
+  const [webviewPath, setWebviewPath] = useState<string>("");
+  const [data, setData] = useState<{ [key: string]: ITableData[] }>({});
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [treeLayout, setTreeLayout] = useState<TreeLayout | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -21,35 +24,48 @@ const TreeView: React.FC = () => {
     // Only start fetching data when context is loaded
     if (isLoadingLayoutContext) return;
 
-    const treeLayouts = layouts[LayoutPaths.TreePanel] ?? {};
-    const root = document.getElementById("root");
-    let tablePath = root?.getAttribute("data-table-path") || "";
+    let treeLayouts: any = {};
 
-    if (!tablePath) {
+    // layouts[LayoutPaths.Pages][1]["children"] comes from pages.json file structure and key-value pairs
+    layouts[LayoutPaths.Pages][1]["children"].forEach((tree: any) => {
+      if (tree.type === "tree") {
+        // Locally scoped variable which is used to set the key of the JSON object
+        let _path = "";
+        // Path comes from the pages.json file with the .json file identifier
+        _path = tree.path + ".json";
+        // Use object spread to merge all trees into treeLayouts object
+        treeLayouts = { ...treeLayouts, ...layouts[_path] };
+      }
+    });
+
+    const root = document.getElementById("root");
+    let webviewPath = root?.getAttribute("data-webview-path") || "";
+
+    if (!webviewPath) {
       setErrorMessage("No tree path specified");
       setIsLoading(false);
       return;
     } else if (Object.keys(treeLayouts).length === 0) {
-      setErrorMessage("Tree layouts not found in `src/vision/layouts`");
+      setErrorMessage("Tree layouts not found in `src/vision/layouts/trees`");
       setIsLoading(false);
       return;
-    } else if (!treeLayouts.hasOwnProperty(tablePath)) {
-      setErrorMessage("No JSON layout found for tree path: " + tablePath);
+    } else if (!treeLayouts.hasOwnProperty(webviewPath)) {
+      setErrorMessage("No JSON layout found for tree path: " + webviewPath);
       setIsLoading(false);
       return;
     }
 
-    const layout = treeLayouts[tablePath] as TreeLayout;
+    const layout = treeLayouts[webviewPath] as TreeLayout;
     setTreeLayout(layout);
-    setTablePath(tablePath);
+    setWebviewPath(webviewPath);
 
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: layout.queries,
-      }
-    })
+      },
+    });
     const handler = (event: MessageEvent) => {
       const message = event.data;
 
@@ -93,27 +109,25 @@ const TreeView: React.FC = () => {
           postMessage({
             command: Commands.GENERATE_TABLE_DATA,
             payload: {
-              tablePath: tablePath,
+              webviewPath: webviewPath,
               queries: layout.queries,
             },
           });
           break;
       }
     };
-    window.addEventListener('message', handler);
+    window.addEventListener("message", handler);
     return () => {
-      window.removeEventListener('message', handler);
+      window.removeEventListener("message", handler);
     };
   }, [layouts, isLoadingLayoutContext]);
 
   const createPageContent = useMemo(() => {
     if (!treeLayout || Object.keys(data).length === 0) {
-        return [];
+      return [];
     }
     return mapTreeValueData(treeLayout, data);
-  },
-    [data, treeLayout],
-  );
+  }, [data, treeLayout]);
 
   const refreshData = () => {
     setIsLoading(true);
@@ -121,50 +135,54 @@ const TreeView: React.FC = () => {
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: treeLayout?.queries ?? {},
-      }
-    })
-  }
+      },
+    });
+  };
 
   const handleClickRow = (tableRow: ITableData) => {
     // Every row should have an IRI, but if somehow it doesn't,
     // hide the properties sheet.
     if (!tableRow.iri) {
       postMessage({
-        command: Commands.HIDE_PROPERTIES
+        command: Commands.HIDE_PROPERTIES,
       });
       return;
-    };
+    }
 
     postMessage({
       command: Commands.ROW_CLICKED,
       payload: tableRow.iri,
     });
-  }
+  };
 
   if (isLoading || isLoadingLayoutContext) {
     return (
       <div className="table-container h-screen flex justify-center">
         <Loader message={"Loading tree data..."} />
       </div>
-    )
+    );
   }
 
   return (
-    <div className="table-container" data-vscode-context={`{"tablePath": "${tablePath}"}`}>
-      {createPageContent.length > 0 &&
-       treeLayout != null ? (
+    <div
+      className="table-container"
+      data-vscode-context={`{"webviewPath": "${webviewPath}"}`}
+    >
+      {createPageContent.length > 0 && treeLayout != null ? (
         <Tree
-          className='w-auto'
+          className="w-auto"
           rowData={createPageContent}
-          tablePath={tablePath}
+          webviewPath={webviewPath}
           layout={treeLayout}
           onClickRow={handleClickRow}
         />
       ) : (
-        <div className='h-screen flex flex-col text-center space-y-4 justify-center items-center'>
-          <p className='text-[color:var(--vscode-foreground)]'>{errorMessage ? errorMessage : "No data found"}</p>
+        <div className="h-screen flex flex-col text-center space-y-4 justify-center items-center">
+          <p className="text-[color:var(--vscode-foreground)]">
+            {errorMessage ? errorMessage : "No data found"}
+          </p>
           <VSCodeButton onClick={refreshData}>
             Refresh
             <span slot="start" className="codicon codicon-refresh"></span>

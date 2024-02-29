@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useMemo, MouseEvent } from 'react';
-import { postMessage } from '../utils/postMessage';
-import { CommandStructures, Commands } from '../../../commands/src/commands';
-import Table from '../components/Table/Table';
-import Loader from '../components/shared/Loader'
-import ITableData from '../interfaces/ITableData';
-import { mapValueData } from '../components/Table/tableUtils';
-import { TableLayout } from '../interfaces/DataLayoutsType';
-import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
-import { LayoutPaths, useLayoutData } from '../contexts/LayoutProvider';
+import React, { useState, useEffect, useMemo, MouseEvent } from "react";
+import { postMessage } from "../utils/postMessage";
+import { CommandStructures, Commands } from "../../../commands/src/commands";
+import Table from "../components/Table/Table";
+import Loader from "../components/shared/Loader";
+import ITableData from "../interfaces/ITableData";
+import { mapValueData } from "../components/Table/tableUtils";
+import { TableLayout } from "../interfaces/DataLayoutsType";
+import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
+import { LayoutPaths, useLayoutData } from "../contexts/LayoutProvider";
 
 const TableView: React.FC = () => {
   const { layouts, isLoadingLayoutContext } = useLayoutData();
-  const [tablePath, setTablePath] = useState<string>("");
-  const [data, setData] = useState<{[key: string]: ITableData[]}>({});
+  const [webviewPath, setWebviewPath] = useState<string>("");
+  const [data, setData] = useState<{ [key: string]: ITableData[] }>({});
   const [columns, setColumns] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [tableLayout, setTableLayout] = useState<TableLayout | null>(null);
@@ -22,35 +22,48 @@ const TableView: React.FC = () => {
     // Only start fetching data when context is loaded
     if (isLoadingLayoutContext) return;
 
-    const tableLayouts = layouts[LayoutPaths.TablePanel] ?? {};
-    const root = document.getElementById("root");
-    let tablePath = root?.getAttribute("data-table-path") || "";
+    let tableLayouts: any = {};
 
-    if (!tablePath) {
+    // layouts[LayoutPaths.Pages][1]["children"] comes from pages.json file structure and key-value pairs
+    layouts[LayoutPaths.Pages][1]["children"].forEach((table: any) => {
+      if (table.type === "table") {
+        // Locally scoped variable which is used to set the key of the JSON object
+        let _path = "";
+        // Path comes from the pages.json file with the .json file identifier
+        _path = table.path + ".json";
+        // Use object spread to merge all tables into tableLayouts object
+        tableLayouts = { ...tableLayouts, ...layouts[_path] };
+      }
+    });
+
+    const root = document.getElementById("root");
+    let webviewPath = root?.getAttribute("data-webview-path") || "";
+
+    if (!webviewPath) {
       setErrorMessage("No table path specified");
       setIsLoading(false);
       return;
     } else if (Object.keys(tableLayouts).length === 0) {
-      setErrorMessage("Table layouts not found in `src/vision/layouts`");
+      setErrorMessage("Table layouts not found in `src/vision/layouts/tables`");
       setIsLoading(false);
       return;
-    } else if (!tableLayouts.hasOwnProperty(tablePath)) {
-      setErrorMessage("No JSON layout found for table path: " + tablePath);
+    } else if (!tableLayouts.hasOwnProperty(webviewPath)) {
+      setErrorMessage("No JSON layout found for table path: " + webviewPath);
       setIsLoading(false);
       return;
     }
 
-    const layout = tableLayouts[tablePath] as TableLayout;
+    const layout = tableLayouts[webviewPath] as TableLayout;
     setTableLayout(layout);
-    setTablePath(tablePath);
+    setWebviewPath(webviewPath);
     setColumns(Object.values(layout.columnNames));
 
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: layout.queries,
-      }
+      },
     });
     const handler = (event: MessageEvent) => {
       const message = event.data;
@@ -58,7 +71,8 @@ const TableView: React.FC = () => {
       let specificMessage;
       switch (message.command) {
         case Commands.LOADED_TABLE_DATA:
-          specificMessage = message as CommandStructures[Commands.LOADED_TABLE_DATA];
+          specificMessage =
+            message as CommandStructures[Commands.LOADED_TABLE_DATA];
           if (specificMessage.errorMessage) {
             console.error(specificMessage.errorMessage);
             postMessage({
@@ -81,33 +95,31 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.GENERATE_TABLE_DATA,
             payload: {
-              tablePath: tablePath,
+              webviewPath: webviewPath,
               queries: layout.queries,
-            }
+            },
           });
           break;
 
         case Commands.CLONED_ELEMENTS:
           postMessage({
-            command: Commands.REFRESH_TABLE_DATA
+            command: Commands.REFRESH_TABLE_DATA,
           });
           break;
       }
     };
-    window.addEventListener('message', handler);
+    window.addEventListener("message", handler);
     return () => {
-      window.removeEventListener('message', handler);
+      window.removeEventListener("message", handler);
     };
   }, [layouts, isLoadingLayoutContext]);
 
   const createPageContent = useMemo(() => {
     if (!tableLayout || Object.keys(data).length === 0) {
-        return [];
+      return [];
     }
     return mapValueData(tableLayout, data);
-  },
-    [data, tableLayout],
-  );
+  }, [data, tableLayout]);
 
   const refreshData = () => {
     setIsLoading(true);
@@ -115,51 +127,57 @@ const TableView: React.FC = () => {
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: tableLayout?.queries ?? {},
-      }
+      },
     });
-  }
+  };
 
-
-  const handleClickRow = (e: MouseEvent<HTMLTableRowElement, MouseEvent>, tableRow: ITableData) => {
+  const handleClickRow = (
+    e: MouseEvent<HTMLTableRowElement, MouseEvent>,
+    tableRow: ITableData
+  ) => {
     // Every row should have an IRI, but if somehow it doesn't,
     // hide the properties sheet.
     if (!tableRow.original.iri) {
       postMessage({
-        command: Commands.HIDE_PROPERTIES
+        command: Commands.HIDE_PROPERTIES,
       });
       return;
-    };
+    }
 
     postMessage({
       command: Commands.ROW_CLICKED,
       payload: tableRow.original.iri,
     });
-  }
+  };
 
   if (isLoading || isLoadingLayoutContext) {
     return (
       <div className="table-container h-screen flex justify-center">
         <Loader message={"Loading table data..."} />
       </div>
-    )
+    );
   }
 
   return (
-    <div className="table-container" data-vscode-context={`{"tablePath": "${tablePath}"}`}>
-      {createPageContent.length > 0 &&
-        tableLayout != null ? (
+    <div
+      className="table-container"
+      data-vscode-context={`{"webviewPath": "${webviewPath}"}`}
+    >
+      {createPageContent.length > 0 && tableLayout != null ? (
         <Table
-          className='w-auto'
+          className="w-auto"
           rowData={createPageContent}
           columnData={columns}
           layout={tableLayout}
           onClickRow={handleClickRow}
         />
       ) : (
-        <div className='h-screen flex flex-col text-center space-y-4 justify-center items-center'>
-          <p className='text-[color:var(--vscode-foreground)]'>{errorMessage ? errorMessage : "No data found"}</p>
+        <div className="h-screen flex flex-col text-center space-y-4 justify-center items-center">
+          <p className="text-[color:var(--vscode-foreground)]">
+            {errorMessage ? errorMessage : "No data found"}
+          </p>
           <VSCodeButton onClick={refreshData}>
             Refresh
             <span slot="start" className="codicon codicon-refresh"></span>
