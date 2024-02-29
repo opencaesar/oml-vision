@@ -1,11 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import IPropertiesData from '../interfaces/IPropertiesData';
-import ITableType from '../../../commands/src/interfaces/ITableType';
+import IWebviewType from '../../../commands/src/interfaces/IWebviewType';
 import { postMessage } from '../utils/postMessage';
 import { Commands } from '../../../commands/src/commands';
 
 interface IPropertiesContext {
-  tableType: ITableType;
+  webviewType: IWebviewType;
   rowIri: string;
   tableRowTypes: string[];
   isAvailable: boolean;
@@ -13,9 +13,10 @@ interface IPropertiesContext {
 
 // Create the context
 const PropertiesDataContext = createContext<IPropertiesContext>({
-  tableType: {
+  webviewType: {
     title: "",
     path: "",
+    type: "",
   },
   rowIri: "",
   tableRowTypes: [],
@@ -57,7 +58,7 @@ export const PropertiesDataProvider: React.FC<{ children: React.ReactNode }> = (
 
   const contextValue = propertiesData
     ? { ...propertiesData, isAvailable: true }
-    : { tableType: { title: "", path: "" }, rowIri: "", tableRowTypes: [], isAvailable: false };
+    : { webviewType: { title: "", path: "", type: "" }, rowIri: "", tableRowTypes: [], isAvailable: false };
 
   return (
     <PropertiesDataContext.Provider value={contextValue}>

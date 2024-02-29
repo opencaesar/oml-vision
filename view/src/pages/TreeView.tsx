@@ -14,7 +14,7 @@ import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 
 const TreeView: React.FC = () => {
   const { layouts, isLoadingLayoutContext } = useLayoutData();
-  const [tablePath, setTablePath] = useState<string>("");
+  const [webviewPath, setWebviewPath] = useState<string>("");
   const [data, setData] = useState<{ [key: string]: ITableData[] }>({});
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [treeLayout, setTreeLayout] = useState<TreeLayout | null>(null);
@@ -28,7 +28,7 @@ const TreeView: React.FC = () => {
 
     // layouts[LayoutPaths.Pages][1]["children"] comes from pages.json file structure and key-value pairs
     layouts[LayoutPaths.Pages][1]["children"].forEach((tree: any) => {
-      if (tree.isTree) {
+      if (tree.type === "tree") {
         // Locally scoped variable which is used to set the key of the JSON object
         let _path = "";
         // Path comes from the pages.json file with the .json file identifier
@@ -39,9 +39,9 @@ const TreeView: React.FC = () => {
     });
 
     const root = document.getElementById("root");
-    let tablePath = root?.getAttribute("data-table-path") || "";
+    let webviewPath = root?.getAttribute("data-webview-path") || "";
 
-    if (!tablePath) {
+    if (!webviewPath) {
       setErrorMessage("No tree path specified");
       setIsLoading(false);
       return;
@@ -49,20 +49,20 @@ const TreeView: React.FC = () => {
       setErrorMessage("Tree layouts not found in `src/vision/layouts/trees`");
       setIsLoading(false);
       return;
-    } else if (!treeLayouts.hasOwnProperty(tablePath)) {
-      setErrorMessage("No JSON layout found for tree path: " + tablePath);
+    } else if (!treeLayouts.hasOwnProperty(webviewPath)) {
+      setErrorMessage("No JSON layout found for tree path: " + webviewPath);
       setIsLoading(false);
       return;
     }
 
-    const layout = treeLayouts[tablePath] as TreeLayout;
+    const layout = treeLayouts[webviewPath] as TreeLayout;
     setTreeLayout(layout);
-    setTablePath(tablePath);
+    setWebviewPath(webviewPath);
 
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: layout.queries,
       },
     });
@@ -109,7 +109,7 @@ const TreeView: React.FC = () => {
           postMessage({
             command: Commands.GENERATE_TABLE_DATA,
             payload: {
-              tablePath: tablePath,
+              webviewPath: webviewPath,
               queries: layout.queries,
             },
           });
@@ -135,7 +135,7 @@ const TreeView: React.FC = () => {
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: treeLayout?.queries ?? {},
       },
     });
@@ -168,13 +168,13 @@ const TreeView: React.FC = () => {
   return (
     <div
       className="table-container"
-      data-vscode-context={`{"tablePath": "${tablePath}"}`}
+      data-vscode-context={`{"webviewPath": "${webviewPath}"}`}
     >
       {createPageContent.length > 0 && treeLayout != null ? (
         <Tree
           className="w-auto"
           rowData={createPageContent}
-          tablePath={tablePath}
+          webviewPath={webviewPath}
           layout={treeLayout}
           onClickRow={handleClickRow}
         />

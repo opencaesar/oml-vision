@@ -1,26 +1,40 @@
-import * as vscode from 'vscode';
-import ITableCategory from '../../commands/src/interfaces/ITableCategory';
-import ITableType from '../../commands/src/interfaces/ITableType';
+import * as vscode from "vscode";
+import ITableCategory from "../../commands/src/interfaces/ITableCategory";
+import IWebviewType from "../../commands/src/interfaces/IWebviewType";
 
 export class SidebarProvider implements vscode.TreeDataProvider<TreeItem> {
-  _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | null> = new vscode.EventEmitter<TreeItem | undefined | null>();
-  onDidChangeTreeData: vscode.Event<TreeItem | undefined | null> = this._onDidChangeTreeData.event;
+  _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | null> =
+    new vscode.EventEmitter<TreeItem | undefined | null>();
+  onDidChangeTreeData: vscode.Event<TreeItem | undefined | null> =
+    this._onDidChangeTreeData.event;
 
   private static _instance: SidebarProvider | null = null;
 
-	public static getInstance(hasBuildFolder: boolean = false, hasPageLayout: boolean = false, hasSparqlConfig: boolean = false): SidebarProvider {
-		if (this._instance === null) {
-			this._instance = new SidebarProvider(hasBuildFolder, hasPageLayout, hasSparqlConfig);
-		}
-		return this._instance;
-	}
+  public static getInstance(
+    hasBuildFolder: boolean = false,
+    hasPageLayout: boolean = false,
+    hasSparqlConfig: boolean = false
+  ): SidebarProvider {
+    if (this._instance === null) {
+      this._instance = new SidebarProvider(
+        hasBuildFolder,
+        hasPageLayout,
+        hasSparqlConfig
+      );
+    }
+    return this._instance;
+  }
 
   data: TreeItem[];
   private _hasBuildFolder: boolean;
   private _hasPageLayout: boolean;
   private _hasSparqlConfig: boolean;
 
-  private constructor(hasBuildFolder: boolean, hasPageLayout: boolean, hasSparqlConfig: boolean) {
+  private constructor(
+    hasBuildFolder: boolean,
+    hasPageLayout: boolean,
+    hasSparqlConfig: boolean
+  ) {
     this._hasBuildFolder = hasBuildFolder;
     this._hasPageLayout = hasPageLayout;
     this._hasSparqlConfig = hasSparqlConfig;
@@ -31,16 +45,18 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeItem> {
     if (!element.children || element.children.length === 0) {
       const label = element.getLabel();
       element.command = {
-        command: 'oml-vision.createTable',
+        command: "oml-vision.createWebview",
         title: label,
-        arguments: [element.tableType]
+        arguments: [element.webviewType],
       };
     }
 
     return element;
   }
 
-  getChildren(element?: TreeItem | undefined): vscode.ProviderResult<TreeItem[]> {
+  getChildren(
+    element?: TreeItem | undefined
+  ): vscode.ProviderResult<TreeItem[]> {
     if (this._hasBuildFolder && this._hasPageLayout && this._hasSparqlConfig) {
       if (element === undefined) {
         return this.data;
@@ -70,7 +86,7 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeItem> {
     this._onDidChangeTreeData.fire(undefined);
   }
 
-  updateLayouts(pageLayout: (ITableType | ITableCategory)[]) {
+  updateLayouts(pageLayout: (IWebviewType | ITableCategory)[]) {
     this.data = buildTreeItems(pageLayout);
     // This will refresh the sidebar pages view.
     this._onDidChangeTreeData.fire(undefined);
@@ -79,44 +95,65 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeItem> {
 
 class TreeItem extends vscode.TreeItem {
   children: TreeItem[] | undefined;
-  readonly tableType: ITableType;
+  readonly webviewType: IWebviewType;
 
-  constructor(label: string, tableType: ITableType, children?: TreeItem[], description = '') {
+  constructor(
+    label: string,
+    webviewType: IWebviewType,
+    children?: TreeItem[],
+    description = ""
+  ) {
     super(
       label,
-      children === undefined || children.length === 0 ? vscode.TreeItemCollapsibleState.None :
-        vscode.TreeItemCollapsibleState.Expanded
+      children === undefined || children.length === 0
+        ? vscode.TreeItemCollapsibleState.None
+        : vscode.TreeItemCollapsibleState.Expanded
     );
     this.children = children;
-    this.tableType = tableType;
+    this.webviewType = webviewType;
     if (description) {
       this.tooltip = description;
     }
   }
 
-  public static from(tableType: ITableType) {
-    return new TreeItem(tableType.title, tableType, undefined, tableType.path ? tableType.path : tableType.title);
+  public static from(webviewType: IWebviewType) {
+    return new TreeItem(
+      webviewType.title,
+      webviewType,
+      undefined,
+      webviewType.path ? webviewType.path : webviewType.title
+    );
   }
 
   public getLabel(): string {
-    return this.label ? this.label.toString() : '';
+    return this.label ? this.label.toString() : "";
   }
 
   public getToolTip(): string {
-    return this.tooltip ? this.tooltip.toString() : '';
+    return this.tooltip ? this.tooltip.toString() : "";
   }
 
   public clone(): TreeItem {
-    return new TreeItem(this.getLabel(), this.tableType, this.children, this.getToolTip());
+    return new TreeItem(
+      this.getLabel(),
+      this.webviewType,
+      this.children,
+      this.getToolTip()
+    );
   }
 }
 
-
-function buildTreeItems(source: (ITableType | ITableCategory)[] = []): TreeItem[] {
-  let output: TreeItem[] = source.map(entry => {
+function buildTreeItems(
+  source: (IWebviewType | ITableCategory)[] = []
+): TreeItem[] {
+  let output: TreeItem[] = source.map((entry) => {
     let item;
-    if ('children' in entry) {
-      item = new TreeItem(entry.title, {title: entry.title, path: ''}, buildTreeItems(entry.children));
+    if ("children" in entry) {
+      item = new TreeItem(
+        entry.title,
+        { title: entry.title, path: "", type: "" },
+        buildTreeItems(entry.children)
+      );
     } else {
       item = TreeItem.from(entry);
 
@@ -124,9 +161,15 @@ function buildTreeItems(source: (ITableType | ITableCategory)[] = []): TreeItem[
       item.collapsibleState = vscode.TreeItemCollapsibleState.None;
     }
 
-    // Set the tree icon if necessary
-    item.iconPath = entry.treeIcon ? new vscode.ThemeIcon(entry.treeIcon) : undefined;
-    item.resourceUri = entry.treeIcon ? vscode.Uri.parse('_.js') : undefined;
+    // Set the tree icon if necessary based on type
+    item.iconPath = undefined;
+    if (entry.type === "home") item.iconPath = new vscode.ThemeIcon("home");
+    else if (entry.type === "group") item.iconPath = new vscode.ThemeIcon("server");
+    else if (entry.type === "table") item.iconPath = new vscode.ThemeIcon("window");
+    else if (entry.type === "tree") item.iconPath = new vscode.ThemeIcon("list-tree");
+    else if (entry.type === "diagram") item.iconPath = new vscode.ThemeIcon("graph-scatter");
+    else console.error(`TYPE ERROR: Set type in pages.json for ${entry.title}`)
+    item.resourceUri = entry.type ? vscode.Uri.parse("_.js") : undefined;
     return item;
   });
 

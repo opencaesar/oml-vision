@@ -1,8 +1,8 @@
-import ITableType from "../../commands/src/interfaces/ITableType";
+import IWebviewType from "../../commands/src/interfaces/IWebviewType";
 import ITableCategory from "../../commands/src/interfaces/ITableCategory";
 
-const TABLES: (ITableType | ITableCategory)[] = [
-    { title: 'Home', path: '/', treeIcon: "home" }
+const TABLES: (IWebviewType | ITableCategory)[] = [
+    { title: 'Home', path: '/', type: "home" }
 ];
 
 export default TABLES;

@@ -1,6 +1,6 @@
 import ITableData from "../../view/src/interfaces/ITableData";
 import { IPropertyData } from "./interfaces/IPropertyData";
-import ITableType from "./interfaces/ITableType";
+import IWebviewType from "./interfaces/IWebviewType";
 
 export enum Commands {
   ALERT = 'alert',
@@ -46,7 +46,7 @@ export enum Commands {
 
 export type CommandStructures = {
   [Commands.CREATE_TABLE]: {
-    payload: ITableType;
+    payload: IWebviewType;
   };
   [Commands.ALERT]: {
     text: string;
@@ -60,7 +60,7 @@ export type CommandStructures = {
   [Commands.HIDE_PROPERTIES]: {};
   [Commands.ASK_FOR_LAYOUTS]: {};
   [Commands.GENERATE_TABLE_DATA]: {
-    payload: { tablePath: string; queries: Record<string, string>; };
+    payload: { webviewPath: string; queries: Record<string, string>; };
     wizardId?: string;
   };
   [Commands.UPDATE_CM_STATE]: {
@@ -68,15 +68,15 @@ export type CommandStructures = {
   };
   [Commands.REFRESH_TABLE_DATA]: {};
   [Commands.GET_ELEMENT_DEPENDENCIES]: {
-    payload: { tablePath: string; iriArray: string[]; labelArray: string[]; };
+    payload: { webviewPath: string; iriArray: string[]; labelArray: string[]; };
     wizardId?: string;
   };
   [Commands.EXECUTE_DELETE_ELEMENTS]: {
-    payload: { tablePath: string; IRIsToDelete: string[]; };
+    payload: { webviewPath: string; IRIsToDelete: string[]; };
     wizardId?: string;
   };
   [Commands.CREATE_FCR]: {
-    payload: { tablePath: string; assemblies: string[]; properties: Record<string, any>; };
+    payload: { webviewPath: string; assemblies: string[]; properties: Record<string, any>; };
     wizardId: string;
   };
   [Commands.EXECUTE_CREATE_ELEMENTS]: {
@@ -186,6 +186,6 @@ export enum WebviewToExtensionCommands {
 export interface WebviewToExtensionCommandPayloads {
   createTable?: any;
   alert?: { text: string };
-  generateTableData?: { tablePath: string; queries: any[] };
+  generateTableData?: { webviewPath: string; queries: any[] };
   // ... other payloads
 }

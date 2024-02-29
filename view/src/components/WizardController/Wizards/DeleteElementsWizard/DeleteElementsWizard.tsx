@@ -23,7 +23,7 @@ function DeleteElementsWizard({
   iriArray: string[]
 }) {
   const [wizardId, setWizardId] = useState("");
-  const [tablePath, setTablePath] = useState("");
+  const [webviewPath, setWebviewPath] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [canDeleteElements, setCanDeleteElements] = useState(true);
@@ -34,8 +34,8 @@ function DeleteElementsWizard({
 
   useEffect(() => {
     const root = document.getElementById("root");
-    let tablePath = root?.getAttribute("data-table-path") || "";
-    setTablePath(tablePath);
+    let webviewPath = root?.getAttribute("data-webview-path") || "";
+    setWebviewPath(webviewPath);
 
     const wizardId = uuid();
     setWizardId(wizardId);
@@ -44,7 +44,7 @@ function DeleteElementsWizard({
       command: Commands.GET_ELEMENT_DEPENDENCIES,
       wizardId,
       payload: {
-        tablePath,
+        webviewPath,
         iriArray,
         labelArray
       }
@@ -118,7 +118,7 @@ function DeleteElementsWizard({
       command: Commands.GET_ELEMENT_DEPENDENCIES,
       wizardId,
       payload: {
-        tablePath,
+        webviewPath,
         iriArray,
         labelArray
       }
@@ -132,7 +132,7 @@ function DeleteElementsWizard({
       command: Commands.EXECUTE_DELETE_ELEMENTS,
       wizardId,
       payload: {
-        tablePath,
+        webviewPath,
         IRIsToDelete
       }
     })

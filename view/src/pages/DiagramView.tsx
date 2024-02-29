@@ -12,7 +12,7 @@ import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 
 const DiagramView: React.FC = () => {
   const { layouts, isLoadingLayoutContext } = useLayoutData();
-  const [tablePath, setTablePath] = useState<string>("");
+  const [webviewPath, setWebviewPath] = useState<string>("");
   const [diagramLayout, setDiagramLayout] = useState<DiagramLayout | null>(
     null
   );
@@ -32,7 +32,7 @@ const DiagramView: React.FC = () => {
 
     // layouts[LayoutPaths.Pages][1]["children"] comes from pages.json file structure and key-value pairs
     layouts[LayoutPaths.Pages][1]["children"].forEach((diagram: any) => {
-      if (diagram.isDiagram) {
+      if (diagram.type === "diagram") {
         // Locally scoped variable which is used to set the key of the JSON object
         let _path = "";
         // Path comes from the pages.json file with the .json file identifier
@@ -43,9 +43,9 @@ const DiagramView: React.FC = () => {
     });
 
     const root = document.getElementById("root");
-    let tablePath = root?.getAttribute("data-table-path") || "";
+    let webviewPath = root?.getAttribute("data-webview-path") || "";
 
-    if (!tablePath) {
+    if (!webviewPath) {
       setErrorMessage("No diagram path specified");
       setIsLoading(false);
       return;
@@ -55,20 +55,20 @@ const DiagramView: React.FC = () => {
       );
       setIsLoading(false);
       return;
-    } else if (!diagramLayouts.hasOwnProperty(tablePath)) {
-      setErrorMessage("No JSON layout found for diagram path: " + tablePath);
+    } else if (!diagramLayouts.hasOwnProperty(webviewPath)) {
+      setErrorMessage("No JSON layout found for diagram path: " + webviewPath);
       setIsLoading(false);
       return;
     }
 
-    const layout = diagramLayouts[tablePath] as DiagramLayout;
+    const layout = diagramLayouts[webviewPath] as DiagramLayout;
     setDiagramLayout(layout);
-    setTablePath(tablePath);
+    setWebviewPath(webviewPath);
 
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: layout.queries,
       },
     });
@@ -116,7 +116,7 @@ const DiagramView: React.FC = () => {
           postMessage({
             command: Commands.GENERATE_TABLE_DATA,
             payload: {
-              tablePath: tablePath,
+              webviewPath: webviewPath,
               queries: layout.queries,
             },
           });
@@ -163,7 +163,7 @@ const DiagramView: React.FC = () => {
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: diagramLayout?.queries ?? {},
       },
     });
@@ -180,14 +180,14 @@ const DiagramView: React.FC = () => {
   return (
     <div
       className="table-container"
-      data-vscode-context={`{"tablePath": "${tablePath}"}`}
+      data-vscode-context={`{"webviewPath": "${webviewPath}"}`}
     >
       {/* We don't check if edges exist in case of edgeless graph w*/}
       {createPageContent.nodes.length > 0 ? (
         <ReactFlowProvider>
           <Diagram
             initData={createPageContent}
-            tablePath={tablePath}
+            webviewPath={webviewPath}
             hasFilter={filter.iris.length > 0}
             clearFilter={() => setFilter({ iris: [], filterObject: null })}
             onNodeSelected={handleClickRow}

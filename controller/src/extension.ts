@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { CommandDefinitions, Commands } from "../../commands/src/commands";
-import ITableType from "../../commands/src/interfaces/ITableType";
+import IWebviewType from "../../commands/src/interfaces/IWebviewType";
 import { SidebarProvider } from "./Sidebar";
 import { SetupTasksProvider } from "./SetupTasksProvider";
 import { generatePropertySheet } from "./sparql/data-manager/generateDataUtils";
@@ -39,19 +39,20 @@ export function activate(context: vscode.ExtensionContext) {
       TablePanel.createOrShow(context.extensionPath, {
         title: "OML Vision Home",
         path: "/",
+        type: "home"
       });
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "oml-vision.createTable",
-      (tableType: ITableType) => {
-        if (!tableType) {
+      "oml-vision.createWebview",
+      (webviewType: IWebviewType) => {
+        if (!webviewType) {
           vscode.window.showErrorMessage("Please specify a table type");
           return;
         }
-        TablePanel.createOrShow(context.extensionPath, tableType);
+        TablePanel.createOrShow(context.extensionPath, webviewType);
       }
     )
   );
@@ -88,7 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
         };
 
         TablePanel.currentPanels
-          .get(vsCodeContext.tablePath)
+          .get(vsCodeContext.webviewPath)
           ?.sendMessage({ command: Commands.OPEN_WIZARD, payload });
       }
     )
@@ -105,7 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
         };
 
         TablePanel.currentPanels
-          .get(vsCodeContext.tablePath)
+          .get(vsCodeContext.webviewPath)
           ?.sendMessage({ command: Commands.OPEN_WIZARD, payload });
       }
     )
@@ -120,37 +121,37 @@ export function activate(context: vscode.ExtensionContext) {
       iriArray: vsCodeContext.iri,
     };
 
-    // Find the full ITableType for the given tablePath
+    // Find the full IWebviewType for the given webviewPath
     const tableLayouts = (globalLayoutContents[LayoutPaths.Pages] ?? []) as (
-      | ITableType
+      | IWebviewType
       | ITableCategory
     )[];
     const findTable = (item: any): any =>
       item.path === diagram ? item : item.children?.find(findTable);
-    const diagramTableType = tableLayouts
+    const diagramWebviewType = tableLayouts
       .reduce((acc, table) => acc.concat(findTable(table) || []), [])
       .find(Boolean);
 
-    if (!diagramTableType)
+    if (!diagramWebviewType)
       return vscode.window.showErrorMessage(
         "No diagram found for selected row(s)."
       );
     // @ts-ignore
-    else if (!diagramTableType.isDiagram)
+    else if (diagramWebviewType.type !== "diagram")
       vscode.window.showErrorMessage(
-        "Incorrect diagram configuration: tablePath was not of type 'diagram'"
+        "Incorrect diagram configuration: webviewPath was not of type 'diagram'"
       );
 
     const diagramTable = TablePanel.currentPanels.get(diagram);
 
     if (diagramTable) {
-      TablePanel.createOrShow(context.extensionPath, diagramTableType);
+      TablePanel.createOrShow(context.extensionPath, diagramWebviewType);
       diagramTable.sendMessage({
         command: Commands.CREATE_FILTERED_DIAGRAM,
         payload,
       });
     } else {
-      TablePanel.createOrShow(context.extensionPath, diagramTableType, payload);
+      TablePanel.createOrShow(context.extensionPath, diagramWebviewType, payload);
     }
   };
 
@@ -185,7 +186,7 @@ export function activate(context: vscode.ExtensionContext) {
         };
 
         TablePanel.currentPanels
-          .get(context.tablePath)
+          .get(context.webviewPath)
           ?.sendMessage({ command: Commands.OPEN_WIZARD, payload });
       }
     )
@@ -216,7 +217,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "oml-vision.showProperties",
-      async (iri: string = "", tableType: ITableType) => {
+      async (iri: string = "", webviewType: IWebviewType) => {
         let types: string[] = [];
         if (iri !== "") {
           const rawTypesQuery = getIriTypes(iri);
@@ -225,7 +226,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         const propertyData = {
-          tableType: tableType,
+          webviewType: webviewType,
           rowIri: iri,
           tableRowTypes: types,
         };
@@ -287,7 +288,7 @@ export function activate(context: vscode.ExtensionContext) {
       "oml-vision.create-row",
       async (context: Record<string, any>) => {
         if (context.iri.length === 1) {
-          TablePanel.currentPanels.get(context.tablePath)?.sendMessage({
+          TablePanel.currentPanels.get(context.webviewPath)?.sendMessage({
             command: Commands.OPEN_WIZARD,
             payload: {
               key: "CreateElementWizard",

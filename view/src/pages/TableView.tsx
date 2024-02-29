@@ -11,7 +11,7 @@ import { LayoutPaths, useLayoutData } from "../contexts/LayoutProvider";
 
 const TableView: React.FC = () => {
   const { layouts, isLoadingLayoutContext } = useLayoutData();
-  const [tablePath, setTablePath] = useState<string>("");
+  const [webviewPath, setWebviewPath] = useState<string>("");
   const [data, setData] = useState<{ [key: string]: ITableData[] }>({});
   const [columns, setColumns] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -26,7 +26,7 @@ const TableView: React.FC = () => {
 
     // layouts[LayoutPaths.Pages][1]["children"] comes from pages.json file structure and key-value pairs
     layouts[LayoutPaths.Pages][1]["children"].forEach((table: any) => {
-      if (table.isTable) {
+      if (table.type === "table") {
         // Locally scoped variable which is used to set the key of the JSON object
         let _path = "";
         // Path comes from the pages.json file with the .json file identifier
@@ -37,9 +37,9 @@ const TableView: React.FC = () => {
     });
 
     const root = document.getElementById("root");
-    let tablePath = root?.getAttribute("data-table-path") || "";
+    let webviewPath = root?.getAttribute("data-webview-path") || "";
 
-    if (!tablePath) {
+    if (!webviewPath) {
       setErrorMessage("No table path specified");
       setIsLoading(false);
       return;
@@ -47,21 +47,21 @@ const TableView: React.FC = () => {
       setErrorMessage("Table layouts not found in `src/vision/layouts/tables`");
       setIsLoading(false);
       return;
-    } else if (!tableLayouts.hasOwnProperty(tablePath)) {
-      setErrorMessage("No JSON layout found for table path: " + tablePath);
+    } else if (!tableLayouts.hasOwnProperty(webviewPath)) {
+      setErrorMessage("No JSON layout found for table path: " + webviewPath);
       setIsLoading(false);
       return;
     }
 
-    const layout = tableLayouts[tablePath] as TableLayout;
+    const layout = tableLayouts[webviewPath] as TableLayout;
     setTableLayout(layout);
-    setTablePath(tablePath);
+    setWebviewPath(webviewPath);
     setColumns(Object.values(layout.columnNames));
 
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: layout.queries,
       },
     });
@@ -95,7 +95,7 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.GENERATE_TABLE_DATA,
             payload: {
-              tablePath: tablePath,
+              webviewPath: webviewPath,
               queries: layout.queries,
             },
           });
@@ -127,7 +127,7 @@ const TableView: React.FC = () => {
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
-        tablePath: tablePath,
+        webviewPath: webviewPath,
         queries: tableLayout?.queries ?? {},
       },
     });
@@ -163,7 +163,7 @@ const TableView: React.FC = () => {
   return (
     <div
       className="table-container"
-      data-vscode-context={`{"tablePath": "${tablePath}"}`}
+      data-vscode-context={`{"webviewPath": "${webviewPath}"}`}
     >
       {createPageContent.length > 0 && tableLayout != null ? (
         <Table

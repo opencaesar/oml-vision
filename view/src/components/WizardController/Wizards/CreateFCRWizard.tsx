@@ -16,13 +16,13 @@ function CreateFaultContainmentRegionWizard({
   const { closeWizard } = useWizards();
   const [isCreating, setIsCreating] = useState(false);
   const [wizardId, setWizardId] = useState("");
-  const [tablePath, setTablePath] = useState("");
+  const [webviewPath, setWebviewPath] = useState("");
   const { register, handleSubmit, formState: { errors } } = useForm({ mode: 'onSubmit', reValidateMode: 'onBlur' });
 
   useEffect(() => {
     const root = document.getElementById("root");
-    let tablePath = root?.getAttribute("data-table-path") || "";
-    setTablePath(tablePath);
+    let webviewPath = root?.getAttribute("data-webview-path") || "";
+    setWebviewPath(webviewPath);
 
     const wizardId = uuidv4();
     setWizardId(wizardId);
@@ -56,7 +56,7 @@ function CreateFaultContainmentRegionWizard({
       command: Commands.CREATE_FCR,
       wizardId,
       payload: {
-        tablePath,
+        webviewPath,
         assemblies: iriArray,
         properties: state
       }

@@ -50,7 +50,7 @@ const nodeTypes = {
 
 function Diagram({
   initData,
-  tablePath,
+  webviewPath,
   hasFilter,
   clearFilter = () => {},
   onNodeSelected = () => {},
@@ -60,7 +60,7 @@ function Diagram({
     edges: Edge[];
     legendItems: LegendItem[];
   };
-  tablePath: string;
+  webviewPath: string;
   hasFilter: boolean;
   clearFilter: Function;
   onNodeSelected?: Function;
@@ -197,7 +197,7 @@ function Diagram({
         ),
     }).then((dataUrl: any) => {
       const a = document.createElement("a");
-      a.setAttribute("download", `${tablePath}.png`);
+      a.setAttribute("download", `${webviewPath}.png`);
       a.setAttribute("href", dataUrl);
       a.click();
     });
@@ -215,7 +215,7 @@ function Diagram({
         ),
     }).then((dataUrl: any) => {
       const a = document.createElement("a");
-      a.setAttribute("download", `${tablePath}.svg`);
+      a.setAttribute("download", `${webviewPath}.svg`);
       a.setAttribute("href", dataUrl);
       a.click();
     });
