@@ -1,14 +1,18 @@
 import * as vscode from "vscode";
 import { CommandDefinitions, Commands } from "../../commands/src/commands";
 import IWebviewType from "../../commands/src/interfaces/IWebviewType";
-import { SidebarProvider } from "./Sidebar";
-import { SetupTasksProvider } from "./SetupTasksProvider";
 import { generatePropertySheet } from "./sparql/data-manager/generateDataUtils";
 import { SparqlClient } from "./sparql/SparqlClient";
 import ITableData from "../../view/src/interfaces/ITableData";
 import { getIriTypes } from "./sparql/queries/GetIriTypes";
 import { LayoutPaths } from "../../commands/src/interfaces/LayoutPaths";
 import ITableCategory from "../../commands/src/interfaces/ITableCategory";
+
+// Sidebar functions
+import { TreeDataProvider } from "./sidebar/TreeDataProvider";
+import { LoadedTriplestoreTreeDataProvider } from "./sidebar/LoadedTriplestoreTreeDataProvider";
+import { SetupTasksProvider } from "./sidebar/SetupTasksProvider";
+import { LoadedTriplestoreProvider } from "./sidebar/LoadedTriplestoreProvider";
 
 // Utilities functions
 import { checkBuildFolder } from "./utilities/checkers/checkBuildFolder";
@@ -305,8 +309,16 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // default the 'hasBuildFolder' and 'hasPageLayout' and 'hasSparqlConfig' properties to false in the Sidebar
-  const sidebarProvider = SidebarProvider.getInstance();
-  vscode.window.registerTreeDataProvider("vision-pages", sidebarProvider);
+  /**
+   * Register Tree Data to show data in the sidebar
+   *
+   * @remarks
+   * This method uses the {@link https://code.visualstudio.com/api/extension-guides/tree-view| Tree View API}
+   */
+  const treeDataProvider = TreeDataProvider.getInstance();
+  vscode.window.registerTreeDataProvider("vision-webview-pages", treeDataProvider);
+  const loadedTriplestoreTreeDataProvider = LoadedTriplestoreTreeDataProvider.getInstance();
+  vscode.window.registerTreeDataProvider("vision-loaded-triplestore", loadedTriplestoreTreeDataProvider);
 
   /*** START set up Vision repo context ***/
   vscode.commands.executeCommand("setContext", "vision:hasBuildFolder", false);
@@ -324,7 +336,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Watch for creation of 'build' folder
   buildFolderWatcher.onDidCreate(() => {
     vscode.commands.executeCommand("setContext", "vision:hasBuildFolder", true);
-    sidebarProvider.updateHasBuildFolder(true);
+    treeDataProvider.updateHasBuildFolder(true);
   });
 
   // Watch for deletion of 'build' folder
@@ -334,12 +346,12 @@ export function activate(context: vscode.ExtensionContext) {
       "vision:hasBuildFolder",
       false
     );
-    sidebarProvider.updateHasBuildFolder(false);
+    treeDataProvider.updateHasBuildFolder(false);
   });
   context.subscriptions.push(buildFolderWatcher);
 
   // Check if 'build' folder exists on start
-  checkBuildFolder(sidebarProvider);
+  checkBuildFolder(treeDataProvider);
 
   // Load all files initially
   loadSparqlFiles(globalSparqlContents).catch((err) => {
@@ -374,7 +386,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(sparqlConfigFolderWatcher);
   /*** END Vision context creation ***/
 
-  /* START Setup Tasks Provider CODE */
+  /* START Sidebar Providers CODE */
   const gradleForJavaExtension = vscode.extensions.getExtension(
     "vscjava.vscode-gradle"
   );
@@ -393,8 +405,18 @@ export function activate(context: vscode.ExtensionContext) {
         setupTasksProvider
       )
     );
+    const loadedTriplestoreProvider = new LoadedTriplestoreProvider(
+      context.extensionPath,
+      gradleApi
+    );
+    context.subscriptions.push(
+      vscode.window.registerWebviewViewProvider(
+        LoadedTriplestoreProvider.viewType,
+        loadedTriplestoreProvider
+      )
+    );
   });
-  /* END Setup Tasks Provider CODE */
+  /* END Sidebar Providers CODE */
 }
 
 // TODO: Implement cloneSelectedRows in commands

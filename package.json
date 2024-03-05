@@ -182,8 +182,8 @@
         "when": "workbenchState == empty"
       },
       {
-        "view": "vision-pages",
-        "contents": "No pages available. Go to 'Setup Tasks' to configure your project, OR confirm that your Vision files are configured in your workspace.",
+        "view": "vision-webview-pages",
+        "contents": "No pages available in the build folder. Run ./gradlew owlLoad.",
         "when": "!vision:hasBuildFolder || !vision:hasLayoutFiles || !vision:hasSparqlConfig"
       }
     ],
@@ -194,16 +194,24 @@
           "id": "vision-setup-tasks",
           "name": "Setup Tasks",
           "when": "workbenchState != empty",
-          "icon": "$(wrench)",
-          "initialSize": 2,
+          "icon": "public/vision128x128.png",
+          "initialSize": 20,
           "visibility": "visible"
         },
         {
-          "id": "vision-pages",
-          "name": "Pages",
+          "id": "vision-webview-pages",
+          "name": "Navigate Webview Pages",
           "when": "workbenchState != empty",
-          "icon": "$(three-bars)",
-          "initialSize": 7,
+          "icon": "public/vision128x128.png",
+          "initialSize": 5,
+          "visibility": "visible"
+        },
+        {
+          "id": "vision-loaded-triplestore",
+          "name": "Check RDF Triplestore Load",
+          "when": "workbenchState != empty",
+          "icon": "public/vision128x128.png",
+          "initialSize": 1,
           "visibility": "visible"
         },
         {

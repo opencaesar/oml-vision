@@ -1,22 +1,22 @@
 import * as vscode from "vscode";
-import ITableCategory from "../../commands/src/interfaces/ITableCategory";
-import IWebviewType from "../../commands/src/interfaces/IWebviewType";
+import ITableCategory from "../../../commands/src/interfaces/ITableCategory";
+import IWebviewType from "../../../commands/src/interfaces/IWebviewType";
 
-export class SidebarProvider implements vscode.TreeDataProvider<TreeItem> {
+export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | null> =
     new vscode.EventEmitter<TreeItem | undefined | null>();
   onDidChangeTreeData: vscode.Event<TreeItem | undefined | null> =
     this._onDidChangeTreeData.event;
 
-  private static _instance: SidebarProvider | null = null;
+  private static _instance: TreeDataProvider | null = null;
 
   public static getInstance(
     hasBuildFolder: boolean = false,
     hasPageLayout: boolean = false,
     hasSparqlConfig: boolean = false
-  ): SidebarProvider {
+  ): TreeDataProvider {
     if (this._instance === null) {
-      this._instance = new SidebarProvider(
+      this._instance = new TreeDataProvider(
         hasBuildFolder,
         hasPageLayout,
         hasSparqlConfig
@@ -70,25 +70,25 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeItem> {
 
   updateHasBuildFolder(hasBuildFolder: boolean) {
     this._hasBuildFolder = hasBuildFolder;
-    // This will refresh the sidebar pages view.
+    // This will refresh the tree items pages view in the sidebar.
     this._onDidChangeTreeData.fire(undefined);
   }
 
   updateHasPageLayout(hasPageLayout: boolean) {
     this._hasPageLayout = hasPageLayout;
-    // This will refresh the sidebar pages view.
+    // This will refresh the tree items pages view in the sidebar.
     this._onDidChangeTreeData.fire(undefined);
   }
 
   updateHasSparqlConfig(hasSparqlConfig: boolean) {
     this._hasSparqlConfig = hasSparqlConfig;
-    // This will refresh the sidebar pages view.
+    // This will refresh the tree items pages view in the sidebar.
     this._onDidChangeTreeData.fire(undefined);
   }
 
   updateLayouts(pageLayout: (IWebviewType | ITableCategory)[]) {
     this.data = buildTreeItems(pageLayout);
-    // This will refresh the sidebar pages view.
+    // This will refresh the tree items pages view in the sidebar.
     this._onDidChangeTreeData.fire(undefined);
   }
 }
@@ -164,11 +164,15 @@ function buildTreeItems(
     // Set the tree icon if necessary based on type
     item.iconPath = undefined;
     if (entry.type === "home") item.iconPath = new vscode.ThemeIcon("home");
-    else if (entry.type === "group") item.iconPath = new vscode.ThemeIcon("server");
-    else if (entry.type === "table") item.iconPath = new vscode.ThemeIcon("window");
-    else if (entry.type === "tree") item.iconPath = new vscode.ThemeIcon("list-tree");
-    else if (entry.type === "diagram") item.iconPath = new vscode.ThemeIcon("graph-scatter");
-    else console.error(`TYPE ERROR: Set type in pages.json for ${entry.title}`)
+    else if (entry.type === "group")
+      item.iconPath = new vscode.ThemeIcon("server");
+    else if (entry.type === "table")
+      item.iconPath = new vscode.ThemeIcon("window");
+    else if (entry.type === "tree")
+      item.iconPath = new vscode.ThemeIcon("list-tree");
+    else if (entry.type === "diagram")
+      item.iconPath = new vscode.ThemeIcon("graph-scatter");
+    else console.error(`TYPE ERROR: Set type in pages.json for ${entry.title}`);
     item.resourceUri = entry.type ? vscode.Uri.parse("_.js") : undefined;
     return item;
   });

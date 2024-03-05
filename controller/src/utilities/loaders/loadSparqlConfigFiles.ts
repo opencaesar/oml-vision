@@ -1,12 +1,13 @@
 import { workspace, Uri, commands, window, FileType } from "vscode";
-import { SidebarProvider } from "../../Sidebar";
+import { TreeDataProvider } from "../../sidebar/TreeDataProvider";
 
 export let globalQueryEndpoint: string = "";
+export let globalPingEndpoint: string = "";
 export let globalUpdateEndpoint: string = "";
 
 export async function loadSparqlConfigFiles() {
     commands.executeCommand("setContext", "vision:hasSparqlConfig", false);
-    SidebarProvider.getInstance().updateHasSparqlConfig(false);
+    TreeDataProvider.getInstance().updateHasSparqlConfig(false);
   
     const workspaceFolders = workspace.workspaceFolders;
     if (workspaceFolders) {
@@ -30,7 +31,7 @@ export async function loadSparqlConfigFiles() {
               if (file === "sparqlConfig.json") {
                 globalQueryEndpoint = content.queryEndpoint;
                 globalUpdateEndpoint = content.updateEndpoint;
-                SidebarProvider.getInstance().updateHasSparqlConfig(true);
+                TreeDataProvider.getInstance().updateHasSparqlConfig(true);
               }
             } catch (parseErr) {
               throw new Error(`Error parsing ${file}: ${parseErr}`);

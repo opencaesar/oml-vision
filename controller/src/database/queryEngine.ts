@@ -1,6 +1,7 @@
 import { QueryEngine } from "@comunica/query-sparql";
 import {
   globalQueryEndpoint,
+  globalPingEndpoint,
   globalUpdateEndpoint,
 } from "../utilities/loaders/loadSparqlConfigFiles";
 
@@ -47,5 +48,30 @@ export const queryEngine = async (query: string): Promise<any> => {
       // timeout in ms
       httpTimeout: 6000,
     });
+  }
+};
+
+/**  
+    This async function pings a query engine.  
+    This allows OML Vision to talk with the RDF triplestore.
+    @remarks For more information, go here: https://comunica.dev/docs/query/getting_started/query_app/
+    @returns The HTTP status code as a number from the ping operation in a Promise object
+ */
+export const pingQueryEngine = async (): Promise<number> => {
+  let endpoint = globalPingEndpoint;
+
+  // Use async/await to wait for the fetch operation to complete
+  const response = await fetch(endpoint, {
+    method: "POST",
+  });
+
+  // Check if the request was successful (status code 200-299)
+  if (response.ok) {
+    // Return the response status code
+    return response.status;
+  } else {
+    // If there was an error, throw an error with the status code and text
+    console.error(`Error ${response.status}: ${response.statusText}`);
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
   }
 };
