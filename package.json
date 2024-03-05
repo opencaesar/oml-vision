@@ -199,19 +199,20 @@
           "visibility": "visible"
         },
         {
-          "id": "vision-webview-pages",
-          "name": "Navigate Webview Pages",
-          "when": "workbenchState != empty",
-          "icon": "public/vision128x128.png",
-          "initialSize": 5,
-          "visibility": "visible"
-        },
-        {
+          "type":"webview",
           "id": "vision-loaded-triplestore",
           "name": "Check RDF Triplestore Load",
           "when": "workbenchState != empty",
           "icon": "public/vision128x128.png",
           "initialSize": 1,
+          "visibility": "visible"
+        },
+        {
+          "id": "vision-webview-pages",
+          "name": "Navigate Webview Pages",
+          "when": "workbenchState != empty",
+          "icon": "public/vision128x128.png",
+          "initialSize": 5,
           "visibility": "visible"
         },
         {

@@ -43,6 +43,11 @@ const LoadedTriplestoreView: React.FC = () => {
     });
   }
 
+  console.log("loadedTriplestore")
+  console.log(loadedTriplestore)
+  console.log("pingedTriplestore")
+  console.log(pingedTriplestore)
+
   return (
     <div className={`setup-tasks-view ${isPreloading ?? "preload"}`}>
       <div className="setup-tasks-container scrollable">

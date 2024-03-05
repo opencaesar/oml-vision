@@ -10,7 +10,6 @@ import ITableCategory from "../../commands/src/interfaces/ITableCategory";
 
 // Sidebar functions
 import { TreeDataProvider } from "./sidebar/TreeDataProvider";
-import { LoadedTriplestoreTreeDataProvider } from "./sidebar/LoadedTriplestoreTreeDataProvider";
 import { SetupTasksProvider } from "./sidebar/SetupTasksProvider";
 import { LoadedTriplestoreProvider } from "./sidebar/LoadedTriplestoreProvider";
 
@@ -317,8 +316,6 @@ export function activate(context: vscode.ExtensionContext) {
    */
   const treeDataProvider = TreeDataProvider.getInstance();
   vscode.window.registerTreeDataProvider("vision-webview-pages", treeDataProvider);
-  const loadedTriplestoreTreeDataProvider = LoadedTriplestoreTreeDataProvider.getInstance();
-  vscode.window.registerTreeDataProvider("vision-loaded-triplestore", loadedTriplestoreTreeDataProvider);
 
   /*** START set up Vision repo context ***/
   vscode.commands.executeCommand("setContext", "vision:hasBuildFolder", false);
@@ -416,6 +413,7 @@ export function activate(context: vscode.ExtensionContext) {
       )
     );
   });
+  
   /* END Sidebar Providers CODE */
 }
 
