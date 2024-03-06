@@ -330,6 +330,22 @@ export function activate(context: vscode.ExtensionContext) {
     "**/src/vision/config/*.json"
   );
 
+  // TODO: Assumes fuseki for now.  Change to accomodate other triplestores
+  let triplestoreLogFileWatcher = vscode.workspace.createFileSystemWatcher(
+    "**/.fuseki/fuseki.log"
+  )
+
+  // Watch for changes in SPARQL files
+  triplestoreLogFileWatcher.onDidChange(() => {
+    console.log("changed")
+  });
+  triplestoreLogFileWatcher.onDidCreate(() => {
+    console.log("created")
+  });
+  triplestoreLogFileWatcher.onDidDelete(() => {
+    console.log("deleted")
+  });
+
   // Watch for creation of 'build' folder
   buildFolderWatcher.onDidCreate(() => {
     vscode.commands.executeCommand("setContext", "vision:hasBuildFolder", true);
