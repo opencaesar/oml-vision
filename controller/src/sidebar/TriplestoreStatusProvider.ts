@@ -7,8 +7,8 @@ import { queryEngine, pingQueryEngine } from "../database/queryEngine";
 /**
  * Checks if the RDF Triplestore is loaded and outputs the result to the webview.
  */
-export class LoadedTriplestoreProvider implements vscode.WebviewViewProvider {
-  public static readonly viewType = "vision-loaded-triplestore";
+export class TriplestoreStatusProvider implements vscode.WebviewViewProvider {
+  public static readonly viewType = "vision-triplestore-status";
 
   private _view?: vscode.WebviewView;
   public pinged: boolean = false;
@@ -47,7 +47,7 @@ export class LoadedTriplestoreProvider implements vscode.WebviewViewProvider {
     webviewView.webview.html = getHtmlForWebview(
       webviewView.webview,
       this._extensionPath,
-      "/loaded-triplestore-panel"
+      "/triplestore-status-panel"
     );
 
     // Handle messages from the webview
@@ -59,7 +59,7 @@ export class LoadedTriplestoreProvider implements vscode.WebviewViewProvider {
         case "pingTriplestoreTask":
           this.pingTriplestoreTask();
           return;
-        case "loadedTriplestoreTask":
+        case "checkLoadedTriplestoreTask":
           this.loadedTriplestoreTask();
           return;
       }
@@ -80,18 +80,20 @@ export class LoadedTriplestoreProvider implements vscode.WebviewViewProvider {
         this.pinged = false;
         // this.runTriplestoreTask("startFuseki");
       }
-    } catch(err) {
+    } catch (err) {
       this.pinged = false;
       console.error(`Error: ${err}`);
     }
-    const payload = {success: this.pinged}
-    this.sendMessage({ command: Commands.PING_TRIPLESTORE_TASK, payload: payload });
+    const payload = { success: this.pinged };
+    this.sendMessage({
+      command: Commands.PING_TRIPLESTORE_TASK,
+      payload: payload,
+    });
   }
 
   /**
-   * Set Check RDF Triplestore task.
+   * Check if RDF Triplestore is loaded task.
    *
-   * @param success - The success boolean to set
    */
   public async loadedTriplestoreTask() {
     // Generic query to find a triple in the triplestore
@@ -111,33 +113,6 @@ export class LoadedTriplestoreProvider implements vscode.WebviewViewProvider {
     let checkTriplestoreResult = { success: this.loaded };
     const payload = checkTriplestoreResult;
     this.sendMessage({ command: Commands.LOADED_TRIPLESTORE_TASK, payload: payload });
-  }
-
-  /**
-   * Runs RDF Triplestore task using the VSCode Gradle API.
-   *
-   * @param triplestore - The triplestore gradle task name to run to start the RDF Triplestore
-   */
-  public runTriplestoreTask(triplestore: string) {
-    this._gradleApi
-      .getTaskProvider()
-      .provideTasks()
-      .then((tasks: vscode.Task[]) => {
-        console.log("tasks")
-        console.log(tasks)
-        const taskToRun = tasks.find((task) => task.name === triplestore);
-        if (taskToRun) {
-          vscode.tasks.executeTask(taskToRun);
-        } else {
-          // If there was an error, throw an error with the status code and text
-          console.error(
-            `Gradle Task Error: startFuseki not found in build.gradle`
-          );
-          throw new Error(
-            `Gradle Task Error: startFuseki not found in build.gradle`
-          );
-        }
-      });
   }
 
   /**

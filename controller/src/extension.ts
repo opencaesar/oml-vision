@@ -11,7 +11,7 @@ import ITableCategory from "../../commands/src/interfaces/ITableCategory";
 // Sidebar functions
 import { TreeDataProvider } from "./sidebar/TreeDataProvider";
 import { SetupTasksProvider } from "./sidebar/SetupTasksProvider";
-import { LoadedTriplestoreProvider } from "./sidebar/LoadedTriplestoreProvider";
+import { TriplestoreStatusProvider } from "./sidebar/TriplestoreStatusProvider";
 
 // Utilities functions
 import { checkBuildFolder } from "./utilities/checkers/checkBuildFolder";
@@ -409,14 +409,14 @@ export function activate(context: vscode.ExtensionContext) {
         setupTasksProvider
       )
     );
-    const loadedTriplestoreProvider = new LoadedTriplestoreProvider(
+    const triplestoreStatusProvider = new TriplestoreStatusProvider(
       context.extensionPath,
       gradleApi
     );
     context.subscriptions.push(
       vscode.window.registerWebviewViewProvider(
-        LoadedTriplestoreProvider.viewType,
-        loadedTriplestoreProvider
+        TriplestoreStatusProvider.viewType,
+        triplestoreStatusProvider
       )
     );
     // TODO: Assumes fuseki for now.  Change to accomodate other triplestores
@@ -424,24 +424,21 @@ export function activate(context: vscode.ExtensionContext) {
       "**/.fuseki/fuseki.log"
     );
 
-    // Watch for changes in SPARQL files
+    // Watch for changes in triplestore log file
     triplestoreLogFileWatcher.onDidChange(() => {
-      console.log("changed");
-      loadedTriplestoreProvider.pingTriplestoreTask();
+      triplestoreStatusProvider.pingTriplestoreTask();
     });
     triplestoreLogFileWatcher.onDidCreate(() => {
-      console.log("created");
-      loadedTriplestoreProvider.pingTriplestoreTask();
+      triplestoreStatusProvider.pingTriplestoreTask();
     });
     triplestoreLogFileWatcher.onDidDelete(() => {
-      console.log("deleted");
-      loadedTriplestoreProvider.pingTriplestoreTask();
+      triplestoreStatusProvider.pingTriplestoreTask();
     });
 
     // Define a function to execute the Ping task
     const runPingTask = async () => {
       try {
-        await loadedTriplestoreProvider.pingTriplestoreTask();
+        await triplestoreStatusProvider.pingTriplestoreTask();
       } catch (err) {
         console.error(`Error: ${err}`);
       }

@@ -29,7 +29,6 @@ test("queryEngine doesn't return undefined", async () => {
 
 test("queryEngine returns an array greater than 1", async () => {
   const queryResponse = await queryEngine(query);
-  console.log(queryResponse);
   const queryLength = Object.keys(queryResponse);
   expect(queryLength).not.toHaveLength(0);
 });

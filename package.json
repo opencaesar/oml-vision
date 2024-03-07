@@ -200,8 +200,8 @@
         },
         {
           "type":"webview",
-          "id": "vision-loaded-triplestore",
-          "name": "Check RDF Triplestore Load",
+          "id": "vision-triplestore-status",
+          "name": "RDF Triplestore Status",
           "when": "workbenchState != empty",
           "icon": "public/vision128x128.png",
           "initialSize": 1,

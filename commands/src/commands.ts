@@ -31,6 +31,7 @@ export enum Commands {
   RECEIVED_GRADLE_TASKS = "receivedGradleTasks",
 
   // Loaded Triplestore Provider Commands
+  CHECK_LOADED_TRIPLESTORE_TASK = "checkLoadedTriplestoreTask",
   LOADED_TRIPLESTORE_TASK = "loadedTriplestoreTask",
   PING_TRIPLESTORE_TASK = "pingTriplestoreTask",
 
@@ -108,6 +109,7 @@ export type CommandStructures = {
   [Commands.RECEIVED_GRADLE_TASKS]: {
     payload: string[];
   };
+  [Commands.CHECK_LOADED_TRIPLESTORE_TASK]: {};
   [Commands.LOADED_TRIPLESTORE_TASK]: {
     payload: {
       success: boolean;

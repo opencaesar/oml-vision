@@ -13,7 +13,7 @@ import PropertySheet from "./components/PropertySheet";
 import wizards from "./components/WizardController/allWizards";
 import { WizardsProvider } from "./contexts/WizardController";
 import SetupTasksView from "./pages/SetupTasksView";
-import LoadedTriplestoreView from "./pages/LoadedTriplestoreView";
+import TriplestoreStatusView from "./pages/TriplestoreStatusView";
 
 const queryClient = new QueryClient();
 
@@ -44,7 +44,7 @@ const App = () => {
     <MemoryRouter initialEntries={route}>
       <Routes>
         <Route path="/" element={<HomeView />} />
-        <Route path="/loaded-triplestore-panel" element={<LoadedTriplestoreView />} />
+        <Route path="/triplestore-status-panel" element={<TriplestoreStatusView />} />
         <Route path="/setup-tasks-panel" element={<SetupTasksView />} />
         <Route path="/table-panel" element={viewWithProviders(<TableView />)} />
         <Route path="/tree-panel" element={viewWithProviders(<TreeView />)} />
