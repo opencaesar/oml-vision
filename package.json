@@ -183,7 +183,7 @@
       },
       {
         "view": "vision-webview-pages",
-        "contents": "No pages available in the build folder. Run ./gradlew owlLoad.",
+        "contents": "No pages available in the build folder. Run ./gradlew build.",
         "when": "!vision:hasBuildFolder || !vision:hasLayoutFiles || !vision:hasSparqlConfig"
       }
     ],
