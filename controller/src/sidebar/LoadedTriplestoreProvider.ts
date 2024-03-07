@@ -11,6 +11,8 @@ export class LoadedTriplestoreProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "vision-loaded-triplestore";
 
   private _view?: vscode.WebviewView;
+  public pinged: boolean = false;
+  public loaded: boolean = false;
 
   constructor(
     private readonly _extensionPath: string,
@@ -54,25 +56,44 @@ export class LoadedTriplestoreProvider implements vscode.WebviewViewProvider {
         case "alert":
           vscode.window.showErrorMessage(message.text);
           return;
-        case "checkLoadedTriplestoreTask":
-          this.checkLoadedTriplestoreTask();
-          return;
         case "pingTriplestoreTask":
-          this.pingTriplestoreTask(message.payload);
+          this.pingTriplestoreTask();
           return;
         case "loadedTriplestoreTask":
-          this.loadedTriplestoreTask(message.payload);
+          this.loadedTriplestoreTask();
           return;
       }
     }, null);
   }
 
   /**
-   * Pings RDF Triplestore and checks for loaded data in RDF Triplestore if running.  Run triplestore if not running.
+   * Ping RDF Triplestore task.
    *
    */
-  private async checkLoadedTriplestoreTask() {
+  public async pingTriplestoreTask() {
     const pingStatus = await pingQueryEngine();
+    try {
+      if (pingStatus === 200) {
+        this.pinged = true;
+      } else {
+        // Run the triplestore if not running if not running already.
+        this.pinged = false;
+        // this.runTriplestoreTask("startFuseki");
+      }
+    } catch(err) {
+      this.pinged = false;
+      console.error(`Error: ${err}`);
+    }
+    const payload = {success: this.pinged}
+    this.sendMessage({ command: Commands.PING_TRIPLESTORE_TASK, payload: payload });
+  }
+
+  /**
+   * Set Check RDF Triplestore task.
+   *
+   * @param success - The success boolean to set
+   */
+  public async loadedTriplestoreTask() {
     // Generic query to find a triple in the triplestore
     const query = `
       SELECT * 
@@ -82,41 +103,14 @@ export class LoadedTriplestoreProvider implements vscode.WebviewViewProvider {
       LIMIT 1
       `;
     const queryResult = await queryEngine(query);
-    // Set Ping status to true if HTTP status code is 200
-    if (pingStatus === 200) {
-      // Check if there is no data in the JSON array
-      if (Object.keys(queryResult).length === 0) {
-        this.loadedTriplestoreTask(false);
-      } else {
-        this.loadedTriplestoreTask(true);
-      }
-      this.pingTriplestoreTask(true);
+    if (Object.keys(queryResult).length === 0) {
+      this.loaded = false;
     } else {
-      // Run the triplestore if not running if not running already.
-      this.runTriplestoreTask("startFuseki");
+      this.loaded = true;
     }
-  }
-
-  /**
-   * Set Ping RDF Triplestore task.
-   *
-   * @param success - The success boolean to set
-   */
-  private pingTriplestoreTask(success: boolean) {
-    let pingResult = { success: success };
-    const payload = pingResult;
-    this.sendMessage({ command: Commands.PING_TRIPLESTORE_TASK, payload });
-  }
-
-  /**
-   * Set Check RDF Triplestore task.
-   *
-   * @param success - The success boolean to set
-   */
-  private loadedTriplestoreTask(success: boolean) {
-    let checkTriplestoreResult = { success: success };
+    let checkTriplestoreResult = { success: this.loaded };
     const payload = checkTriplestoreResult;
-    this.sendMessage({ command: Commands.LOADED_TRIPLESTORE_TASK, payload });
+    this.sendMessage({ command: Commands.LOADED_TRIPLESTORE_TASK, payload: payload });
   }
 
   /**
@@ -124,11 +118,13 @@ export class LoadedTriplestoreProvider implements vscode.WebviewViewProvider {
    *
    * @param triplestore - The triplestore gradle task name to run to start the RDF Triplestore
    */
-  private runTriplestoreTask(triplestore: string) {
+  public runTriplestoreTask(triplestore: string) {
     this._gradleApi
       .getTaskProvider()
       .provideTasks()
       .then((tasks: vscode.Task[]) => {
+        console.log("tasks")
+        console.log(tasks)
         const taskToRun = tasks.find((task) => task.name === triplestore);
         if (taskToRun) {
           vscode.tasks.executeTask(taskToRun);

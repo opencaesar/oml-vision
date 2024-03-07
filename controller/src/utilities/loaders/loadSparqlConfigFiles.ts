@@ -30,6 +30,7 @@ export async function loadSparqlConfigFiles() {
               const content: Record<string,string> = JSON.parse(buffer.toString());
               if (file === "sparqlConfig.json") {
                 globalQueryEndpoint = content.queryEndpoint;
+                globalPingEndpoint = content.pingEndpoint;
                 globalUpdateEndpoint = content.updateEndpoint;
                 TreeDataProvider.getInstance().updateHasSparqlConfig(true);
               }

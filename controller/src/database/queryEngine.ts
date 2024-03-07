@@ -60,18 +60,15 @@ export const queryEngine = async (query: string): Promise<any> => {
 export const pingQueryEngine = async (): Promise<number> => {
   let endpoint = globalPingEndpoint;
 
-  // Use async/await to wait for the fetch operation to complete
-  const response = await fetch(endpoint, {
-    method: "POST",
-  });
-
-  // Check if the request was successful (status code 200-299)
-  if (response.ok) {
+  try {
+    // Use async/await to wait for the fetch operation to complete
+    const response = await fetch(endpoint, {
+      method: "POST",
+    });
     // Return the response status code
     return response.status;
-  } else {
-    // If there was an error, throw an error with the status code and text
-    console.error(`Error ${response.status}: ${response.statusText}`);
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  } catch (err) {
+    console.error(`Error: ${err}`);
+    return 404;
   }
 };

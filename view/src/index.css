@@ -196,11 +196,63 @@ body {
 
 /* START Loaded Triplestore Panel CODE */
 
-.setup-tasks-view {
+.loaded-triplestore-view {
   font-family: var(--font-family) !important;
   font-size: var(--font-size) !important;
   line-height: 1rem;
   padding: 0;
+}
+
+.loaded-triplestore-view {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-size) !important;
+  line-height: 1rem;
+  padding: 0;
+}
+
+.loaded-triplestore-view.scrollable,
+.loaded-triplestore-view .scrollable {
+  border-color: transparent;
+  transition: border-color 1s linear
+}
+
+.loaded-triplestore-view.scrollable:hover .scrollable,
+.loaded-triplestore-view.scrollable:focus-within .scrollable,
+.loaded-triplestore-view .scrollable:hover,
+.loaded-triplestore-view .scrollable:focus-within {
+  border-color: var(--vscode-scrollbarSlider-background);
+  transition: none;
+}
+
+.loaded-triplestore-view.preload .scrollable,
+.loaded-triplestore.preload.scrollable {
+  transition: none;
+}
+
+.loaded-triplestore-container {
+  max-height: 100vh;
+  overflow: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  font-weight: 500;
+  forced-color-adjust: none;
+  background-color: var(--vscode-sideBar-background);
+}
+
+.loaded-triplestore-container .p {
+  color: var(--vscode-sideBar-foreground);
+}
+
+.loaded-triplestore-container [aria-hidden='true'] {
+  display: none;
+}
+
+.loaded-triplestore-container p,
+.loaded-triplestore-container h2,
+.loaded-triplestore-container .nav-label,
+.loaded-triplestore-container .nav-list__content {
+  padding-left: var(--vision-gutter-width);
+  padding-right: var(--vision-scrollbar-gutter-width);
 }
 
 /* END Loaded Triplestore CODE */

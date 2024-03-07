@@ -1,79 +1,89 @@
-import React, { useEffect, useState } from 'react';
-import { postMessage } from '../utils/postMessage';
-import { Commands } from '../../../commands/src/commands';
-import { VscPlay } from 'react-icons/vsc'
-import Loader from '../components/shared/Loader';
+import React, { useEffect, useState } from "react";
+import { postMessage } from "../utils/postMessage";
+import { Commands } from "../../../commands/src/commands";
+import { VscDatabase, VscPlay } from "react-icons/vsc";
+import Loader from "../components/shared/Loader";
 
 const LoadedTriplestoreView: React.FC = () => {
-  const [isPreloading, setIsPreloading] = useState<boolean>(true);
-  const [isPinging, setIsPinging] = useState<boolean>(true);
   const [loadedTriplestore, setLoadedTriplestore] = useState<boolean>(false);
   const [pingedTriplestore, setPingedTriplestore] = useState<boolean>(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsPreloading(false);
-    }, 500)
-
-    postMessage({ command: Commands.CHECK_LOADED_TRIPLESTORE_TASK })
     const handler = (event: MessageEvent) => {
       const message = event.data;
 
       if (message.command === Commands.PING_TRIPLESTORE_TASK) {
         const pinged = message.payload;
-        setPingedTriplestore(pinged);
-        setIsPinging(false);
+        setPingedTriplestore(pinged.success);
       }
 
       if (message.command === Commands.LOADED_TRIPLESTORE_TASK) {
         const loaded = message.payload;
-        setLoadedTriplestore(loaded);
+        setLoadedTriplestore(loaded.success);
       }
     };
-    window.addEventListener('message', handler);
+    window.addEventListener("message", handler);
     return () => {
-      window.removeEventListener('message', handler);
+      window.removeEventListener("message", handler);
     };
-  }, []);
+  }, [pingedTriplestore, loadedTriplestore]);
 
-  const runGradleTask = (task: string) => {
-    postMessage({
-      command: Commands.RUN_GRADLE_TASK,
-      payload: task
-    });
-  }
+  useEffect(() => {
+    console.log("pingedTriplestore");
+    console.log(pingedTriplestore);
+  }, [pingedTriplestore]);
 
-  console.log("loadedTriplestore")
-  console.log(loadedTriplestore)
-  console.log("pingedTriplestore")
-  console.log(pingedTriplestore)
+  useEffect(() => {
+    console.log("loadedTriplestore");
+    console.log(loadedTriplestore);
+  }, [loadedTriplestore]);
 
   return (
-    <div className={`setup-tasks-view ${isPreloading ?? "preload"}`}>
-      <div className="setup-tasks-container scrollable">
-        <div className="setup-tasks-container__none">
-          <p className="my-[13px]"><a className="no-underline text-[#3792fa] hover:underline active:text-[#cccccc] underline" href="http://www.opencaesar.io/oml-vision-docs/">Read the official docs</a></p>
-          <p className="my-[13px]">Run the proper Gradle tasks to setup the OML Vision environment:</p>
+    <div className={`loaded-triplestore-view`}>
+      <div className="loaded-triplestore-container scrollable">
+        <div className="loaded-triplestore-container__none">
           <nav className="nav-list">
-            <h2 className="nav-list__title nav-label">Gradle Tasks</h2>
-            {/* @ts-ignore */}
-            {!isPinging ? gradleTasks.map(task => (
-              <button
-                className="nav-list__item"
-                title={`Run Gradle ${task}`}
-                aria-label={`Run Gradle ${task}`}
-                onClick={() => runGradleTask(task)}
-              >
-                <div className="nav-list__content">
-                  <VscPlay />
-                  <span className="nav-list__label">Run {task}</span>
-                </div>
-              </button>
-            )): 
-            <div className="flex justify-center mt-4">
-              <Loader />
-            </div>
-            }
+            <h2 className="nav-list__title nav-label">RDF Triplestore</h2>
+            {!pingedTriplestore ? (
+              <div className="nav-list__content">
+                <svg
+                  stroke="red"
+                  fill="red"
+                  strokeWidth={0}
+                  viewBox="0 0 1024 1024"
+                  height="1em"
+                  width="1em"
+                >
+                  <path d="M723 620.5C666.8 571.6 593.4 542 513 542s-153.8 29.6-210.1 78.6a8.1 8.1 0 0 0-.8 11.2l36 42.9c2.9 3.4 8 3.8 11.4.9C393.1 637.2 450.3 614 513 614s119.9 23.2 163.5 61.5c3.4 2.9 8.5 2.5 11.4-.9l36-42.9c2.8-3.3 2.4-8.3-.9-11.2zm117.4-140.1C751.7 406.5 637.6 362 513 362s-238.7 44.5-327.5 118.4a8.05 8.05 0 0 0-1 11.3l36 42.9c2.8 3.4 7.9 3.8 11.2 1C308 472.2 406.1 434 513 434s205 38.2 281.2 101.6c3.4 2.8 8.4 2.4 11.2-1l36-42.9c2.8-3.4 2.4-8.5-1-11.3zm116.7-139C835.7 241.8 680.3 182 511 182c-168.2 0-322.6 59-443.7 157.4a8 8 0 0 0-1.1 11.4l36 42.9c2.8 3.3 7.8 3.8 11.1 1.1C222 306.7 360.3 254 511 254c151.8 0 291 53.5 400 142.7 3.4 2.8 8.4 2.3 11.2-1.1l36-42.9c2.9-3.4 2.4-8.5-1.1-11.3zM448 778a64 64 0 1 0 128 0 64 64 0 1 0-128 0z" />
+                </svg>
+                <span className="nav-list__label">PING STATUS</span>
+              </div>
+            ) : (
+              <div className="nav-list__content">
+                <svg
+                  stroke="green"
+                  fill="green"
+                  strokeWidth={0}
+                  viewBox="0 0 1024 1024"
+                  height="1em"
+                  width="1em"
+                >
+                  <path d="M723 620.5C666.8 571.6 593.4 542 513 542s-153.8 29.6-210.1 78.6a8.1 8.1 0 0 0-.8 11.2l36 42.9c2.9 3.4 8 3.8 11.4.9C393.1 637.2 450.3 614 513 614s119.9 23.2 163.5 61.5c3.4 2.9 8.5 2.5 11.4-.9l36-42.9c2.8-3.3 2.4-8.3-.9-11.2zm117.4-140.1C751.7 406.5 637.6 362 513 362s-238.7 44.5-327.5 118.4a8.05 8.05 0 0 0-1 11.3l36 42.9c2.8 3.4 7.9 3.8 11.2 1C308 472.2 406.1 434 513 434s205 38.2 281.2 101.6c3.4 2.8 8.4 2.4 11.2-1l36-42.9c2.8-3.4 2.4-8.5-1-11.3zm116.7-139C835.7 241.8 680.3 182 511 182c-168.2 0-322.6 59-443.7 157.4a8 8 0 0 0-1.1 11.4l36 42.9c2.8 3.3 7.8 3.8 11.1 1.1C222 306.7 360.3 254 511 254c151.8 0 291 53.5 400 142.7 3.4 2.8 8.4 2.3 11.2-1.1l36-42.9c2.9-3.4 2.4-8.5-1.1-11.3zM448 778a64 64 0 1 0 128 0 64 64 0 1 0-128 0z" />
+                </svg>
+                <span className="nav-list__label">PING STATUS</span>
+              </div>
+            )}
+            {!loadedTriplestore ? (
+              <div className="nav-list__content">
+                <VscDatabase style={{ color: "red" }} />
+                <span className="nav-list__label">LOAD STATUS</span>
+              </div>
+            ) : (
+              <div className="nav-list__content">
+                <VscDatabase style={{ color: "green" }} />
+                <span className="nav-list__label">LOAD STATUS</span>
+              </div>
+            )}
           </nav>
         </div>
       </div>

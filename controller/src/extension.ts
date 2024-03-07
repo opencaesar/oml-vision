@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
       TablePanel.createOrShow(context.extensionPath, {
         title: "OML Vision Home",
         path: "/",
-        type: "home"
+        type: "home",
       });
     })
   );
@@ -154,7 +154,11 @@ export function activate(context: vscode.ExtensionContext) {
         payload,
       });
     } else {
-      TablePanel.createOrShow(context.extensionPath, diagramWebviewType, payload);
+      TablePanel.createOrShow(
+        context.extensionPath,
+        diagramWebviewType,
+        payload
+      );
     }
   };
 
@@ -315,7 +319,10 @@ export function activate(context: vscode.ExtensionContext) {
    * This method uses the {@link https://code.visualstudio.com/api/extension-guides/tree-view| Tree View API}
    */
   const treeDataProvider = TreeDataProvider.getInstance();
-  vscode.window.registerTreeDataProvider("vision-webview-pages", treeDataProvider);
+  vscode.window.registerTreeDataProvider(
+    "vision-webview-pages",
+    treeDataProvider
+  );
 
   /*** START set up Vision repo context ***/
   vscode.commands.executeCommand("setContext", "vision:hasBuildFolder", false);
@@ -329,22 +336,6 @@ export function activate(context: vscode.ExtensionContext) {
   let sparqlConfigFolderWatcher = vscode.workspace.createFileSystemWatcher(
     "**/src/vision/config/*.json"
   );
-
-  // TODO: Assumes fuseki for now.  Change to accomodate other triplestores
-  let triplestoreLogFileWatcher = vscode.workspace.createFileSystemWatcher(
-    "**/.fuseki/fuseki.log"
-  )
-
-  // Watch for changes in SPARQL files
-  triplestoreLogFileWatcher.onDidChange(() => {
-    console.log("changed")
-  });
-  triplestoreLogFileWatcher.onDidCreate(() => {
-    console.log("created")
-  });
-  triplestoreLogFileWatcher.onDidDelete(() => {
-    console.log("deleted")
-  });
 
   // Watch for creation of 'build' folder
   buildFolderWatcher.onDidCreate(() => {
@@ -428,8 +419,38 @@ export function activate(context: vscode.ExtensionContext) {
         loadedTriplestoreProvider
       )
     );
+    // TODO: Assumes fuseki for now.  Change to accomodate other triplestores
+    let triplestoreLogFileWatcher = vscode.workspace.createFileSystemWatcher(
+      "**/.fuseki/fuseki.log"
+    );
+
+    // Watch for changes in SPARQL files
+    triplestoreLogFileWatcher.onDidChange(() => {
+      console.log("changed");
+      loadedTriplestoreProvider.pingTriplestoreTask();
+    });
+    triplestoreLogFileWatcher.onDidCreate(() => {
+      console.log("created");
+      loadedTriplestoreProvider.pingTriplestoreTask();
+    });
+    triplestoreLogFileWatcher.onDidDelete(() => {
+      console.log("deleted");
+      loadedTriplestoreProvider.pingTriplestoreTask();
+    });
+
+    // Define a function to execute the Ping task
+    const runPingTask = async () => {
+      try {
+        await loadedTriplestoreProvider.pingTriplestoreTask();
+      } catch (err) {
+        console.error(`Error: ${err}`);
+      }
+    };
+
+    // Run the Ping task every second
+    setInterval(runPingTask, 1000);
   });
-  
+
   /* END Sidebar Providers CODE */
 }
 
