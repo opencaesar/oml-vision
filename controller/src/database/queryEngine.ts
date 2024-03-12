@@ -1,8 +1,10 @@
 import { QueryEngine } from "@comunica/query-sparql";
 import {
   globalQueryEndpoint,
-  globalUpdateEndpoint,
+  globalPingEndpoint,
+  globalUpdateEndpoint
 } from "../utilities/loaders/loadSparqlConfigFiles";
+import ITriplestoreStatus from "../interfaces/ITriplestoreStatus";
 
 /**  
     This async function creates a new query engine.  
@@ -49,3 +51,48 @@ export const queryEngine = async (query: string): Promise<any> => {
     });
   }
 };
+
+/**  
+    This async function pings a query engine.  
+    This allows OML Vision to talk with the RDF triplestore.
+    @remarks For more information, go here: https://comunica.dev/docs/query/getting_started/query_app/
+    @returns The HTTP status code as a number from the ping operation in a Promise object
+ */
+export const pingQueryEngine = async (): Promise<number> => {
+  let endpoint = globalPingEndpoint;
+
+  try {
+    // Use async/await to wait for the fetch operation to complete
+    const response = await fetch(endpoint, {
+      method: "POST",
+    });
+    // Return the response status code
+    return response.status;
+  } catch (err) {
+    console.error(`Error: ${err}`);
+    return 404;
+  }
+};
+
+// /**  
+//     This async function gets the status of a query engine.  
+//     This allows OML Vision to talk with the RDF triplestore.
+//     @remarks For more information, go here: https://comunica.dev/docs/query/getting_started/query_app/
+//     @returns The HTTP status code as a number from the ping operation in a Promise object
+//     @todo TODO: Use this function for getting status of triplestore. Must add globalStatusEndpoint as well
+//  */
+//     export const getQueryEngineStatus = async (): Promise<{} | ITriplestoreStatus> => {
+//       let endpoint = globalStatusEndpoint;
+    
+//       try {
+//         // Use async/await to wait for the fetch operation to complete
+//         const response = await fetch(endpoint, {
+//           method: "GET",
+//         });
+//         // Return the response status code
+//         return response.json();
+//       } catch (err) {
+//         console.error(`Error: ${err}`);
+//         return {};
+//       }
+//     };

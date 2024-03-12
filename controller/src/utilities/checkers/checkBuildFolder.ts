@@ -1,8 +1,8 @@
 import { workspace, Uri, commands, FileType } from "vscode";
-import { SidebarProvider } from "../../Sidebar";
+import { TreeDataProvider } from "../../sidebar/TreeDataProvider";
 
 // TODO: handle multiple workspaces (currently assumes model is in the 1st)
-export async function checkBuildFolder(sidebarProvider: SidebarProvider) {
+export async function checkBuildFolder(TreeDataProvider: TreeDataProvider) {
 	let hasBuildFolder = false;
 	let workspaceFolders = workspace.workspaceFolders;
 	if (workspaceFolders) {
@@ -16,5 +16,5 @@ export async function checkBuildFolder(sidebarProvider: SidebarProvider) {
 		}
 	}
 	commands.executeCommand('setContext', 'vision:hasBuildFolder', hasBuildFolder);
-	sidebarProvider.updateHasBuildFolder(hasBuildFolder);
+	TreeDataProvider.updateHasBuildFolder(hasBuildFolder);
 }

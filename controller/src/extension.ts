@@ -1,14 +1,17 @@
 import * as vscode from "vscode";
 import { CommandDefinitions, Commands } from "../../commands/src/commands";
 import IWebviewType from "../../commands/src/interfaces/IWebviewType";
-import { SidebarProvider } from "./Sidebar";
-import { SetupTasksProvider } from "./SetupTasksProvider";
 import { generatePropertySheet } from "./sparql/data-manager/generateDataUtils";
 import { SparqlClient } from "./sparql/SparqlClient";
 import ITableData from "../../view/src/interfaces/ITableData";
 import { getIriTypes } from "./sparql/queries/GetIriTypes";
 import { LayoutPaths } from "../../commands/src/interfaces/LayoutPaths";
 import ITableCategory from "../../commands/src/interfaces/ITableCategory";
+
+// Sidebar functions
+import { TreeDataProvider } from "./sidebar/TreeDataProvider";
+import { SetupTasksProvider } from "./sidebar/SetupTasksProvider";
+import { TriplestoreStatusProvider } from "./sidebar/TriplestoreStatusProvider";
 
 // Utilities functions
 import { checkBuildFolder } from "./utilities/checkers/checkBuildFolder";
@@ -39,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
       TablePanel.createOrShow(context.extensionPath, {
         title: "OML Vision Home",
         path: "/",
-        type: "home"
+        type: "home",
       });
     })
   );
@@ -151,7 +154,11 @@ export function activate(context: vscode.ExtensionContext) {
         payload,
       });
     } else {
-      TablePanel.createOrShow(context.extensionPath, diagramWebviewType, payload);
+      TablePanel.createOrShow(
+        context.extensionPath,
+        diagramWebviewType,
+        payload
+      );
     }
   };
 
@@ -305,8 +312,17 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // default the 'hasBuildFolder' and 'hasPageLayout' and 'hasSparqlConfig' properties to false in the Sidebar
-  const sidebarProvider = SidebarProvider.getInstance();
-  vscode.window.registerTreeDataProvider("vision-pages", sidebarProvider);
+  /**
+   * Register Tree Data to show data in the sidebar
+   *
+   * @remarks
+   * This method uses the {@link https://code.visualstudio.com/api/extension-guides/tree-view| Tree View API}
+   */
+  const treeDataProvider = TreeDataProvider.getInstance();
+  vscode.window.registerTreeDataProvider(
+    "vision-webview-pages",
+    treeDataProvider
+  );
 
   /*** START set up Vision repo context ***/
   vscode.commands.executeCommand("setContext", "vision:hasBuildFolder", false);
@@ -324,7 +340,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Watch for creation of 'build' folder
   buildFolderWatcher.onDidCreate(() => {
     vscode.commands.executeCommand("setContext", "vision:hasBuildFolder", true);
-    sidebarProvider.updateHasBuildFolder(true);
+    treeDataProvider.updateHasBuildFolder(true);
   });
 
   // Watch for deletion of 'build' folder
@@ -334,12 +350,12 @@ export function activate(context: vscode.ExtensionContext) {
       "vision:hasBuildFolder",
       false
     );
-    sidebarProvider.updateHasBuildFolder(false);
+    treeDataProvider.updateHasBuildFolder(false);
   });
   context.subscriptions.push(buildFolderWatcher);
 
   // Check if 'build' folder exists on start
-  checkBuildFolder(sidebarProvider);
+  checkBuildFolder(treeDataProvider);
 
   // Load all files initially
   loadSparqlFiles(globalSparqlContents).catch((err) => {
@@ -374,7 +390,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(sparqlConfigFolderWatcher);
   /*** END Vision context creation ***/
 
-  /* START Setup Tasks Provider CODE */
+  /* START Sidebar Providers CODE */
   const gradleForJavaExtension = vscode.extensions.getExtension(
     "vscjava.vscode-gradle"
   );
@@ -393,8 +409,46 @@ export function activate(context: vscode.ExtensionContext) {
         setupTasksProvider
       )
     );
+    const triplestoreStatusProvider = new TriplestoreStatusProvider(
+      context.extensionPath,
+      gradleApi
+    );
+    context.subscriptions.push(
+      vscode.window.registerWebviewViewProvider(
+        TriplestoreStatusProvider.viewType,
+        triplestoreStatusProvider
+      )
+    );
+    // TODO: Assumes fuseki for now.  Change to accomodate other triplestores
+    let triplestoreLogFileWatcher = vscode.workspace.createFileSystemWatcher(
+      "**/.fuseki/fuseki.log"
+    );
+
+    // Watch for changes in triplestore log file
+    triplestoreLogFileWatcher.onDidChange(() => {
+      triplestoreStatusProvider.pingTriplestoreTask();
+    });
+    triplestoreLogFileWatcher.onDidCreate(() => {
+      triplestoreStatusProvider.pingTriplestoreTask();
+    });
+    triplestoreLogFileWatcher.onDidDelete(() => {
+      triplestoreStatusProvider.pingTriplestoreTask();
+    });
+
+    // Define a function to execute the Ping task
+    const runPingTask = async () => {
+      try {
+        await triplestoreStatusProvider.pingTriplestoreTask();
+      } catch (err) {
+        console.error(`Error: ${err}`);
+      }
+    };
+
+    // Run the Ping task every second
+    setInterval(runPingTask, 1000);
   });
-  /* END Setup Tasks Provider CODE */
+
+  /* END Sidebar Providers CODE */
 }
 
 // TODO: Implement cloneSelectedRows in commands

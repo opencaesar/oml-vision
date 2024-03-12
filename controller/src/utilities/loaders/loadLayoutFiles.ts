@@ -1,5 +1,5 @@
 import { workspace, Uri, commands, window, FileType } from "vscode";
-import { SidebarProvider } from "../../Sidebar";
+import { TreeDataProvider } from "../../sidebar/TreeDataProvider";
 import { TablePanel } from "../../panels/TablePanel";
 import { PropertyPanelProvider } from "../../panels/PropertyPanelProvider";
 // TODO: handle multiple workspaces (currently assumes model is in the 1st)
@@ -17,7 +17,7 @@ export const loadLayoutFiles = async (layoutContents: {
   [file: string]: any;
 }) => {
   commands.executeCommand("setContext", "vision:hasPageLayout", false);
-  SidebarProvider.getInstance().updateHasPageLayout(false);
+  TreeDataProvider.getInstance().updateHasPageLayout(false);
 
   const workspaceFolders = workspace.workspaceFolders;
   if (workspaceFolders) {
@@ -56,8 +56,8 @@ const loadPageFile = async (
         const buffer = await workspace.fs.readFile(fileUri);
         const content = JSON.parse(buffer.toString());
         try {
-          SidebarProvider.getInstance().updateLayouts(content);
-          SidebarProvider.getInstance().updateHasPageLayout(true);
+          TreeDataProvider.getInstance().updateLayouts(content);
+          TreeDataProvider.getInstance().updateHasPageLayout(true);
           layoutContents[file] = content;
         } catch (parseErr) {
           layoutContents = {};
