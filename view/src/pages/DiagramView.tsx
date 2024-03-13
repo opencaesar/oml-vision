@@ -30,17 +30,19 @@ const DiagramView: React.FC = () => {
 
     let diagramLayouts: any = {};
 
-    // layouts[LayoutPaths.Pages][1]["children"] comes from pages.json file structure and key-value pairs
-    layouts[LayoutPaths.Pages][1]["children"].forEach((diagram: any) => {
-      if (diagram.type === "diagram") {
-        // Locally scoped variable which is used to set the key of the JSON object
-        let _path = "";
-        // Path comes from the pages.json file with the .json file identifier
-        _path = diagram.path + ".json";
-        // Use object spread to merge all diagrams into diagramLayouts object
-        diagramLayouts = {...diagramLayouts, ...layouts[_path]};
-      }
-    });
+    // layouts[LayoutPaths.Pages] comes from the pages.json file structure and key-value pairs
+    layouts[LayoutPaths.Pages].forEach((layout: any) => {
+      layout.children?.forEach((page: any) => {
+        if (page.type === "diagram") {
+          // Locally scoped variable which is used to set the key of the JSON object
+          let _path = "";
+          // Path comes from the pages.json file with the .json file identifier
+          _path = page.path + ".json";
+          // Use object spread to merge all tables into tableLayouts object
+          diagramLayouts = { ...diagramLayouts, ...layouts[_path] };
+        }
+      });
+    })
 
     const root = document.getElementById("root");
     let webviewPath = root?.getAttribute("data-webview-path") || "";

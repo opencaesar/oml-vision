@@ -4,13 +4,19 @@ All notable changes to the "oml-vision" extension will be documented in this fil
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [v0.3.0]
+## v0.3.0 - Venus
+
+## v0.2.5 - Caloris Basin
+
+### Fixed
+- Table, Tree, and Diagram Views: cannot generate a view when there are more than 2 sets of layouts objects that contain the "children" attribute in the pages.json file https://github.com/opencaesar/oml-vision/pull/37
 
 ### Added
 - Table, Tree, and Diagram Views: refactor layouts to support viewpoint definitions for each page https://github.com/opencaesar/oml-vision/pull/33
 - Sidebar: add UI indication that data has been loaded into Fuseki RDF Triplestore https://github.com/opencaesar/oml-vision/pull/34
+- Tree View: add ability to specify and edits columns https://github.com/opencaesar/oml-vision/pull/36
 
-## [v0.2.0]
+## v0.2.0 - Mercury
 
 ### Fixed
 - Tree View: shows VSCode error popup with Tree UI bugs https://github.com/opencaesar/oml-vision/pull/5
@@ -24,7 +30,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Diagram View: Add ability to automatically apply a position layout to nodes and edges https://github.com/opencaesar/oml-vision/pull/25
 - Diagram View: Add ability to apply a layout algorithm to nodes and edges https://github.com/opencaesar/oml-vision/pull/27
 
-## [0.1.0]
+## 0.1.0
 
 ### Added
 - Initial release
