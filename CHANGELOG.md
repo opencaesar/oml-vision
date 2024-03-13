@@ -4,6 +4,8 @@ All notable changes to the "oml-vision" extension will be documented in this fil
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs/changelog)
+
 ## v0.3.0 - Venus
 
 ## v0.2.5 - Caloris Basin

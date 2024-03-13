@@ -81,7 +81,7 @@ const HomeView: React.FC<{}> = () => {
 
         {/* top-right text */}
         <h1 className="absolute top-0 right-2.5 text-lg text-[color:var(--vscode-settings-textInputForeground)]">{title}</h1><br/>
-        <h3 className="absolute bottom-0 right-2.5 text-xs text-[color:var(--vscode-settings-textInputForeground)]"><IconVisibleShow className="inline" /> {version}</h3>
+        <h3 className="absolute bottom-0 right-2.5 text-xs text-[color:var(--vscode-settings-textInputForeground)]"><IconVisibleShow className="inline" /> v{version}</h3>
       </div>
 
       {/* Links for each view */}
