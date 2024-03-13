@@ -24,17 +24,19 @@ const TableView: React.FC = () => {
 
     let tableLayouts: any = {};
 
-    // layouts[LayoutPaths.Pages][1]["children"] comes from pages.json file structure and key-value pairs
-    layouts[LayoutPaths.Pages][1]["children"].forEach((table: any) => {
-      if (table.type === "table") {
-        // Locally scoped variable which is used to set the key of the JSON object
-        let _path = "";
-        // Path comes from the pages.json file with the .json file identifier
-        _path = table.path + ".json";
-        // Use object spread to merge all tables into tableLayouts object
-        tableLayouts = { ...tableLayouts, ...layouts[_path] };
-      }
-    });
+    // layouts[LayoutPaths.Pages] comes from the pages.json file structure and key-value pairs
+    layouts[LayoutPaths.Pages].forEach((layout: any) => {
+      layout.children?.forEach((page: any) => {
+        if (page.type === "table") {
+          // Locally scoped variable which is used to set the key of the JSON object
+          let _path = "";
+          // Path comes from the pages.json file with the .json file identifier
+          _path = page.path + ".json";
+          // Use object spread to merge all tables into tableLayouts object
+          tableLayouts = { ...tableLayouts, ...layouts[_path] };
+        }
+      });
+    })
 
     const root = document.getElementById("root");
     let webviewPath = root?.getAttribute("data-webview-path") || "";
