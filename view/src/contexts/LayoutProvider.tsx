@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { LayoutPaths } from '../../../commands/src/interfaces/LayoutPaths';
-export { LayoutPaths } from '../../../commands/src/interfaces/LayoutPaths';
+import { ViewpointPaths } from '../../../commands/src/interfaces/ViewpointPaths';
+export { ViewpointPaths } from '../../../commands/src/interfaces/ViewpointPaths';
 import { postMessage } from '../utils/postMessage';
 import { CommandStructures, Commands } from '../../../commands/src/commands';
 
@@ -24,14 +24,14 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const handler = (event: MessageEvent) => {
       const { command, payload } = event.data;
     
-      if (command === Commands.SEND_LAYOUTS) {
-        const layoutContents = payload as CommandStructures[Commands.SEND_LAYOUTS]['payload'];
+      if (command === Commands.SEND_VIEWPOINTS) {
+        const layoutContents = payload as CommandStructures[Commands.SEND_VIEWPOINTS]['payload'];
         let prefixes: Record<string, string> = {};
-    
-        // If LayoutPaths.Prefixes exists in layoutContents, move it to prefixes
-        if (layoutContents.hasOwnProperty(LayoutPaths.Prefixes)) {
-          prefixes = layoutContents[LayoutPaths.Prefixes] as Record<string, string>;
-          delete layoutContents[LayoutPaths.Prefixes]; // Remove it from the layoutContents
+
+        // If ViewpointPaths.Prefixes exists in layoutContents, move it to prefixes
+        if (layoutContents.hasOwnProperty(ViewpointPaths.Prefixes)) {
+          prefixes = layoutContents[ViewpointPaths.Prefixes] as Record<string, string>;
+          delete layoutContents[ViewpointPaths.Prefixes]; // Remove it from the layoutContents
         }
     
         setLayouts({ layouts: layoutContents, prefixes, isLoadingLayoutContext: false });
@@ -41,7 +41,7 @@ export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Ask for data every time the component is mounted or updated
     postMessage({
-      command: Commands.ASK_FOR_LAYOUTS
+      command: Commands.ASK_FOR_VIEWPOINTS
     });
 
     return () => {

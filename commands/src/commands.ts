@@ -7,17 +7,17 @@ export enum Commands {
   INFORM = "inform",
 
   // Table Panel Commands
-  CREATE_TABLE = "createTable",
-  ROW_CLICKED = "rowClicked",
-  HIDE_PROPERTIES = "hideProperties",
-  ASK_FOR_LAYOUTS = "askForLayouts",
-  GENERATE_TABLE_DATA = "generateTableData",
-  UPDATE_CM_STATE = "updateCmState",
-  REFRESH_TABLE_DATA = "refreshTableData",
-  GET_ELEMENT_DEPENDENCIES = "getElementDependencies",
-  EXECUTE_CREATE_ELEMENTS = "executeCreateElements",
-  EXECUTE_DELETE_ELEMENTS = "executeDeleteElements",
-  CREATE_FCR = "createFCR",
+  CREATE_TABLE = 'createTable',
+  ROW_CLICKED = 'rowClicked',
+  HIDE_PROPERTIES = 'hideProperties',
+  ASK_FOR_VIEWPOINTS = 'askForViewpoints',
+  GENERATE_TABLE_DATA = 'generateTableData',
+  UPDATE_CM_STATE = 'updateCmState',
+  REFRESH_TABLE_DATA = 'refreshTableData',
+  GET_ELEMENT_DEPENDENCIES = 'getElementDependencies',
+  EXECUTE_CREATE_ELEMENTS = 'executeCreateElements',
+  EXECUTE_DELETE_ELEMENTS = 'executeDeleteElements',
+  CREATE_FCR = 'createFCR',
 
   // Property Panel Commands
   ASK_FOR_PROPERTIES = "askForProperties",
@@ -36,17 +36,17 @@ export enum Commands {
   PING_TRIPLESTORE_TASK = "pingTriplestoreTask",
 
   // Extension To Table Panel Commands
-  UPDATE_LOCAL_VALUE = "updateLocalValue",
-  SEND_LAYOUTS = "sendLayouts",
-  OPEN_WIZARD = "openWizard",
-  CREATE_FILTERED_DIAGRAM = "createFilteredDiagram",
-  LOADED_PROPERTY_SHEET = "loadedPropertySheet",
-  LOADED_TABLE_DATA = "loadedTableData",
-  LOADED_ELEMENT_DEPENDENCIES = "loadedElementDependencies",
-  DELETED_ELEMENTS = "deletedElements",
-  CREATED_ELEMENT = "createdElement",
-  CLONED_ELEMENTS = "clonedElements",
-  SHOW_PROPERTIES = "showProperties",
+  UPDATE_LOCAL_VALUE = 'updateLocalValue',
+  SEND_VIEWPOINTS = 'sendViewpoints',
+  OPEN_WIZARD = 'openWizard',
+  CREATE_FILTERED_DIAGRAM = 'createFilteredDiagram',
+  LOADED_PROPERTY_SHEET = 'loadedPropertySheet',
+  LOADED_TABLE_DATA = 'loadedTableData',
+  LOADED_ELEMENT_DEPENDENCIES = 'loadedElementDependencies',
+  DELETED_ELEMENTS = 'deletedElements',
+  CREATED_ELEMENT = 'createdElement',
+  CLONED_ELEMENTS = 'clonedElements',
+  SHOW_PROPERTIES = 'showProperties',
 }
 
 export type CommandStructures = {
@@ -63,7 +63,7 @@ export type CommandStructures = {
     payload: string;
   };
   [Commands.HIDE_PROPERTIES]: {};
-  [Commands.ASK_FOR_LAYOUTS]: {};
+  [Commands.ASK_FOR_VIEWPOINTS]: {};
   [Commands.GENERATE_TABLE_DATA]: {
     payload: { webviewPath: string; queries: Record<string, string> };
     wizardId?: string;
@@ -121,8 +121,8 @@ export type CommandStructures = {
     };
   };
   [Commands.UPDATE_LOCAL_VALUE]: {};
-  [Commands.SEND_LAYOUTS]: {
-    payload: { [filename: string]: Record<string, string> | any[] };
+  [Commands.SEND_VIEWPOINTS]: {
+    payload: { [filename: string]: Record<string, string> | any[] }
   };
   [Commands.OPEN_WIZARD]: {
     payload: {

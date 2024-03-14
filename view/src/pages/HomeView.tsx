@@ -6,7 +6,7 @@ import { Commands } from "../../../commands/src/commands";
 import { IconVisibleShow, IconSearch } from "@nasa-jpl/react-stellar";
 import Loader from "../components/shared/Loader";
 import { SubmenuData } from "../interfaces/SubmenuData";
-import { LayoutPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
 import packageJson from "../../../package.json"
 
 const MAX_SEARCH_SUGGESTIONS = 4;
@@ -23,8 +23,8 @@ const HomeView: React.FC<{}> = () => {
   useEffect(() => {
     if (isLoadingLayoutContext) return;
 
-    const tableLayouts = layouts[LayoutPaths.Pages] ?? [];
-    setSubmenuData(tableLayouts.filter((item: any) => ('title' in item && 'children' in item && 'iconUrl' in item)));
+    const webviewViewpoints = layouts[ViewpointPaths.Pages] ?? [];
+    setSubmenuData(webviewViewpoints.filter((item: any) => ('title' in item && 'children' in item && 'iconUrl' in item)));
     setIsLoading(false);
   }, [layouts, isLoadingLayoutContext]);
 

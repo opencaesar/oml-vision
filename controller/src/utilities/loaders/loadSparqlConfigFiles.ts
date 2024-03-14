@@ -12,7 +12,7 @@ export async function loadSparqlConfigFiles() {
     const workspaceFolders = workspace.workspaceFolders;
     if (workspaceFolders) {
       const uri = workspaceFolders[0].uri;
-      const layoutsFolderUri = Uri.joinPath(
+      const configFolderUri = Uri.joinPath(
         uri,
         "src",
         "vision",
@@ -20,11 +20,11 @@ export async function loadSparqlConfigFiles() {
       );
   
       try {
-        const files = await workspace.fs.readDirectory(layoutsFolderUri);
+        const files = await workspace.fs.readDirectory(configFolderUri);
   
         for (const [file, type] of files) {
           if (file.endsWith(".json") && type === FileType.File) {
-            const fileUri = Uri.joinPath(layoutsFolderUri, file);
+            const fileUri = Uri.joinPath(configFolderUri, file);
             const buffer = await workspace.fs.readFile(fileUri);
             try {
               const content: Record<string,string> = JSON.parse(buffer.toString());

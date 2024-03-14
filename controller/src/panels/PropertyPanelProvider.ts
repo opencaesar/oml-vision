@@ -13,7 +13,7 @@ import {
   CommandDefinitions,
   Commands,
 } from "../../../commands/src/commands";
-import { globalLayoutContents } from "../extension";
+import { globalViewpointContents } from "../extension";
 /**
  * Manages react-based webview for the Property page
  */
@@ -103,10 +103,10 @@ export class PropertyPanelProvider implements WebviewViewProvider {
     }
   }
 
-  public static updateLayouts() {
+  public static updateViewpoints() {
     this._instance?.sendMessage({
-      command: Commands.SEND_LAYOUTS,
-      payload: globalLayoutContents,
+      command: Commands.SEND_VIEWPOINTS,
+      payload: globalViewpointContents,
     });
   }
 }

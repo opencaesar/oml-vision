@@ -5,28 +5,28 @@ import { PropertyPanelProvider } from "../../panels/PropertyPanelProvider";
 // TODO: handle multiple workspaces (currently assumes model is in the 1st)
 
 /**
- * Loads JSON files that are stored in the layouts folder of the model.
+ * Loads JSON files that are stored in the viewpoints folder of the model.
  *
  * @remarks
  * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
  *
- * @param layoutContents - content of the layout object
+ * @param viewpointContents - content of the viewpoint object
  *
  */
-export const loadLayoutFiles = async (layoutContents: {
+export const loadViewpointFiles = async (viewpointContents: {
   [file: string]: any;
 }) => {
-  commands.executeCommand("setContext", "vision:hasPageLayout", false);
-  TreeDataProvider.getInstance().updateHasPageLayout(false);
+  commands.executeCommand("setContext", "vision:hasPageViewpoint", false);
+  TreeDataProvider.getInstance().updateHasPageViewpoint(false);
 
   const workspaceFolders = workspace.workspaceFolders;
   if (workspaceFolders) {
     const uri = workspaceFolders[0].uri;
-    loadPageFile(uri, layoutContents);
-    loadTableFiles(uri, layoutContents);
-    loadTreeFiles(uri, layoutContents);
-    loadDiagramFiles(uri, layoutContents);
-    loadPropertyFiles(uri, layoutContents);
+    loadPageFile(uri, viewpointContents);
+    loadTableFiles(uri, viewpointContents);
+    loadTreeFiles(uri, viewpointContents);
+    loadDiagramFiles(uri, viewpointContents);
+    loadPropertyFiles(uri, viewpointContents);
   }
 };
 
@@ -37,17 +37,17 @@ export const loadLayoutFiles = async (layoutContents: {
  * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
  *
  * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
- * @param layoutContents - content of the layout object
+ * @param viewpointContents - content of the viewpoint object
  *
  */
 const loadPageFile = async (
   uri: Uri,
-  layoutContents: {
+  viewpointContents: {
     [file: string]: any;
   }
 ) => {
   // Uri is required for VSCode extension to determine path to file or folder
-  const pageFolderUri = Uri.joinPath(uri, "src", "vision", "layouts");
+  const pageFolderUri = Uri.joinPath(uri, "src", "vision", "viewpoints");
 
   try {
     const files = await workspace.fs.readDirectory(pageFolderUri);
@@ -57,13 +57,13 @@ const loadPageFile = async (
         const buffer = await workspace.fs.readFile(fileUri);
         const content = JSON.parse(buffer.toString());
         try {
-          TreeDataProvider.getInstance().updateLayouts(content);
-          TreeDataProvider.getInstance().updateHasPageLayout(true);
-          layoutContents[file] = content;
+          TreeDataProvider.getInstance().updateViewpoints(content);
+          TreeDataProvider.getInstance().updateHasPageViewpoint(true);
+          viewpointContents[file] = content;
         } catch (parseErr) {
-          layoutContents = {};
+          viewpointContents = {};
           throw new Error(
-            `Error parsing table layout file ${file}: ${parseErr}`
+            `Error parsing table viewpoint file ${file}: ${parseErr}`
           );
         }
       }
@@ -71,28 +71,28 @@ const loadPageFile = async (
   } catch (err) {
     if (
       err instanceof Error &&
-      err.message.startsWith("Error parsing layout file")
+      err.message.startsWith("Error parsing viewpoint file")
     )
       window.showErrorMessage(err.message);
     else {
-      window.showErrorMessage(`Error reading layout files: ${err}`);
+      window.showErrorMessage(`Error reading viewpoint files: ${err}`);
     }
   }
 };
 
 /**
- * Loads table layouts from the tables directory.
+ * Loads table viewpoints from the tables directory.
  *
  * @remarks
  * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
  *
  * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
- * @param layoutContents - content of the layout object
+ * @param viewpointContents - content of the viewpoint object
  *
  */
 const loadTableFiles = async (
   uri: Uri,
-  layoutContents: {
+  viewpointContents: {
     [file: string]: any;
   }
 ) => {
@@ -101,7 +101,7 @@ const loadTableFiles = async (
     uri,
     "src",
     "vision",
-    "layouts",
+    "viewpoints",
     "tables"
   );
 
@@ -109,92 +109,102 @@ const loadTableFiles = async (
     const files = await workspace.fs.readDirectory(tableFolderUri);
     for (const [file, type] of files) {
       if (file.endsWith(".json") && type === FileType.File) {
-        setLayoutContent(tableFolderUri, file, layoutContents);
+        setviewpointContent(tableFolderUri, file, viewpointContents);
       }
     }
     if (files.length > 0) {
-      commands.executeCommand("setContext", "vision:hasPageLayout", true);
-      window.showInformationMessage("Table Layout files loaded successfully.");
+      commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
+      window.showInformationMessage(
+        "Table viewpoint files loaded successfully."
+      );
     } else {
-      window.showWarningMessage("Table Layout files not found.");
+      window.showWarningMessage("Table viewpoint files not found.");
     }
   } catch (err) {
     if (
       err instanceof Error &&
-      err.message.startsWith("Error parsing table layout file")
+      err.message.startsWith("Error parsing table viewpoint file")
     )
       window.showErrorMessage(err.message);
     else {
-      window.showErrorMessage(`Error reading table layout files: ${err}`);
+      window.showErrorMessage(`Error reading table viewpoint files: ${err}`);
     }
   } finally {
-    // Send updated global layouts to TablePanels & PropertyPanel
-    TablePanel.updateLayouts();
-    PropertyPanelProvider.updateLayouts();
+    // Send updated global viewpoints to TablePanels & PropertyPanel
+    TablePanel.updateViewpoints();
+    PropertyPanelProvider.updateViewpoints();
   }
 };
 
 /**
- * Loads tree layouts from the trees directory.
+ * Loads tree viewpoints from the trees directory.
  *
  * @remarks
  * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
  *
  * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
- * @param layoutContents - content of the layout object
+ * @param viewpointContents - content of the viewpoint object
  *
  */
 const loadTreeFiles = async (
   uri: Uri,
-  layoutContents: {
+  viewpointContents: {
     [file: string]: any;
   }
 ) => {
   // Uri is required for VSCode extension to determine path to file or folder
-  const treeFolderUri = Uri.joinPath(uri, "src", "vision", "layouts", "trees");
+  const treeFolderUri = Uri.joinPath(
+    uri,
+    "src",
+    "vision",
+    "viewpoints",
+    "trees"
+  );
 
   try {
     const files = await workspace.fs.readDirectory(treeFolderUri);
     for (const [file, type] of files) {
       if (file.endsWith(".json") && type === FileType.File) {
-        setLayoutContent(treeFolderUri, file, layoutContents);
+        setviewpointContent(treeFolderUri, file, viewpointContents);
       }
     }
     if (files.length > 0) {
-      commands.executeCommand("setContext", "vision:hasPageLayout", true);
-      window.showInformationMessage("Tree Layout files loaded successfully.");
+      commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
+      window.showInformationMessage(
+        "Tree viewpoint files loaded successfully."
+      );
     } else {
-      window.showWarningMessage("Tree Layout files not found.");
+      window.showWarningMessage("Tree viewpoint files not found.");
     }
   } catch (err) {
     if (
       err instanceof Error &&
-      err.message.startsWith("Error parsing tree layout file")
+      err.message.startsWith("Error parsing tree viewpoint file")
     )
       window.showErrorMessage(err.message);
     else {
-      window.showErrorMessage(`Error reading tree layout files: ${err}`);
+      window.showErrorMessage(`Error reading tree viewpoint files: ${err}`);
     }
   } finally {
-    // Send updated global layouts to TablePanels & PropertyPanel
-    TablePanel.updateLayouts();
-    PropertyPanelProvider.updateLayouts();
+    // Send updated global viewpoints to TablePanels & PropertyPanel
+    TablePanel.updateViewpoints();
+    PropertyPanelProvider.updateViewpoints();
   }
 };
 
 /**
- * Loads diagram layouts from the diagrams directory.
+ * Loads diagram viewpoints from the diagrams directory.
  *
  * @remarks
  * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
  *
  * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
- * @param layoutContents - content of the layout object
+ * @param viewpointContents - content of the viewpoint object
  *
  */
 const loadDiagramFiles = async (
   uri: Uri,
-  layoutContents: {
+  viewpointContents: {
     [file: string]: any;
   }
 ) => {
@@ -203,7 +213,7 @@ const loadDiagramFiles = async (
     uri,
     "src",
     "vision",
-    "layouts",
+    "viewpoints",
     "diagrams"
   );
 
@@ -211,39 +221,39 @@ const loadDiagramFiles = async (
     const files = await workspace.fs.readDirectory(diagramFolderUri);
     for (const [file, type] of files) {
       if (file.endsWith(".json") && type === FileType.File) {
-        setLayoutContent(diagramFolderUri, file, layoutContents);
+        setviewpointContent(diagramFolderUri, file, viewpointContents);
       }
     }
     if (files.length > 0) {
-      commands.executeCommand("setContext", "vision:hasPageLayout", true);
+      commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
       window.showInformationMessage(
-        "Diagram Layout files loaded successfully."
+        "Diagram viewpoint files loaded successfully."
       );
     } else {
-      window.showWarningMessage("Diagram Layout files not found.");
+      window.showWarningMessage("Diagram viewpoint files not found.");
     }
   } catch (err) {
-    window.showErrorMessage(`Error reading diagram layout files: ${err}`);
+    window.showErrorMessage(`Error reading diagram viewpoint files: ${err}`);
   } finally {
-    // Send updated global layouts to TablePanels & PropertyPanel
-    TablePanel.updateLayouts();
-    PropertyPanelProvider.updateLayouts();
+    // Send updated global viewpoints to TablePanels & PropertyPanel
+    TablePanel.updateViewpoints();
+    PropertyPanelProvider.updateViewpoints();
   }
 };
 
 /**
- * Loads property layouts from the properties directory.
+ * Loads property viewpoints from the properties directory.
  *
  * @remarks
  * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
  *
  * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
- * @param layoutContents - content of the layout object
+ * @param viewpointContents - content of the viewpoint object
  *
  */
 const loadPropertyFiles = async (
   uri: Uri,
-  layoutContents: {
+  viewpointContents: {
     [file: string]: any;
   }
 ) => {
@@ -252,7 +262,7 @@ const loadPropertyFiles = async (
     uri,
     "src",
     "vision",
-    "layouts",
+    "viewpoints",
     "properties"
   );
 
@@ -260,45 +270,45 @@ const loadPropertyFiles = async (
     const files = await workspace.fs.readDirectory(propertyFolderUri);
     for (const [file, type] of files) {
       if (file.endsWith(".json") && type === FileType.File) {
-        setLayoutContent(propertyFolderUri, file, layoutContents);
+        setviewpointContent(propertyFolderUri, file, viewpointContents);
       }
     }
     if (files.length > 0) {
-      commands.executeCommand("setContext", "vision:hasPageLayout", true);
+      commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
       window.showInformationMessage(
-        "Property Layout files loaded successfully."
+        "Property viewpoint files loaded successfully."
       );
     } else {
-      window.showWarningMessage("Property Layout files not found.");
+      window.showWarningMessage("Property viewpoint files not found.");
     }
   } catch (err) {
-    window.showErrorMessage(`Error reading property layout files: ${err}`);
+    window.showErrorMessage(`Error reading property viewpoint files: ${err}`);
   } finally {
-    // Send updated global layouts to TablePanels & PropertyPanel
-    TablePanel.updateLayouts();
-    PropertyPanelProvider.updateLayouts();
+    // Send updated global viewpoints to TablePanels & PropertyPanel
+    TablePanel.updateViewpoints();
+    PropertyPanelProvider.updateViewpoints();
   }
 };
 
 /**
- * Set the Layout Content.
+ * Set the viewpoint Content.
  *
  * @remarks
  * This method uses the URI class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
  *
  * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
  * @param file - The file name.
- * @param layouts - The layouts object which will be set.
+ * @param viewpoints - The viewpoints object which will be set.
  *
  */
-const setLayoutContent = async (uri: Uri, file: string, layouts: any) => {
+const setviewpointContent = async (uri: Uri, file: string, viewpoints: any) => {
   const fileUri = Uri.joinPath(uri, file);
   const buffer = await workspace.fs.readFile(fileUri);
   const content = JSON.parse(buffer.toString());
   try {
-    layouts[file] = content;
+    viewpoints[file] = content;
   } catch (parseErr) {
-    layouts = {};
-    throw new Error(`Error parsing table layout file ${file}: ${parseErr}`);
+    viewpoints = {};
+    throw new Error(`Error parsing table viewpoint file ${file}: ${parseErr}`);
   }
 };

@@ -45,9 +45,9 @@ export function handleTablePanelMessage(
       vscode.commands.executeCommand("oml-vision.hideProperties");
       break;
 
-    case Commands.ASK_FOR_LAYOUTS:
+    case Commands.ASK_FOR_VIEWPOINTS:
       vscode.commands.executeCommand(
-        "oml-vision.sendLayouts",
+        "oml-vision.sendViewpoints",
         TablePanel.currentPanels.get(TablePanelInstance.getWebviewType().path)
       );
       break;
