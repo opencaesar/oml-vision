@@ -26,6 +26,7 @@ export const loadLayoutFiles = async (layoutContents: {
     loadTableFiles(uri, layoutContents);
     loadTreeFiles(uri, layoutContents);
     loadDiagramFiles(uri, layoutContents);
+    loadPropertyFiles(uri, layoutContents);
   }
 };
 
@@ -223,6 +224,55 @@ const loadDiagramFiles = async (
     }
   } catch (err) {
     window.showErrorMessage(`Error reading diagram layout files: ${err}`);
+  } finally {
+    // Send updated global layouts to TablePanels & PropertyPanel
+    TablePanel.updateLayouts();
+    PropertyPanelProvider.updateLayouts();
+  }
+};
+
+/**
+ * Loads property layouts from the properties directory.
+ *
+ * @remarks
+ * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
+ * @param layoutContents - content of the layout object
+ *
+ */
+const loadPropertyFiles = async (
+  uri: Uri,
+  layoutContents: {
+    [file: string]: any;
+  }
+) => {
+  // Uri is required for VSCode extension to determine path to file or folder
+  const propertyFolderUri = Uri.joinPath(
+    uri,
+    "src",
+    "vision",
+    "layouts",
+    "properties"
+  );
+
+  try {
+    const files = await workspace.fs.readDirectory(propertyFolderUri);
+    for (const [file, type] of files) {
+      if (file.endsWith(".json") && type === FileType.File) {
+        setLayoutContent(propertyFolderUri, file, layoutContents);
+      }
+    }
+    if (files.length > 0) {
+      commands.executeCommand("setContext", "vision:hasPageLayout", true);
+      window.showInformationMessage(
+        "Property Layout files loaded successfully."
+      );
+    } else {
+      window.showWarningMessage("Property Layout files not found.");
+    }
+  } catch (err) {
+    window.showErrorMessage(`Error reading property layout files: ${err}`);
   } finally {
     // Send updated global layouts to TablePanels & PropertyPanel
     TablePanel.updateLayouts();
