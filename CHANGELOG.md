@@ -8,6 +8,9 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 
 ## v0.3.0 - Venus
 
+### Added
+- Property View: Allows users to see the properties of elements selected in the webview https://github.com/opencaesar/oml-vision/pull/42
+
 ### Modified
 - Viewpoints: Listen to viewpoints directory instead of layouts directory (Change layouts directory to viewpoints directory) https://github.com/opencaesar/oml-vision/issues/40
 
