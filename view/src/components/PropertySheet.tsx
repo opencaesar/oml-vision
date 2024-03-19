@@ -1,25 +1,21 @@
-import React, { useEffect, useState, useRef, KeyboardEvent } from 'react';
-import {
-  IconPlus,
-  IconMinus,
-  FormField
-} from '@nasa-jpl/react-stellar';
+import React, { useEffect, useState, useRef, KeyboardEvent } from "react";
+import { IconPlus, IconMinus, FormField } from "@nasa-jpl/react-stellar";
 import {
   VSCodeTextField,
   VSCodeRadioGroup,
-  VSCodeRadio
-} from '@vscode/webview-ui-toolkit/react';
-import { useForm, FieldValues } from 'react-hook-form';
-import { parse, EvalAstFactory } from 'jexpr';
-import { postMessage } from '../utils/postMessage';
-import { usePropertiesData } from '../contexts/PropertyDataProvider';
-import ITableData from '../interfaces/ITableData';
-import { PropertyPage } from '../interfaces/PropertyLayoutsType';
-import { CMStatesArray } from '../interfaces/CMStates';
-import { IDisplayGroup } from '../interfaces/IDisplayGroup';
-import HelpIcon from './shared/HelpIcon';
-import Loader from './shared/Loader';
-import { CommandStructures, Commands } from '../../../commands/src/commands';
+  VSCodeRadio,
+} from "@vscode/webview-ui-toolkit/react";
+import { useForm, FieldValues } from "react-hook-form";
+import { parse, EvalAstFactory } from "jexpr";
+import { postMessage } from "../utils/postMessage";
+import { usePropertiesData } from "../contexts/PropertyDataProvider";
+import ITableData from "../interfaces/ITableData";
+import { PropertyPage } from "../interfaces/PropertyLayoutsType";
+import { CMStatesArray } from "../interfaces/CMStates";
+import { IDisplayGroup } from "../interfaces/IDisplayGroup";
+import HelpIcon from "./shared/HelpIcon";
+import Loader from "./shared/Loader";
+import { CommandStructures, Commands } from "../../../commands/src/commands";
 
 const astFactory = new EvalAstFactory();
 const isDataEmpty = (obj: Object) => Object.keys(obj).length === 0;
@@ -45,7 +41,8 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
 
       let specificMessage;
       if (message.command === Commands.LOADED_PROPERTY_SHEET) {
-        specificMessage = message as CommandStructures[Commands.LOADED_PROPERTY_SHEET];
+        specificMessage =
+          message as CommandStructures[Commands.LOADED_PROPERTY_SHEET];
         if (specificMessage.errorMessage) {
           console.error(specificMessage.errorMessage);
           setErrorMessage(specificMessage.errorMessage);
@@ -56,15 +53,15 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
         try {
           const results = specificMessage.payload;
 
-          if (!results || typeof results !== 'object') {
-            throw new Error('Invalid JSON format: expected an object');
+          if (!results || typeof results !== "object") {
+            throw new Error("Invalid JSON format: expected an object");
           }
 
           const sparqlData = results || [];
           const omlData = sparqlData.length > 0 ? sparqlData[0] : {};
           setData(omlData);
         } catch (error) {
-          let errorMessage = '';
+          let errorMessage = "";
           if (error instanceof SyntaxError) {
             errorMessage = `Failed to parse JSON data: ${error.message}`;
           } else {
@@ -81,9 +78,9 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
         setIsLoading(false);
       }
     };
-    window.addEventListener('message', handler);
+    window.addEventListener("message", handler);
     return () => {
-      window.removeEventListener('message', handler);
+      window.removeEventListener("message", handler);
     };
   }, []);
 
@@ -100,21 +97,28 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
 
       // Generate displayGroups based on current tableRowTypes
       const evaluatedExpressions = page.groups
-        .filter(group => group.displayExpression).map((expression) => {
+        .filter((group) => group.displayExpression)
+        .map((expression) => {
           let display: boolean;
           try {
             const expr = parse(expression.displayExpression!, astFactory);
-            if (!expr) { throw new Error(`Invalid expression: ${expression.displayExpression}`); }
+            if (!expr) {
+              throw new Error(
+                `Invalid expression: ${expression.displayExpression}`
+              );
+            }
             display = expr.evaluate({ tableRowTypes });
           } catch (error) {
-            console.error(`Failed to evaluate display expression for group ${expression.id}: ${error}`);
+            console.error(
+              `Failed to evaluate display expression for group ${expression.id}: ${error}`
+            );
             display = false;
           }
 
           // Return an object that matches the DisplayGroup interface
           return {
             id: expression.id,
-            display
+            display,
           };
         });
       setDisplayGroups(evaluatedExpressions);
@@ -124,7 +128,7 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
         payload: {
           queryName: page.sparqlQuery,
           iri: rowIri,
-        }
+        },
       });
     }
   }, [rowIri, tableRowTypes, isAvailable]);
@@ -135,12 +139,11 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
       setIsOpen(Array(layoutData.groups.length).fill(true));
 
       // Prepopulate form fields
-      Object.keys(data).forEach(key => {
+      Object.keys(data).forEach((key) => {
         setValue(key, data[key]);
       });
     }
   }, [layoutData, setValue, data]);
-
 
   const handleToggle = (index: number) => {
     const newIsOpen = [...isOpen];
@@ -160,7 +163,7 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
   };
 
   const blurIfReturned = (event: KeyboardEvent) => {
-    if (event.key === 'Enter' && event.target instanceof HTMLElement) {
+    if (event.key === "Enter" && event.target instanceof HTMLElement) {
       (event.target as HTMLElement).blur();
     }
   };
@@ -168,27 +171,39 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
   if (isLoading) {
     return (
       <div className="h-screen flex justify-center">
-        <Loader message={`Loading ${page.label.toLowerCase()} property sheet...`} />
+        <Loader
+          message={`Loading ${page.label.toLowerCase()} property sheet...`}
+        />
       </div>
     );
   }
 
   return (
     <form className="w-full" ref={formRef} onSubmit={handleSubmit(onSubmit)}>
-      {(!layoutData || !layoutData.groups.length || isDataEmpty(data) || errorMessage) ? (
-        <div className='h-screen flex justify-center items-center'>
-          <p className='text-[color:var(--vscode-foreground)]'>{errorMessage ? errorMessage : "Uh oh, no editable properties found!"}</p>
+      {!layoutData ||
+      !layoutData.groups.length ||
+      isDataEmpty(data) ||
+      errorMessage ? (
+        <div className="h-screen flex justify-center items-center">
+          <p className="text-[color:var(--vscode-foreground)]">
+            {errorMessage
+              ? errorMessage
+              : "Uh oh, no editable properties found!"}
+          </p>
         </div>
       ) : (
         <div className="pb-4">
           {layoutData.groups.map((group, index) => {
-
             // Checks if this group is in displayGroups. If it is, we use the display prop (true/false)
             // If not, we default to true because only groups with displayExpressions are optionally displayed
-            const groupInDisplayGroups = displayGroups.find(x => x.id == group.id);
+            const groupInDisplayGroups = displayGroups.find(
+              (x) => x.id == group.id
+            );
             const isConditionalGroup = group.displayExpression;
             // If groupInDisplayGroups not found, ONLY display group if it is not a conditional group (ex. Instance, etc.)
-            const shouldDisplay = groupInDisplayGroups ? groupInDisplayGroups.display : !isConditionalGroup;
+            const shouldDisplay = groupInDisplayGroups
+              ? groupInDisplayGroups.display
+              : !isConditionalGroup;
 
             if (shouldDisplay) {
               return (
@@ -198,8 +213,7 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
                     flex items-center w-full px-2 py-1 rounded
                     bg-[color:var(--vscode-list-dropBackground)]
                     hover:text-[color:var(--vscode-list-activeSelectionForeground)]
-                    active:bg-[color:var(--vscode-list-activeSelectionBackground)]`
-                    }
+                    active:bg-[color:var(--vscode-list-activeSelectionBackground)]`}
                     onClick={() => handleToggle(index)}
                   >
                     {isOpen[index] ? (
@@ -220,23 +234,39 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
                   {isOpen[index] && (
                     <div className="mx-3 mt-4">
                       {group.controls.map((control, idx) => (
-                        <div className="flex items-center my-2 min-w-fit" key={idx}>
+                        <div
+                          className="flex items-center my-2 min-w-fit"
+                          key={idx}
+                        >
                           <label className="basis-2/12 text-[color:var(--vscode-foreground)]">
                             {control.label}
                           </label>
                           <div className="basis-1/12 justify-center">
-                            {control.helpExpression && <HelpIcon helpText={control.helpExpression} />}
+                            {control.helpExpression && (
+                              <HelpIcon helpText={control.helpExpression} />
+                            )}
                           </div>
                           <FormField flow="vertical" className="basis-9/12">
-                            {control.type === "text" && <VSCodeTextField className="vscode-input-rounded" readOnly={control.readOnly} {...register(control.id, { onChange: submitForm })} onKeyUp={blurIfReturned} />}
+                            {control.type === "text" && (
+                              <VSCodeTextField
+                                className="vscode-input-rounded"
+                                readOnly={control.readOnly}
+                                {...register(control.id, {
+                                  onChange: submitForm,
+                                })}
+                                onKeyUp={blurIfReturned}
+                              />
+                            )}
                             {control.type === "radio" && (
                               <FormField flow="vertical" className="basis-9/12">
-                                <VSCodeRadioGroup readOnly={control.readOnly} {...register(control.id, { onChange: submitForm })}>
+                                <VSCodeRadioGroup
+                                  readOnly={control.readOnly}
+                                  {...register(control.id, {
+                                    onChange: submitForm,
+                                  })}
+                                >
                                   {CMStatesArray.map((state, idx) => (
-                                    <VSCodeRadio
-                                      key={idx}
-                                      value={state}
-                                    >
+                                    <VSCodeRadio key={idx} value={state}>
                                       {state}
                                     </VSCodeRadio>
                                   ))}

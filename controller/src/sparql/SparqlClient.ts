@@ -27,7 +27,9 @@ export async function SparqlClient(query: string, service: SparqlServiceType, ir
   
   if (!QUERY) {
     QUERY = query
-    vscode.window.showWarningMessage(`SPARQL query not defined in src/vision/sparql directory: ${query}`);
+    // Uncomment to have VSCode notify users about SPARQL query not being defined in src/vision/sparql directory
+    // More info here https://code.visualstudio.com/api/ux-guidelines/notifications
+    // vscode.window.showWarningMessage(`SPARQL query not defined in src/vision/sparql directory: ${query}`);
     console.warn(`SPARQL query not defined in src/vision/sparql directory: ${query}`)
   };
 

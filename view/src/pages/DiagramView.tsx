@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { postMessage } from "../utils/postMessage";
 import { CommandStructures, Commands } from "../../../commands/src/commands";
 import Diagram from "../components/Diagram/Diagram";
@@ -143,10 +143,16 @@ const DiagramView: React.FC = () => {
     );
   }, [data, filter, diagramLayout]);
 
-  const handleClickRow = (tableRow: ITableData) => {
+
+  /**  
+    This function handles when a node is clicked in the Diagram View.  
+    @remarks This method uses the {@link https://react.dev/reference/react/useCallback | useCallback} React hook
+    @param node - The node and its data that is clicked
+  */
+  const handleClickNode = useCallback((node: ITableData) => {
     // Every row should have an IRI, but if somehow it doesn't,
     // hide the properties sheet.
-    if (!tableRow.data.iri) {
+    if (!node.data.iri) {
       postMessage({
         command: Commands.HIDE_PROPERTIES,
       });
@@ -155,9 +161,9 @@ const DiagramView: React.FC = () => {
 
     postMessage({
       command: Commands.ROW_CLICKED,
-      payload: tableRow.data.iri,
+      payload: node.data.iri,
     });
-  };
+  }, []);
 
   const refreshData = () => {
     setIsLoading(true);
@@ -192,7 +198,9 @@ const DiagramView: React.FC = () => {
             webviewPath={webviewPath}
             hasFilter={filter.iris.length > 0}
             clearFilter={() => setFilter({ iris: [], filterObject: null })}
-            onNodeSelected={handleClickRow}
+            onNodeClicked={handleClickNode}
+            // TODO: Use onNodeSelected while node is highlighted/selected
+            onNodeSelected={handleClickNode}
           />
         </ReactFlowProvider>
       ) : (

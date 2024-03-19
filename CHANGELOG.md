@@ -8,6 +8,8 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 
 ## v0.3.0 - Venus
 
+## v0.2.6 - Rembrandt Basin
+
 ### Added
 - Property View: Allows users to see the properties of elements selected in the webview https://github.com/opencaesar/oml-vision/pull/42
 

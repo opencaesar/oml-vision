@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, MouseEvent } from "react";
+import React, { useState, useEffect, useMemo, MouseEvent, useCallback } from "react";
 import { postMessage } from "../utils/postMessage";
 import { CommandStructures, Commands } from "../../../commands/src/commands";
 import Table from "../components/Table/Table";
@@ -135,13 +135,19 @@ const TableView: React.FC = () => {
     });
   };
 
-  const handleClickRow = (
+  /**  
+    This function handles when a row is clicked in the Table View.  
+    @remarks This method uses the {@link https://react.dev/reference/react/useCallback | useCallback} React hook
+    @param e - The mouse event that React should be listening to
+    @param row - The row and its data that is clicked
+  */
+  const handleClickRow = useCallback((
     e: MouseEvent<HTMLTableRowElement, MouseEvent>,
-    tableRow: ITableData
+    row: ITableData
   ) => {
     // Every row should have an IRI, but if somehow it doesn't,
     // hide the properties sheet.
-    if (!tableRow.original.iri) {
+    if (!row.original.iri) {
       postMessage({
         command: Commands.HIDE_PROPERTIES,
       });
@@ -150,9 +156,9 @@ const TableView: React.FC = () => {
 
     postMessage({
       command: Commands.ROW_CLICKED,
-      payload: tableRow.original.iri,
+      payload: row.original.iri,
     });
-  };
+  }, []);
 
   if (isLoading || isLoadingLayoutContext) {
     return (
