@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, MouseEvent } from "react";
+import React, { useState, useEffect, useMemo, MouseEvent, useCallback } from "react";
 import { postMessage } from "../utils/postMessage";
 import { CommandStructures, Commands } from "../../../commands/src/commands";
 import Tree from "../components/Tree/Tree";
@@ -143,10 +143,15 @@ const TreeView: React.FC = () => {
     });
   };
 
-  const handleClickRow = (tableRow: ITableData) => {
+  /**  
+    This function handles when a row is clicked in the Tree View.  
+    @remarks This method uses the {@link https://react.dev/reference/react/useCallback | useCallback} React hook
+    @param row - The row and its data that is clicked
+  */
+  const handleClickRow = useCallback((row: ITableData) => {
     // Every row should have an IRI, but if somehow it doesn't,
     // hide the properties sheet.
-    if (!tableRow.iri) {
+    if (!row.iri) {
       postMessage({
         command: Commands.HIDE_PROPERTIES,
       });
@@ -155,9 +160,9 @@ const TreeView: React.FC = () => {
 
     postMessage({
       command: Commands.ROW_CLICKED,
-      payload: tableRow.iri,
+      payload: row.iri,
     });
-  };
+  }, []);
 
   if (isLoading || isLoadingLayoutContext) {
     return (

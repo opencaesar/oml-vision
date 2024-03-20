@@ -53,7 +53,9 @@ function Diagram({
   webviewPath,
   hasFilter,
   clearFilter = () => {},
+  // TODO: Use onNodeSelected while node is highlighted/selected
   onNodeSelected = () => {},
+  onNodeClicked = () => {},
 }: {
   initData: {
     nodes: ITableData[];
@@ -64,6 +66,7 @@ function Diagram({
   hasFilter: boolean;
   clearFilter: Function;
   onNodeSelected?: Function;
+  onNodeClicked?: Function;
 }) {
   // Vanilla React Hooks
   const [isLoading, setIsLoading] = useState(true);
@@ -78,14 +81,21 @@ function Diagram({
   const { isInteractive, setInteractivity, toggleInteractivity } =
     useCanvasInteractivity();
 
-  useOnSelectionChange({
-    onChange: ({ nodes, edges }) => {
-      setSelectedNodes(nodes);
-      if (nodes.length === 1) {
-        onNodeSelected(nodes[0]);
-      }
-    },
-  });
+  // FIXME: useOnSelectionChange occurs after a selection occurs and will continously running when clicking a node or edge
+  // useOnSelectionChange({
+  //   onChange: ({ nodes, edges }) => {
+  //     setSelectedNodes(nodes);
+  //     if (nodes.length === 1) {
+  //       onNodeClicked(nodes[0]);
+  //       onNodeSelected(nodes[0]);
+  //     }
+  //   },
+  // });
+
+  // Handles when a node is clicked.  Note accessing properties is handled in DiagramView.tsx
+  const onNodeClick = (event: any, node: any) => {
+    onNodeClicked(node);
+  };
 
   const highlightPath = (
     selectedNodes: Node[],
@@ -471,6 +481,7 @@ function Diagram({
           setSelectedNodes([]);
           unHighlightPath(edges);
         }}
+        onNodeClick={onNodeClick}
         proOptions={{ hideAttribution: true }}
         nodeTypes={nodeTypes}
         nodesConnectable={false}

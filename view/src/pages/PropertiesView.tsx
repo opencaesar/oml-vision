@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { IconSettings, IconDatabase, IconBranch, IconFilter, IconChecklist, IconLink } from '@nasa-jpl/react-stellar';
+import * as StellarIcons from '@nasa-jpl/react-stellar';
 import { parse, EvalAstFactory } from 'jexpr';
 import NavTab from '../components/shared/NavTab';
 import { usePropertiesData } from '../contexts/PropertyDataProvider';
@@ -9,16 +9,6 @@ import { IDisplayGroup } from '../interfaces/IDisplayGroup';
 
 const astFactory = new EvalAstFactory();
 
-// Icon map for dynamic rendering from layout json
-const ICONS = {
-  IconSettings,
-  IconDatabase,
-  IconBranch,
-  IconFilter,
-  IconChecklist,
-  IconLink,
-  // Add any additional icons you are using here
-}
 
 const PropertiesView: React.FC<{layout: PropertyLayout}> = ({
   layout,
@@ -83,10 +73,11 @@ const PropertiesView: React.FC<{layout: PropertyLayout}> = ({
                 // If pageInDisplayPages not found, ONLY display page if it is not a conditional page
                 const shouldDisplay = pageInDisplayPages ? pageInDisplayPages.display : !isConditionalGroup;
 
-                const IconComponent = page.icon in ICONS ? ICONS[page.icon as keyof typeof ICONS] : null;
+                const IconComponent = page.icon in StellarIcons ? StellarIcons[page.icon as keyof typeof StellarIcons] : null;
                 if (shouldDisplay) return (
                   <li key={page.id}>
                     <NavTab to={`/property-panel/${page.id}`}>
+                      {/* @ts-ignore */}
                       {IconComponent && <IconComponent className="pr-[8px] flex-shrink-0 flex-grow-0 text-[color:var(--vscode-foreground)]" width="20" height="20" />}
                       {page.label}
                     </NavTab>
