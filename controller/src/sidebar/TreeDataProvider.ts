@@ -12,13 +12,13 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
   public static getInstance(
     hasBuildFolder: boolean = false,
-    hasPageLayout: boolean = false,
+    hasPageViewpoint: boolean = false,
     hasSparqlConfig: boolean = false
   ): TreeDataProvider {
     if (this._instance === null) {
       this._instance = new TreeDataProvider(
         hasBuildFolder,
-        hasPageLayout,
+        hasPageViewpoint,
         hasSparqlConfig
       );
     }
@@ -27,16 +27,16 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
   data: TreeItem[];
   private _hasBuildFolder: boolean;
-  private _hasPageLayout: boolean;
+  private _hasPageViewpoint: boolean;
   private _hasSparqlConfig: boolean;
 
   private constructor(
     hasBuildFolder: boolean,
-    hasPageLayout: boolean,
+    hasPageViewpoint: boolean,
     hasSparqlConfig: boolean
   ) {
     this._hasBuildFolder = hasBuildFolder;
-    this._hasPageLayout = hasPageLayout;
+    this._hasPageViewpoint = hasPageViewpoint;
     this._hasSparqlConfig = hasSparqlConfig;
     this.data = buildTreeItems();
   }
@@ -57,13 +57,13 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   getChildren(
     element?: TreeItem | undefined
   ): vscode.ProviderResult<TreeItem[]> {
-    if (this._hasBuildFolder && this._hasPageLayout && this._hasSparqlConfig) {
+    if (this._hasBuildFolder && this._hasPageViewpoint && this._hasSparqlConfig) {
       if (element === undefined) {
         return this.data;
       }
       return element.children;
     } else {
-      // If there's no build folder or no page layout, return an empty array to trigger the welcome view.
+      // If there's no build folder or no page viewpoint, return an empty array to trigger the welcome view.
       return [];
     }
   }
@@ -74,9 +74,9 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     this._onDidChangeTreeData.fire(undefined);
   }
 
-  updateHasPageLayout(hasPageLayout: boolean) {
-    this._hasPageLayout = hasPageLayout;
-    // This will refresh the tree items pages view in the sidebar.
+  updateHasPageViewpoint(hasPageViewpoint: boolean) {
+    this._hasPageViewpoint = hasPageViewpoint;
+    // This will refresh the sidebar pages view.
     this._onDidChangeTreeData.fire(undefined);
   }
 
@@ -86,8 +86,8 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
     this._onDidChangeTreeData.fire(undefined);
   }
 
-  updateLayouts(pageLayout: (IWebviewType | ITableCategory)[]) {
-    this.data = buildTreeItems(pageLayout);
+  updateViewpoints(pageViewpoint: (IWebviewType | ITableCategory)[]) {
+    this.data = buildTreeItems(pageViewpoint);
     // This will refresh the tree items pages view in the sidebar.
     this._onDidChangeTreeData.fire(undefined);
   }

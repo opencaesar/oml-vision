@@ -7,7 +7,7 @@ import ITableData from "../interfaces/ITableData";
 import { mapDiagramValueData } from "../components/Diagram/diagramUtils";
 import { DiagramLayout } from "../interfaces/DataLayoutsType";
 import { ReactFlowProvider } from "reactflow";
-import { LayoutPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 
 const DiagramView: React.FC = () => {
@@ -31,7 +31,7 @@ const DiagramView: React.FC = () => {
     let diagramLayouts: any = {};
 
     // layouts[LayoutPaths.Pages] comes from the pages.json file structure and key-value pairs
-    layouts[LayoutPaths.Pages].forEach((layout: any) => {
+    layouts[ViewpointPaths.Pages].forEach((layout: any) => {
       layout.children?.forEach((page: any) => {
         if (page.type === "diagram") {
           // Locally scoped variable which is used to set the key of the JSON object

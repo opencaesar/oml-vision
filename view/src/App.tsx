@@ -2,7 +2,7 @@ import React from "react";
 import { MemoryRouter, Navigate, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PropertiesDataProvider } from "./contexts/PropertyDataProvider";
-import { LayoutPaths, useLayoutData } from "./contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "./contexts/LayoutProvider";
 import HomeView from "./pages/HomeView";
 import TableView from "./pages/TableView";
 import TreeView from "./pages/TreeView";
@@ -28,10 +28,11 @@ const App = () => {
     </WizardsProvider>
   );
 
-  // Generate routes from property layout data
+  // Generate routes from property layout data in src/vision/layouts/properties folder in OML model
   const propertyLayout = (layouts[
-    LayoutPaths.PropertyPanel
+    ViewpointPaths.PropertyPanel
   ] as PropertyLayout) ?? { pages: [] };
+
   const propertyRoutes = propertyLayout.pages.map((page: PropertyPage) => (
     <Route
       key={page.id}

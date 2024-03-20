@@ -7,7 +7,7 @@ import ITableData from "../interfaces/ITableData";
 import { mapValueData } from "../components/Table/tableUtils";
 import { TableLayout } from "../interfaces/DataLayoutsType";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
-import { LayoutPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
 
 const TableView: React.FC = () => {
   const { layouts, isLoadingLayoutContext } = useLayoutData();
@@ -25,7 +25,7 @@ const TableView: React.FC = () => {
     let tableLayouts: any = {};
 
     // layouts[LayoutPaths.Pages] comes from the pages.json file structure and key-value pairs
-    layouts[LayoutPaths.Pages].forEach((layout: any) => {
+    layouts[ViewpointPaths.Pages].forEach((layout: any) => {
       layout.children?.forEach((page: any) => {
         if (page.type === "table") {
           // Locally scoped variable which is used to set the key of the JSON object

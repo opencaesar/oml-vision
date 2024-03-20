@@ -9,7 +9,7 @@ import {
   areArraysOfObjectsEqual,
 } from "../components/Tree/treeUtils";
 import { TreeLayout } from "../interfaces/DataLayoutsType";
-import { LayoutPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 
 const TreeView: React.FC = () => {
@@ -27,7 +27,7 @@ const TreeView: React.FC = () => {
     let treeLayouts: any = {};
 
     // layouts[LayoutPaths.Pages] comes from the pages.json file structure and key-value pairs
-    layouts[LayoutPaths.Pages].forEach((layout: any) => {
+    layouts[ViewpointPaths.Pages].forEach((layout: any) => {
       layout.children?.forEach((page: any) => {
         if (page.type === "tree") {
           // Locally scoped variable which is used to set the key of the JSON object

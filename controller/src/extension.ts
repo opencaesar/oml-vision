@@ -5,7 +5,7 @@ import { generatePropertySheet } from "./sparql/data-manager/generateDataUtils";
 import { SparqlClient } from "./sparql/SparqlClient";
 import ITableData from "../../view/src/interfaces/ITableData";
 import { getIriTypes } from "./sparql/queries/GetIriTypes";
-import { LayoutPaths } from "../../commands/src/interfaces/LayoutPaths";
+import { ViewpointPaths } from "../../commands/src/interfaces/ViewpointPaths";
 import ITableCategory from "../../commands/src/interfaces/ITableCategory";
 
 // Sidebar functions
@@ -16,7 +16,7 @@ import { TriplestoreStatusProvider } from "./sidebar/TriplestoreStatusProvider";
 // Utilities functions
 import { checkBuildFolder } from "./utilities/checkers/checkBuildFolder";
 import { loadSparqlFiles } from "./utilities/loaders/loadSparqlFiles";
-import { loadLayoutFiles } from "./utilities/loaders/loadLayoutFiles";
+import { loadViewpointFiles } from "./utilities/loaders/loadViewpointFiles";
 import { loadSparqlConfigFiles } from "./utilities/loaders/loadSparqlConfigFiles";
 
 // Panel Classes
@@ -24,7 +24,7 @@ import { TablePanel } from "./panels/TablePanel";
 import { PropertyPanelProvider } from "./panels/PropertyPanelProvider";
 
 export let globalSparqlContents: { [filename: string]: string } = {};
-export let globalLayoutContents: {
+export let globalViewpointContents: {
   [filename: string]: Record<string, string> | any[];
 } = {};
 
@@ -125,14 +125,14 @@ export function activate(context: vscode.ExtensionContext) {
     };
 
     // Find the full IWebviewType for the given webviewPath
-    const tableLayouts = (globalLayoutContents[LayoutPaths.Pages] ?? []) as (
+    const webviewViewpoints = (globalViewpointContents[ViewpointPaths.Pages] ?? []) as (
       | IWebviewType
       | ITableCategory
     )[];
-    const findTable = (item: any): any =>
-      item.path === diagram ? item : item.children?.find(findTable);
-    const diagramWebviewType = tableLayouts
-      .reduce((acc, table) => acc.concat(findTable(table) || []), [])
+    const findViewpoint = (item: any): any =>
+      item.path === diagram ? item : item.children?.find(findViewpoint);
+    const diagramWebviewType = webviewViewpoints
+      .reduce((acc, viewpoint) => acc.concat(findViewpoint(viewpoint) || []), [])
       .find(Boolean);
 
     if (!diagramWebviewType)
@@ -229,7 +229,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (iri !== "") {
           const rawTypesQuery = getIriTypes(iri);
           const sparqlResult = await SparqlClient(rawTypesQuery, "query");
-          types = sparqlResult.map((entry: ITableData) => entry.type.value);
+          types = sparqlResult.map((entry: ITableData) => entry.type);
         }
 
         const propertyData = {
@@ -276,11 +276,11 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "oml-vision.sendLayouts",
+      "oml-vision.sendViewpoints",
       (panel: TablePanel | PropertyPanelProvider) => {
         panel.sendMessage({
-          command: Commands.SEND_LAYOUTS,
-          payload: globalLayoutContents,
+          command: Commands.SEND_VIEWPOINTS,
+          payload: globalViewpointContents,
         });
       }
     )
@@ -311,7 +311,7 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  // default the 'hasBuildFolder' and 'hasPageLayout' and 'hasSparqlConfig' properties to false in the Sidebar
+  // default the 'hasBuildFolder' and 'hasPageViewpoint' and 'hasSparqlConfig' properties to false in the Sidebar
   /**
    * Register Tree Data to show data in the sidebar
    *
@@ -330,8 +330,8 @@ export function activate(context: vscode.ExtensionContext) {
   let sparqlFolderWatcher = vscode.workspace.createFileSystemWatcher(
     "**/src/vision/sparql/*.sparql"
   );
-  let layoutsFolderWatcher = vscode.workspace.createFileSystemWatcher(
-    "**/src/vision/layouts/*.json"
+  let viewpointsFolderWatcher = vscode.workspace.createFileSystemWatcher(
+    "**/src/vision/viewpoints/*.json"
   );
   let sparqlConfigFolderWatcher = vscode.workspace.createFileSystemWatcher(
     "**/src/vision/config/*.json"
@@ -362,8 +362,8 @@ export function activate(context: vscode.ExtensionContext) {
     console.error("Error loading SPARQL files from model:", err);
   });
 
-  loadLayoutFiles(globalLayoutContents).catch((err) => {
-    console.error("Error loading layout files from model:", err);
+  loadViewpointFiles(globalViewpointContents).catch((err) => {
+    console.error("Error loading viewpoint files from model:", err);
   });
 
   loadSparqlConfigFiles().catch((err) => {
@@ -375,10 +375,10 @@ export function activate(context: vscode.ExtensionContext) {
   sparqlFolderWatcher.onDidCreate(() => loadSparqlFiles(globalSparqlContents));
   sparqlFolderWatcher.onDidDelete(() => loadSparqlFiles(globalSparqlContents));
 
-  // Watch for changes in JSON layout files
-  layoutsFolderWatcher.onDidChange(() => loadLayoutFiles(globalLayoutContents));
-  layoutsFolderWatcher.onDidCreate(() => loadLayoutFiles(globalLayoutContents));
-  layoutsFolderWatcher.onDidDelete(() => loadLayoutFiles(globalLayoutContents));
+  // Watch for changes in JSON viewpoint files
+  viewpointsFolderWatcher.onDidChange(() => loadViewpointFiles(globalViewpointContents));
+  viewpointsFolderWatcher.onDidCreate(() => loadViewpointFiles(globalViewpointContents));
+  viewpointsFolderWatcher.onDidDelete(() => loadViewpointFiles(globalViewpointContents));
 
   // Watch for changes in SPARQL Config JSON files
   sparqlConfigFolderWatcher.onDidChange(() => loadSparqlConfigFiles());
@@ -386,7 +386,7 @@ export function activate(context: vscode.ExtensionContext) {
   sparqlConfigFolderWatcher.onDidDelete(() => loadSparqlConfigFiles());
 
   context.subscriptions.push(sparqlFolderWatcher);
-  context.subscriptions.push(layoutsFolderWatcher);
+  context.subscriptions.push(viewpointsFolderWatcher);
   context.subscriptions.push(sparqlConfigFolderWatcher);
   /*** END Vision context creation ***/
 

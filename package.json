@@ -184,7 +184,7 @@
       {
         "view": "vision-webview-pages",
         "contents": "No pages available in the build folder. Run ./gradlew build.",
-        "when": "!vision:hasBuildFolder || !vision:hasLayoutFiles || !vision:hasSparqlConfig"
+        "when": "!vision:hasBuildFolder || !vision:hasViewpointFiles || !vision:hasSparqlConfig"
       }
     ],
     "views": {

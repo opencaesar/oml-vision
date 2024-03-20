@@ -14,7 +14,7 @@ import {
   CommandDefinitions,
   Commands,
 } from "../../../commands/src/commands";
-import { globalLayoutContents } from "../extension";
+import { globalViewpointContents } from "../extension";
 
 /**
  * Manages react-based webview panels for a Table
@@ -155,11 +155,11 @@ export class TablePanel {
     );
   }
 
-  public static updateLayouts() {
+  public static updateViewpoints() {
     TablePanel.currentPanels.forEach((panel) =>
       panel.sendMessage({
-        command: Commands.SEND_LAYOUTS,
-        payload: globalLayoutContents,
+        command: Commands.SEND_VIEWPOINTS,
+        payload: globalViewpointContents,
       })
     );
   }

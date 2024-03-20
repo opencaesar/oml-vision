@@ -27,9 +27,9 @@ export function handlePropertyPanelMessage(
       vscode.commands.executeCommand("oml-vision.sendPropertiesToPanel");
       return;
 
-    case Commands.ASK_FOR_LAYOUTS:
+    case Commands.ASK_FOR_VIEWPOINTS:
       vscode.commands.executeCommand(
-        "oml-vision.sendLayouts",
+        "oml-vision.sendViewpoints",
         PropertyPanelInstance
       );
       return;
