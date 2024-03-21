@@ -22,7 +22,14 @@ const isDataEmpty = (obj: Object) => Object.keys(obj).length === 0;
 
 const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
   const { rowIri, tableRowTypes, isAvailable } = usePropertiesData();
-  const { register, handleSubmit, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [data, setData] = useState<ITableData>({});
@@ -271,6 +278,67 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
                                     </VSCodeRadio>
                                   ))}
                                 </VSCodeRadioGroup>
+                              </FormField>
+                            )}
+                            {control.type === "number" && (
+                              <FormField flow="vertical" className="basis-9/12">
+                                <VSCodeTextField
+                                  className="vscode-input-rounded"
+                                  type="tel"
+                                  pattern="^[0-9]+$"
+                                  readOnly={control.readOnly}
+                                  {...register(control.id, {
+                                    // https://www.w3schools.com/jsref/event_onblur.asp
+                                    onBlur: (e) => {
+                                      console.log("control");
+                                      console.log(control);
+                                      const inputValue = e.target.value;
+                                      const isValid = /^[0-9]+$/.test(
+                                        inputValue
+                                      );
+                                      console.log("inputValue");
+                                      console.log(inputValue);
+                                      const formattedValue = (inputValue.search(/"(.*?)"/))
+                                      // FIXME: fix regex expression
+                                      console.log("formattedValue");
+                                      console.log(formattedValue);
+                                      if (!isValid) {
+                                        setError(control.id, {
+                                          type: "pattern",
+                                          message:
+                                            "Please enter a valid number",
+                                        });
+                                      } else {
+                                        clearErrors(control.id);
+                                        submitForm;
+                                      }
+                                    },
+                                    // https://www.w3schools.com/jsref/event_onchange.asp
+                                    onChange: (e) => {
+                                      const inputValue = e.target.value;
+                                      const isValid = /^[0-9]+$/.test(
+                                        inputValue
+                                      );
+                                      if (!isValid) {
+                                        setError(control.id, {
+                                          type: "pattern",
+                                          message:
+                                            "Please enter a valid number",
+                                        });
+                                      } else {
+                                        clearErrors(control.id);
+                                        submitForm;
+                                      }
+                                    },
+                                  })}
+                                  onKeyUp={blurIfReturned}
+                                />
+                                {errors[control.id] && (
+                                  <span className="text-red-500">
+                                    {/* @ts-ignore */}
+                                    {errors[control.id].message.toString()}
+                                  </span>
+                                )}
                               </FormField>
                             )}
                           </FormField>
