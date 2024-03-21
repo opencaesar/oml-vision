@@ -44,6 +44,9 @@ import Legend from "./Legend";
 import "reactflow/dist/style.css";
 import "./Diagram.css";
 
+//Cursors
+import { handlePointerMove } from "./Cursor/Cursor"
+
 const nodeTypes = {
   overlay: OverlayNode,
 };
@@ -465,6 +468,7 @@ function Diagram({
         "hasSelection": ${selectedNodes.length > 0},
         "iri": ${JSON.stringify(iriArray)}
       }`}
+      onPointerMove={handlePointerMove}
     >
       <ReactFlow
         ref={diagramRef}
