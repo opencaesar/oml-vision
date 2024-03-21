@@ -290,18 +290,12 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
                                   {...register(control.id, {
                                     // https://www.w3schools.com/jsref/event_onblur.asp
                                     onBlur: (e) => {
-                                      console.log("control");
-                                      console.log(control);
                                       const inputValue = e.target.value;
                                       const isValid = /^[0-9]+$/.test(
                                         inputValue
                                       );
-                                      console.log("inputValue");
-                                      console.log(inputValue);
+                                      // TODO: remove formattedValue 
                                       const formattedValue = (inputValue.search(/"(.*?)"/))
-                                      // FIXME: fix regex expression
-                                      console.log("formattedValue");
-                                      console.log(formattedValue);
                                       if (!isValid) {
                                         setError(control.id, {
                                           type: "pattern",
