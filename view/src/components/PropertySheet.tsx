@@ -16,6 +16,7 @@ import { IDisplayGroup } from "../interfaces/IDisplayGroup";
 import HelpIcon from "./shared/HelpIcon";
 import Loader from "./shared/Loader";
 import { CommandStructures, Commands } from "../../../commands/src/commands";
+import { VSCodeNumberField } from "./shared/VSCodeNumberField/VSCodeNumberField";
 
 const astFactory = new EvalAstFactory();
 const isDataEmpty = (obj: Object) => Object.keys(obj).length === 0;
@@ -282,57 +283,19 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
                             )}
                             {control.type === "number" && (
                               <FormField flow="vertical" className="basis-9/12">
-                                <VSCodeTextField
+                                {/* FIXME: numberfield should render correct arrows */}
+                                {/* @ts-ignore */}
+                                <VSCodeNumberField
                                   className="vscode-input-rounded"
-                                  type="tel"
-                                  pattern="^[0-9]+$"
                                   readOnly={control.readOnly}
+                                  step={1}
+                                  pattern={/^\d*\.?\d{0,2}$/}
                                   {...register(control.id, {
-                                    // https://www.w3schools.com/jsref/event_onblur.asp
-                                    onBlur: (e) => {
-                                      const inputValue = e.target.value;
-                                      const isValid = /^[0-9]+$/.test(
-                                        inputValue
-                                      );
-                                      // TODO: remove formattedValue 
-                                      const formattedValue = (inputValue.search(/"(.*?)"/))
-                                      if (!isValid) {
-                                        setError(control.id, {
-                                          type: "pattern",
-                                          message:
-                                            "Please enter a valid number",
-                                        });
-                                      } else {
-                                        clearErrors(control.id);
-                                        submitForm;
-                                      }
-                                    },
-                                    // https://www.w3schools.com/jsref/event_onchange.asp
-                                    onChange: (e) => {
-                                      const inputValue = e.target.value;
-                                      const isValid = /^[0-9]+$/.test(
-                                        inputValue
-                                      );
-                                      if (!isValid) {
-                                        setError(control.id, {
-                                          type: "pattern",
-                                          message:
-                                            "Please enter a valid number",
-                                        });
-                                      } else {
-                                        clearErrors(control.id);
-                                        submitForm;
-                                      }
-                                    },
+                                    pattern: /^\d*\.?\d{0,2}$/,
+                                    onChange: submitForm,
                                   })}
                                   onKeyUp={blurIfReturned}
                                 />
-                                {errors[control.id] && (
-                                  <span className="text-red-500">
-                                    {/* @ts-ignore */}
-                                    {errors[control.id].message.toString()}
-                                  </span>
-                                )}
                               </FormField>
                             )}
                           </FormField>
