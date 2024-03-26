@@ -55,6 +55,26 @@ export const generateTableData = async (
   }
 };
 
+/**  
+    This function filters data from an array based on a given regex.  
+    This allows OML Vision to talk with the RDF triplestore.
+    @remarks For more information, about testing regex {@link https://regex101.com | RegEx 101}.
+    @param regex - The regex that is used to filter the data
+    @param data - The array of data to be filtered
+    @param url - The optional URL that is used to check if the URL is located within the JSON object 
+ */
+const filterData = (regex: RegExp, data: Record<string, any>[], url: string) => {
+  data.forEach((obj) => {
+    Object.entries(obj).forEach(([key, value]) => {
+      const match = value.match(regex)
+      if (match && value.includes(url)) {
+        const validNumber = match[0]
+        obj[key] = validNumber
+      }
+    });
+  });
+}
+
 export const generatePropertySheet = async (
   panelProvider: PropertyPanelProvider,
   queryName: string,
@@ -63,7 +83,16 @@ export const generatePropertySheet = async (
   try {
     if (vscode.workspace.workspaceFolders !== undefined) {
       // Query Fuseki DB to get the property sheet data
-      const sparqlData = await SparqlClient(queryName, "query", iri);
+      let sparqlData = await SparqlClient(queryName, "query", iri);
+      
+      const decimalNumberRegex = /([\d\.]+)/;
+      const naNumberRegex = /NA/;
+      const tbdNumberRegex = /TBD/;
+      const url = "http://www.w3.org"
+      
+      filterData(decimalNumberRegex, sparqlData, url)
+      filterData(naNumberRegex, sparqlData, url)
+      filterData(tbdNumberRegex, sparqlData, url)
 
       console.log("SPARQL DATA", sparqlData);
 

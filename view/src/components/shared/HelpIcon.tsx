@@ -31,7 +31,7 @@ const HelpIcon: React.FC<{helpText: string}> = ({helpText}) => {
           height="15"
         />
       </button>
-      <div ref={tooltipRef} className={`${!showTooltip && 'invisible'} z-10 w-[10rem] absolute left-1/2 transform -translate-x-1/2 bg-[color:var(--vscode-dropdown-listBackground)] text-[color:var(--vscode-list-deemphasizedForeground)] text-xxs rounded py-1 px-2 ${tooltipBelow ? 'top-full mt-2' : 'bottom-full mb-2'}`}>
+      <div ref={tooltipRef} className={`${!showTooltip && 'invisible'} z-10 w-[10rem] absolute left-1/2 transform -translate-x-1/2 bg-[color:var(--vscode-dropdown-background)] text-[color:var(--vscode-list-activeSelectionForeground)] text-xxs rounded py-1 px-2 ${tooltipBelow ? 'top-full mt-2' : 'bottom-full mb-2'}`}>
         {helpText}
       </div>
     </div>

@@ -16,13 +16,21 @@ import { IDisplayGroup } from "../interfaces/IDisplayGroup";
 import HelpIcon from "./shared/HelpIcon";
 import Loader from "./shared/Loader";
 import { CommandStructures, Commands } from "../../../commands/src/commands";
+import { VSCodeNumberField } from "./shared/VSCodeNumberField/VSCodeNumberField";
 
 const astFactory = new EvalAstFactory();
 const isDataEmpty = (obj: Object) => Object.keys(obj).length === 0;
 
 const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
   const { rowIri, tableRowTypes, isAvailable } = usePropertiesData();
-  const { register, handleSubmit, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [data, setData] = useState<ITableData>({});
@@ -271,6 +279,23 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
                                     </VSCodeRadio>
                                   ))}
                                 </VSCodeRadioGroup>
+                              </FormField>
+                            )}
+                            {control.type === "number" && (
+                              <FormField flow="vertical" className="basis-9/12">
+                                {/* FIXME: numberfield should render correct arrows */}
+                                {/* @ts-ignore */}
+                                <VSCodeNumberField
+                                  className="vscode-input-rounded"
+                                  readOnly={control.readOnly}
+                                  step={1}
+                                  pattern={/^\d*\.?\d{0,2}$/}
+                                  {...register(control.id, {
+                                    pattern: /^\d*\.?\d{0,2}$/,
+                                    onChange: submitForm,
+                                  })}
+                                  onKeyUp={blurIfReturned}
+                                />
                               </FormField>
                             )}
                           </FormField>
