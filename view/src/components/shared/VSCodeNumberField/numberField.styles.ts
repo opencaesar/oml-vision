@@ -122,7 +122,7 @@ export const numberFieldStyles = (
 
   .step-up-glyph::before,
   .step-down-glyph::before {
-    top: -0.5em;
+    top: -0.57em;
     position: relative;
     right: 90%;
     margin: 40%;
