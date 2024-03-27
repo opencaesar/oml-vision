@@ -489,11 +489,11 @@ function Diagram({
         minZoom={0.01}
       >
         {initData.legendItems.length > 0 && (
-          <Panel className="flow-panel" position="top-left">
+          <Panel className="flow-panel" position="top-right">
             <Legend items={initData.legendItems} />
           </Panel>
         )}
-        <Panel className="flow-panel" position="top-right">
+        {/*<Panel className="flow-panel" position="top-right">
           <div className="flex-col items-center z-10 space-y-2 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
             <VSCodeButton appearance="secondary" onClick={() => fitView()}>
               Fit View
@@ -508,7 +508,7 @@ function Diagram({
                 <span slot="start" className="codicon codicon-filter"></span>
               </VSCodeButton>
             ) : (
-              /* TODO: Implement Add Filter functionality */
+              //TODO: Implement Add Filter functionality
               <VSCodeButton onClick={() => {}}>
                 Add Filter
                 <span slot="start" className="codicon codicon-filter"></span>
@@ -517,9 +517,18 @@ function Diagram({
             {selectedAutoLayout(autoLayout)}
             {selectedAlgorithmLayout(algorithmLayout)}
           </div>
-        </Panel>
+        </Panel>*/}
+
         <Controls className="flow-controls" showInteractive={false}>
           {/* Implemented custom interactive button to avoid disabling selection in diagram */}
+          <ControlButton
+            className="react-flow__controls-interactive"
+            onClick={toggleInteractivity}
+            title="toggle interactivity"
+            aria-label="toggle interactivity"
+          >
+            {isInteractive ? <UnlockIcon /> : <LockIcon />}
+          </ControlButton>
           <ControlButton
             className="react-flow__controls-interactive"
             onClick={toggleInteractivity}
