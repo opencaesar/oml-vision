@@ -27,7 +27,7 @@ const TreeView: React.FC = () => {
     let treeLayouts: any = {};
 
     // layouts[LayoutPaths.Pages] comes from the pages.json file structure and key-value pairs
-    layouts[ViewpointPaths.Pages].forEach((layout: any) => {
+    layouts[ViewpointPaths.Pages]?.forEach((layout: any) => {
       layout.children?.forEach((page: any) => {
         if (page.type === "tree") {
           // Locally scoped variable which is used to set the key of the JSON object

@@ -31,7 +31,7 @@ const DiagramView: React.FC = () => {
     let diagramLayouts: any = {};
 
     // layouts[LayoutPaths.Pages] comes from the pages.json file structure and key-value pairs
-    layouts[ViewpointPaths.Pages].forEach((layout: any) => {
+    layouts[ViewpointPaths.Pages]?.forEach((layout: any) => {
       layout.children?.forEach((page: any) => {
         if (page.type === "diagram") {
           // Locally scoped variable which is used to set the key of the JSON object
