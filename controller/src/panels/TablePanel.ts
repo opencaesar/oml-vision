@@ -14,7 +14,7 @@ import {
   CommandDefinitions,
   Commands,
 } from "../../../commands/src/commands";
-import { globalViewpointContents } from "../extension";
+import { globalCommandContents, globalViewpointContents } from "../extension";
 
 /**
  * Manages react-based webview panels for a Table
@@ -117,7 +117,7 @@ export class TablePanel {
     if (webviewType.type === "table") panelRoute = "/table-panel";
     else if (webviewType.type === "tree") panelRoute = "/tree-panel";
     else if (webviewType.type === "diagram") panelRoute = "/diagram-panel";
-    
+
     // Set the webview's initial html content
     this._panel.webview.html = getHtmlForWebview(
       this._panel.webview,
@@ -160,6 +160,15 @@ export class TablePanel {
       panel.sendMessage({
         command: Commands.SEND_VIEWPOINTS,
         payload: globalViewpointContents,
+      })
+    );
+  }
+
+  public static updateCommands() {
+    TablePanel.currentPanels.forEach((panel) =>
+      panel.sendMessage({
+        command: Commands.SEND_COMMANDS,
+        payload: globalCommandContents,
       })
     );
   }

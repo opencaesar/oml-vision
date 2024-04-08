@@ -109,7 +109,7 @@ const loadTableFiles = async (
     const files = await workspace.fs.readDirectory(tableFolderUri);
     for (const [file, type] of files) {
       if (file.endsWith(".json") && type === FileType.File) {
-        setviewpointContent(tableFolderUri, file, viewpointContents);
+        setViewpointContent(tableFolderUri, file, viewpointContents);
       }
     }
     if (files.length > 0) {
@@ -165,7 +165,7 @@ const loadTreeFiles = async (
     const files = await workspace.fs.readDirectory(treeFolderUri);
     for (const [file, type] of files) {
       if (file.endsWith(".json") && type === FileType.File) {
-        setviewpointContent(treeFolderUri, file, viewpointContents);
+        setViewpointContent(treeFolderUri, file, viewpointContents);
       }
     }
     if (files.length > 0) {
@@ -221,7 +221,7 @@ const loadDiagramFiles = async (
     const files = await workspace.fs.readDirectory(diagramFolderUri);
     for (const [file, type] of files) {
       if (file.endsWith(".json") && type === FileType.File) {
-        setviewpointContent(diagramFolderUri, file, viewpointContents);
+        setViewpointContent(diagramFolderUri, file, viewpointContents);
       }
     }
     if (files.length > 0) {
@@ -270,7 +270,7 @@ const loadPropertyFiles = async (
     const files = await workspace.fs.readDirectory(propertyFolderUri);
     for (const [file, type] of files) {
       if (file.endsWith(".json") && type === FileType.File) {
-        setviewpointContent(propertyFolderUri, file, viewpointContents);
+        setViewpointContent(propertyFolderUri, file, viewpointContents);
       }
     }
     if (files.length > 0) {
@@ -301,7 +301,7 @@ const loadPropertyFiles = async (
  * @param viewpoints - The viewpoints object which will be set.
  *
  */
-const setviewpointContent = async (uri: Uri, file: string, viewpoints: any) => {
+const setViewpointContent = async (uri: Uri, file: string, viewpoints: any) => {
   const fileUri = Uri.joinPath(uri, file);
   const buffer = await workspace.fs.readFile(fileUri);
   const content = JSON.parse(buffer.toString());

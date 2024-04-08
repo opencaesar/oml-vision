@@ -52,6 +52,13 @@ export function handleTablePanelMessage(
       );
       break;
 
+    case Commands.ASK_FOR_COMMANDS:
+      vscode.commands.executeCommand(
+        "oml-vision.sendCommands",
+        TablePanel.currentPanels.get(TablePanelInstance.getWebviewType().path)
+      );
+      break;
+
     case Commands.GENERATE_TABLE_DATA:
       specificMessage =
         message as CommandStructures[Commands.GENERATE_TABLE_DATA];
