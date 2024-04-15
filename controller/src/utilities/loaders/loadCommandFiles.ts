@@ -30,25 +30,27 @@ export const loadCommandFiles = async (
       for (const [file, type] of files) {
         if (
           file.endsWith(".json") &&
-          type === FileType.File &&
-          files.length > 0
+          type === FileType.File
         ) {
           const fileUri = Uri.joinPath(commandFolderUri, file);
           const buffer = await workspace.fs.readFile(fileUri);
           const content = JSON.parse(buffer.toString());
-          commands.executeCommand("setContext", "vision:hasCommand", true);
-          window.showInformationMessage("Command files loaded successfully.");
+          
           try {
-            TablePanel.updateViewpoints();
-            PropertyPanelProvider.updateViewpoints();
+            TablePanel.updateCommands();
+            PropertyPanelProvider.updateCommands();
             commandContents[file] = content;
           } catch (parseErr) {
             commandContents = {};
             throw new Error(`Error parsing command file ${file}: ${parseErr}`);
           }
-        } else {
-          window.showWarningMessage("Command files not found.");
-        }
+        } 
+      }
+      if (files.length > 0) {
+        commands.executeCommand("setContext", "vision:hasCommand", true);
+          window.showInformationMessage("Command files loaded successfully.");
+      } else {
+        window.showWarningMessage("Command files not found.");
       }
     } catch (err) {
       if (

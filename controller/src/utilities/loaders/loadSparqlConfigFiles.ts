@@ -3,7 +3,8 @@ import { TreeDataProvider } from "../../sidebar/TreeDataProvider";
 
 export let globalQueryEndpoint: string = "";
 export let globalPingEndpoint: string = "";
-export let globalUpdateEndpoint: string = "";
+export let globalUpdateAssertionEndpoint: string = "";
+export let globalUpdateInferenceEndpoint: string = "";
 
 export async function loadSparqlConfigFiles() {
     commands.executeCommand("setContext", "vision:hasSparqlConfig", false);
@@ -31,7 +32,8 @@ export async function loadSparqlConfigFiles() {
               if (file === "sparqlConfig.json") {
                 globalQueryEndpoint = content.queryEndpoint;
                 globalPingEndpoint = content.pingEndpoint;
-                globalUpdateEndpoint = content.updateEndpoint;
+                globalUpdateAssertionEndpoint = content.updateAssertionEndpoint;
+                globalUpdateInferenceEndpoint = content.updateInferenceEndpoint;
                 TreeDataProvider.getInstance().updateHasSparqlConfig(true);
               }
             } catch (parseErr) {

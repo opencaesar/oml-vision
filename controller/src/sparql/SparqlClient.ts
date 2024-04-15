@@ -4,10 +4,11 @@ import { queryEngine } from '../database/queryEngine';
 
 // SPARQL service types
 import { SparqlServiceType } from '../types/SparqlServiceType';
+import { addGraphToQuery } from "../database/addGraphQuery";
 
 /**
  * SparqlClient connects to the SPARQL query engine 
- * @param query - The SPARQL query as a string
+ * @param query - The SPARQL query as a string.  Can be "query" or "update"
  * @param service - The SPARQL service as a string.  Either query or update service.
  * @param iri - The target IRI used to get a particular element
  * @returns A promise that resolves with the data as a JSON object, or null if an error occurred
@@ -41,7 +42,8 @@ export async function SparqlClient(query: string, service: SparqlServiceType, ir
     console.log(`EXECUTE QUERY SERVICE: ${QUERY}`)
     return await queryEngine(QUERY);
   } else {
-    console.log(`EXECUTE UPDATE SERVICE: ${QUERY}`)
+    console.log(`EXECUTE UPDATE (DEFAULT GRAPH) SERVICE: ${QUERY}`)
+    console.log(`EXECUTE UPDATE (NAMED GRAPH) SERVICE: ${addGraphToQuery(QUERY)}`)
     return await queryEngine(QUERY)
   }
 }
