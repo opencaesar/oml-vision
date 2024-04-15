@@ -15,6 +15,8 @@ import { FillFlexParent } from './FillFlexParent';
 import { TreeLayout } from '../../interfaces/DataLayoutsType';
 import { useWizards } from '../../contexts/WizardController';
 import { useVisionTree } from './use-vision-tree';
+import useContextMenu from '../ContextMenu/useContextMenu';
+import ContextMenu from '../ContextMenu/ContextMenu';
 
 const INDENT_STEP = 30;
 
@@ -38,16 +40,20 @@ function Tree({
   className,
   rowData,
   webviewPath,
+  modelCommands,
   layout,
   onClickRow = () => { }
 }: {
   className?: string
   rowData: ITableData[]
   webviewPath: string
+  modelCommands: Record<string, Record<string, any>>;
   layout: TreeLayout
   onClickRow?: Function
 }) {
   const { openWizard } = useWizards();
+  const { rightClick, setRightClick, coordinates, setCoordinates } =
+    useContextMenu();
   const { data, onToggle, onMove } = useVisionTree(rowData);
   const [currentTree, setCurrentTree] = useState<TreeApi<ITableData> | null | undefined>(null);
   const [currentRowData, setCurrentRowData] = useState<ITableData[]>(rowData);
@@ -271,6 +277,14 @@ function Tree({
                 setCount(currentTree?.visibleNodes.length ?? 0);
               });
             }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setRightClick(true);
+              setCoordinates({
+                x: e.pageX,
+                y: e.pageY,
+              });
+            }}
           >
             {(props) =>
               <Node
@@ -284,6 +298,15 @@ function Tree({
           </ArboristTree>
         )}
       </FillFlexParent>
+      {rightClick && (
+        <ContextMenu
+          selectedElements={selectedRows}
+          top={coordinates.y}
+          left={coordinates.x}
+          modelCommands={modelCommands}
+          layout={layout}
+        />
+      )}
     </div>
   )
 }

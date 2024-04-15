@@ -1,19 +1,29 @@
+// 3rd party libraries
 import React from "react";
-import { MemoryRouter, Navigate, Routes, Route } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// Providers
 import { PropertiesDataProvider } from "./contexts/PropertyDataProvider";
 import { ViewpointPaths, useLayoutData } from "./contexts/LayoutProvider";
+import { CommandProvider } from "./contexts/CommandProvider";
+import { WizardsProvider } from "./contexts/WizardController";
+
+// Pages that instantiate components
 import HomeView from "./pages/HomeView";
 import TableView from "./pages/TableView";
 import TreeView from "./pages/TreeView";
 import DiagramView from "./pages/DiagramView";
 import PropertiesView from "./pages/PropertiesView";
-import { PropertyLayout, PropertyPage } from "./interfaces/PropertyLayoutsType";
-import PropertySheet from "./components/PropertySheet";
-import wizards from "./components/WizardController/allWizards";
-import { WizardsProvider } from "./contexts/WizardController";
 import SetupTasksView from "./pages/SetupTasksView";
 import TriplestoreStatusView from "./pages/TriplestoreStatusView";
+
+// Interfaces
+import { PropertyLayout, PropertyPage } from "./interfaces/PropertyLayoutsType";
+
+// Components
+import PropertySheet from "./components/PropertySheet";
+import wizards from "./components/WizardController/allWizards";
 
 const queryClient = new QueryClient();
 
@@ -23,9 +33,11 @@ const App = () => {
   let route = [root?.getAttribute("data-initial-route") || "/"];
 
   const viewWithProviders = (view: React.JSX.Element) => (
-    <WizardsProvider initialWizards={wizards}>
-      <QueryClientProvider client={queryClient}>{view}</QueryClientProvider>
-    </WizardsProvider>
+    <CommandProvider>
+      <WizardsProvider initialWizards={wizards}>
+        <QueryClientProvider client={queryClient}>{view}</QueryClientProvider>
+      </WizardsProvider>
+    </CommandProvider>
   );
 
   // Generate routes from property layout data in src/vision/layouts/properties folder in OML model

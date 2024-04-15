@@ -1,0 +1,27 @@
+.context-menu-container {
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  background-color: var(--vscode-actionBar-toggledBackground);
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  padding: 4px;
+}
+
+.context-menu {
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* https://github.com/microsoft/vscode-webview-ui-toolkit/tree/a1f078e963969ad3f6d5932f96874f1a41cda919/src/option */
+.context-menu vscode-option {
+  min-width: 15em;
+  font-family: var(--st-table-td-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: 400;
+  line-height: var(--st-table-td-line-height);
+  letter-spacing: var(--st-table-td-letter-spacing);
+}

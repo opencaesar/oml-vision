@@ -9,8 +9,10 @@ import { DiagramLayout } from "../interfaces/DataLayoutsType";
 import { ReactFlowProvider } from "reactflow";
 import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
+import { useCommandData } from "../contexts/CommandProvider";
 
 const DiagramView: React.FC = () => {
+  const { commands } = useCommandData();
   const { layouts, isLoadingLayoutContext } = useLayoutData();
   const [webviewPath, setWebviewPath] = useState<string>("");
   const [diagramLayout, setDiagramLayout] = useState<DiagramLayout | null>(
@@ -42,7 +44,7 @@ const DiagramView: React.FC = () => {
           diagramLayouts = { ...diagramLayouts, ...layouts[_path] };
         }
       });
-    })
+    });
 
     const root = document.getElementById("root");
     let webviewPath = root?.getAttribute("data-webview-path") || "";
@@ -114,6 +116,7 @@ const DiagramView: React.FC = () => {
 
           if (shouldShowLoader) setIsLoading(false);
           break;
+
         case "updateLocalValue":
           postMessage({
             command: Commands.GENERATE_TABLE_DATA,
@@ -121,6 +124,54 @@ const DiagramView: React.FC = () => {
               webviewPath: webviewPath,
               queries: layout.queries,
             },
+          });
+          break;
+
+        case Commands.CREATE_QUERY:
+          specificMessage = message as CommandStructures[Commands.CREATE_QUERY];
+          postMessage({
+            command: Commands.CREATE_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
+
+        case Commands.READ_QUERY:
+          specificMessage = message as CommandStructures[Commands.READ_QUERY];
+          postMessage({
+            command: Commands.READ_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
+
+        case Commands.UPDATE_QUERY:
+          specificMessage = message as CommandStructures[Commands.UPDATE_QUERY];
+          postMessage({
+            command: Commands.UPDATE_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
+
+        case Commands.DELETE_QUERY:
+          specificMessage = message as CommandStructures[Commands.DELETE_QUERY];
+          postMessage({
+            command: Commands.DELETE_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
           });
           break;
       }
@@ -142,7 +193,6 @@ const DiagramView: React.FC = () => {
       filter.filterObject
     );
   }, [data, filter, diagramLayout]);
-
 
   /**  
     This function handles when a node is clicked in the Diagram View.  
@@ -191,7 +241,7 @@ const DiagramView: React.FC = () => {
       data-vscode-context={`{"webviewPath": "${webviewPath}"}`}
     >
       {/* We don't check if edges exist in case of edgeless graph w*/}
-      {createPageContent.nodes.length > 0 ? (
+      {createPageContent.nodes.length > 0 && diagramLayout != null ? (
         <ReactFlowProvider>
           <Diagram
             initData={createPageContent}
@@ -201,6 +251,8 @@ const DiagramView: React.FC = () => {
             onNodeClicked={handleClickNode}
             // TODO: Use onNodeSelected while node is highlighted/selected
             onNodeSelected={handleClickNode}
+            modelCommands={commands}
+            layout={diagramLayout}
           />
         </ReactFlowProvider>
       ) : (
