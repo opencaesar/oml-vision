@@ -2,9 +2,11 @@ import { QueryEngine } from "@comunica/query-sparql";
 import {
   globalQueryEndpoint,
   globalPingEndpoint,
-  globalUpdateEndpoint
+  globalUpdateAssertionEndpoint,
+  globalUpdateInferenceEndpoint,
 } from "../utilities/loaders/loadSparqlConfigFiles";
 import ITriplestoreStatus from "../interfaces/ITriplestoreStatus";
+import { addGraphToQuery } from "./addGraphQuery";
 
 /**  
     This async function creates a new query engine.  
@@ -41,11 +43,19 @@ export const queryEngine = async (query: string): Promise<any> => {
       bindingsStream.on("error", (error: any) => reject(error));
     });
   } else {
-    // UPDATE, DELETE, or CREATE query is executed
-    // globalUpdateEndpoint is fetched from sparqlConfig.json file in OML Model
+    // UPDATE, DELETE, or CREATE query is executed to named (assertions) and default (inferences) graphs
+    // globalUpdateAssertionEndpoint & globalUpdateInferenceEndpoint are fetched from sparqlConfig.json file in OML Model
     // Refer to controller/src/utilities/loaders/loadSparqlConfigFiles.ts
-    await qe.queryVoid(query, {
-      sources: [globalUpdateEndpoint],
+    const inferenceQuery = query;
+    await qe.queryVoid(inferenceQuery, {
+      sources: [globalUpdateInferenceEndpoint],
+      // timeout in ms
+      httpTimeout: 6000,
+    });
+
+    const assertionQuery = addGraphToQuery(query);
+    await qe.queryVoid(assertionQuery, {
+      sources: [globalUpdateAssertionEndpoint],
       // timeout in ms
       httpTimeout: 6000,
     });
@@ -74,8 +84,8 @@ export const pingQueryEngine = async (): Promise<number> => {
   }
 };
 
-// /**  
-//     This async function gets the status of a query engine.  
+// /**
+//     This async function gets the status of a query engine.
 //     This allows OML Vision to talk with the RDF triplestore.
 //     @remarks For more information, go here: https://comunica.dev/docs/query/getting_started/query_app/
 //     @returns The HTTP status code as a number from the ping operation in a Promise object
@@ -83,7 +93,7 @@ export const pingQueryEngine = async (): Promise<number> => {
 //  */
 //     export const getQueryEngineStatus = async (): Promise<{} | ITriplestoreStatus> => {
 //       let endpoint = globalStatusEndpoint;
-    
+
 //       try {
 //         // Use async/await to wait for the fetch operation to complete
 //         const response = await fetch(endpoint, {

@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, MouseEvent, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  MouseEvent,
+  useCallback,
+} from "react";
 import { postMessage } from "../utils/postMessage";
 import { CommandStructures, Commands } from "../../../commands/src/commands";
 import Table from "../components/Table/Table";
@@ -8,8 +14,10 @@ import { mapValueData } from "../components/Table/tableUtils";
 import { TableLayout } from "../interfaces/DataLayoutsType";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { useCommandData } from "../contexts/CommandProvider";
 
 const TableView: React.FC = () => {
+  const { commands } = useCommandData();
   const { layouts, isLoadingLayoutContext } = useLayoutData();
   const [webviewPath, setWebviewPath] = useState<string>("");
   const [data, setData] = useState<{ [key: string]: ITableData[] }>({});
@@ -25,7 +33,7 @@ const TableView: React.FC = () => {
     let tableLayouts: any = {};
 
     // layouts[LayoutPaths.Pages] comes from the pages.json file structure and key-value pairs
-    layouts[ViewpointPaths.Pages].forEach((layout: any) => {
+    layouts[ViewpointPaths.Pages]?.forEach((layout: any) => {
       layout.children?.forEach((page: any) => {
         if (page.type === "table") {
           // Locally scoped variable which is used to set the key of the JSON object
@@ -36,7 +44,7 @@ const TableView: React.FC = () => {
           tableLayouts = { ...tableLayouts, ...layouts[_path] };
         }
       });
-    })
+    });
 
     const root = document.getElementById("root");
     let webviewPath = root?.getAttribute("data-webview-path") || "";
@@ -108,6 +116,54 @@ const TableView: React.FC = () => {
             command: Commands.REFRESH_TABLE_DATA,
           });
           break;
+
+        case Commands.CREATE_QUERY:
+          specificMessage = message as CommandStructures[Commands.CREATE_QUERY];
+          postMessage({
+            command: Commands.CREATE_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
+
+        case Commands.READ_QUERY:
+          specificMessage = message as CommandStructures[Commands.READ_QUERY];
+          postMessage({
+            command: Commands.READ_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
+
+        case Commands.UPDATE_QUERY:
+          specificMessage = message as CommandStructures[Commands.UPDATE_QUERY];
+          postMessage({
+            command: Commands.UPDATE_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
+
+        case Commands.DELETE_QUERY:
+          specificMessage = message as CommandStructures[Commands.DELETE_QUERY];
+          postMessage({
+            command: Commands.DELETE_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
       }
     };
     window.addEventListener("message", handler);
@@ -141,24 +197,24 @@ const TableView: React.FC = () => {
     @param e - The mouse event that React should be listening to
     @param row - The row and its data that is clicked
   */
-  const handleClickRow = useCallback((
-    e: MouseEvent<HTMLTableRowElement, MouseEvent>,
-    row: ITableData
-  ) => {
-    // Every row should have an IRI, but if somehow it doesn't,
-    // hide the properties sheet.
-    if (!row.original.iri) {
-      postMessage({
-        command: Commands.HIDE_PROPERTIES,
-      });
-      return;
-    }
+  const handleClickRow = useCallback(
+    (e: MouseEvent<HTMLTableRowElement, MouseEvent>, row: ITableData) => {
+      // Every row should have an IRI, but if somehow it doesn't,
+      // hide the properties sheet.
+      if (!row.original.iri) {
+        postMessage({
+          command: Commands.HIDE_PROPERTIES,
+        });
+        return;
+      }
 
-    postMessage({
-      command: Commands.ROW_CLICKED,
-      payload: row.original.iri,
-    });
-  }, []);
+      postMessage({
+        command: Commands.ROW_CLICKED,
+        payload: row.original.iri,
+      });
+    },
+    []
+  );
 
   if (isLoading || isLoadingLayoutContext) {
     return (
@@ -178,6 +234,7 @@ const TableView: React.FC = () => {
           className="w-auto"
           rowData={createPageContent}
           columnData={columns}
+          modelCommands={commands}
           layout={tableLayout}
           onClickRow={handleClickRow}
         />

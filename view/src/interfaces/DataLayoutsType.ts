@@ -31,7 +31,9 @@ export interface IDiagramEdgeMapping {
 
 export type DataLayout = {
   name: string
+  id: string
   queries: Record<string, string>
+  contextMenu: Record<string, string>
   rowMapping: IRowMapping
 };
 

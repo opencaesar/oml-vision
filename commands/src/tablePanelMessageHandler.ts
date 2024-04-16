@@ -1,18 +1,18 @@
-import { Commands, CommandStructures } from './commands';
+import { Commands, CommandStructures } from "./commands";
 import * as vscode from "vscode";
 import { generateTableData } from "../../controller/src/sparql/data-manager/generateDataUtils";
 import { TablePanel } from "../../controller/src/panels/TablePanel";
+import { SparqlClient } from "../../controller/src/sparql/SparqlClient";
 
 /**
  * Handles commands that are sent to a Editor (Table, Tree, or Diagram)
  * https://code.visualstudio.com/api/ux-guidelines/overview#editor
  */
 export function handleTablePanelMessage(
-  message: CommandStructures[Commands] & { command: Commands; },
-  TablePanelInstance: TablePanel,
+  message: CommandStructures[Commands] & { command: Commands },
+  TablePanelInstance: TablePanel
 ) {
-
-  let specificMessage;
+  let specificMessage: any;
   switch (message.command) {
     case Commands.CREATE_TABLE:
       specificMessage = message as CommandStructures[Commands.CREATE_TABLE];
@@ -48,6 +48,13 @@ export function handleTablePanelMessage(
     case Commands.ASK_FOR_VIEWPOINTS:
       vscode.commands.executeCommand(
         "oml-vision.sendViewpoints",
+        TablePanel.currentPanels.get(TablePanelInstance.getWebviewType().path)
+      );
+      break;
+
+    case Commands.ASK_FOR_COMMANDS:
+      vscode.commands.executeCommand(
+        "oml-vision.sendCommands",
         TablePanel.currentPanels.get(TablePanelInstance.getWebviewType().path)
       );
       break;
@@ -105,6 +112,34 @@ export function handleTablePanelMessage(
       specificMessage =
         message as CommandStructures[Commands.EXECUTE_CREATE_ELEMENTS];
       const { properties, graph } = specificMessage.payload;
+      break;
+
+    case Commands.CREATE_QUERY:
+      specificMessage = message as CommandStructures[Commands.CREATE_QUERY];
+      specificMessage.parameters.forEach((param: any) => {
+        SparqlClient(specificMessage.query, "update", param);
+      });
+      break;
+
+    case Commands.READ_QUERY:
+      specificMessage = message as CommandStructures[Commands.READ_QUERY];
+      specificMessage.parameters.forEach((param: any) => {
+        SparqlClient(specificMessage.query, "query", param);
+      });
+      break;
+
+    case Commands.UPDATE_QUERY:
+      specificMessage = message as CommandStructures[Commands.UPDATE_QUERY];
+      specificMessage.parameters.forEach((param: any) => {
+        SparqlClient(specificMessage.query, "update", param);
+      });
+      break;
+
+    case Commands.DELETE_QUERY:
+      specificMessage = message as CommandStructures[Commands.DELETE_QUERY];
+      specificMessage.parameters.forEach((param: any) => {
+        SparqlClient(specificMessage.query, "update", param);
+      });
       break;
 
     default:
