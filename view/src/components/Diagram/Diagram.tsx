@@ -80,6 +80,7 @@ function Diagram({
   const { fitView } = useReactFlow();
   const { isInteractive, setInteractivity, toggleInteractivity } =
     useCanvasInteractivity();
+  const [showDownloadMenu, setShowDownloadMenu] = useState<boolean>(true); // Using negative logic here
 
   // FIXME: useOnSelectionChange occurs after a selection occurs and will continously running when clicking a node or edge
   // useOnSelectionChange({
@@ -457,6 +458,18 @@ function Diagram({
     return dropDownOptions;
   };
 
+  /**
+   * This function toggles the download menu.
+   *
+   * @remarks
+   *
+   * @param
+   *
+   */
+  const toggleDownloadMenu = () => {
+    setShowDownloadMenu(!showDownloadMenu);
+  };
+
   return (
     <div
       className="w-screen h-screen"
@@ -531,53 +544,64 @@ function Diagram({
           </ControlButton>
           <ControlButton
             className="react-flow__controls-interactive"
-            onClick={toggleInteractivity}
-            title="toggle interactivity"
-            aria-label="toggle interactivity"
-          >
-            {isInteractive ? <UnlockIcon /> : <LockIcon />}
-          </ControlButton>
-          <ControlButton
-            onClick={pngDownloadDiagram}
+            onPointerEnter={toggleDownloadMenu}
+            onPointerLeave={toggleDownloadMenu}
             title="download diagram"
             aria-label="download diagram"
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <IconDownload
-                className="flex-shrink-0 flex-grow-0"
-                color="var(--vscode-button-secondaryForeground)"
-                width="16"
-                height="16"
-              />
-              <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>PNG</span>
+            <IconDownload
+              className="flex-shrink-0 flex-grow-0"
+              color="var(--vscode-button-secondaryForeground)"
+              width="16"
+              height="16"
+            />
+            <div className="">
+              {/* TODO: Style so it looks like icon.png */}
+            {/* <div className="h-2 w-2 border-x-8 border-x-transparent border-b-[16px] border-b-[#CCCCCC] rotate-90"></div>
+             */}
+              <div className="w-16 overflow-hidden inline-block">
+                <div className=" h-11 w-11 bg-black rotate-45 transform origin-bottom-left"></div>
+              </div>
             </div>
-          </ControlButton>
-          <ControlButton
-            onClick={svgDownloadDiagram}
-            title="download diagram"
-            aria-label="download diagram"
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <IconDownload
-                className="flex-shrink-0 flex-grow-0"
-                color="var(--vscode-button-secondaryForeground)"
-                width="16"
-                height="16"
-              />
-              <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>SVG</span>
-            </div>
+
+            {!showDownloadMenu && (
+              <div className="absolute left-[1.65rem]">
+                <ControlButton
+                  onClick={pngDownloadDiagram}
+                  title="download diagram"
+                  aria-label="download diagram"
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>
+                      PNG
+                    </span>
+                  </div>
+                </ControlButton>
+                <ControlButton
+                  onClick={svgDownloadDiagram}
+                  title="download diagram"
+                  aria-label="download diagram"
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>
+                      SVG
+                    </span>
+                  </div>
+                </ControlButton>
+              </div>
+            )}
           </ControlButton>
         </Controls>
         <MiniMap
