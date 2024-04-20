@@ -22,9 +22,13 @@ import { loadSparqlConfigFiles } from "./utilities/loaders/loadSparqlConfigFiles
 // Panel Classes
 import { TablePanel } from "./panels/TablePanel";
 import { PropertyPanelProvider } from "./panels/PropertyPanelProvider";
+import { loadCommandFiles } from "./utilities/loaders/loadCommandFiles";
 
 export let globalSparqlContents: { [filename: string]: string } = {};
 export let globalViewpointContents: {
+  [filename: string]: Record<string, string> | any[];
+} = {};
+export let globalCommandContents: {
   [filename: string]: Record<string, string> | any[];
 } = {};
 
@@ -125,14 +129,15 @@ export function activate(context: vscode.ExtensionContext) {
     };
 
     // Find the full IWebviewType for the given webviewPath
-    const webviewViewpoints = (globalViewpointContents[ViewpointPaths.Pages] ?? []) as (
-      | IWebviewType
-      | ITableCategory
-    )[];
+    const webviewViewpoints = (globalViewpointContents[ViewpointPaths.Pages] ??
+      []) as (IWebviewType | ITableCategory)[];
     const findViewpoint = (item: any): any =>
       item.path === diagram ? item : item.children?.find(findViewpoint);
     const diagramWebviewType = webviewViewpoints
-      .reduce((acc, viewpoint) => acc.concat(findViewpoint(viewpoint) || []), [])
+      .reduce(
+        (acc, viewpoint) => acc.concat(findViewpoint(viewpoint) || []),
+        []
+      )
       .find(Boolean);
 
     if (!diagramWebviewType)
@@ -287,6 +292,18 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "oml-vision.sendCommands",
+      (panel: TablePanel | PropertyPanelProvider) => {
+        panel.sendMessage({
+          command: Commands.SEND_COMMANDS,
+          payload: globalCommandContents,
+        });
+      }
+    )
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand("oml-vision.clone-row", cloneSelectedRows)
   );
 
@@ -333,6 +350,9 @@ export function activate(context: vscode.ExtensionContext) {
   let viewpointsFolderWatcher = vscode.workspace.createFileSystemWatcher(
     "**/src/vision/viewpoints/*.json"
   );
+  let commandsFolderWatcher = vscode.workspace.createFileSystemWatcher(
+    "**/src/vision/commands/*.json"
+  );
   let sparqlConfigFolderWatcher = vscode.workspace.createFileSystemWatcher(
     "**/src/vision/config/*.json"
   );
@@ -366,19 +386,55 @@ export function activate(context: vscode.ExtensionContext) {
     console.error("Error loading viewpoint files from model:", err);
   });
 
+  loadCommandFiles(globalCommandContents).catch((err) => {
+    console.error("Error loading command files from model:", err);
+  });
+
   loadSparqlConfigFiles().catch((err) => {
     console.error("Error loading SPARQL config from model:", err);
   });
 
   // Watch for changes in SPARQL files
-  sparqlFolderWatcher.onDidChange(() => loadSparqlFiles(globalSparqlContents));
-  sparqlFolderWatcher.onDidCreate(() => loadSparqlFiles(globalSparqlContents));
-  sparqlFolderWatcher.onDidDelete(() => loadSparqlFiles(globalSparqlContents));
+  sparqlFolderWatcher.onDidChange(() => {
+    globalSparqlContents = {};
+    loadSparqlFiles(globalSparqlContents);
+  });
+  sparqlFolderWatcher.onDidCreate(() => {
+    globalSparqlContents = {};
+    loadSparqlFiles(globalSparqlContents);
+  });
+  sparqlFolderWatcher.onDidDelete(() => {
+    globalSparqlContents = {};
+    loadSparqlFiles(globalSparqlContents);
+  });
 
   // Watch for changes in JSON viewpoint files
-  viewpointsFolderWatcher.onDidChange(() => loadViewpointFiles(globalViewpointContents));
-  viewpointsFolderWatcher.onDidCreate(() => loadViewpointFiles(globalViewpointContents));
-  viewpointsFolderWatcher.onDidDelete(() => loadViewpointFiles(globalViewpointContents));
+  viewpointsFolderWatcher.onDidChange(() => {
+    globalViewpointContents = {};
+    loadViewpointFiles(globalViewpointContents);
+  });
+  viewpointsFolderWatcher.onDidCreate(() => {
+    globalViewpointContents = {};
+    loadViewpointFiles(globalViewpointContents);
+  });
+  viewpointsFolderWatcher.onDidDelete(() => {
+    globalViewpointContents = {};
+    loadViewpointFiles(globalViewpointContents);
+  });
+
+  // Watch for changes in JSON command files
+  commandsFolderWatcher.onDidChange(() => {
+    globalCommandContents = {};
+    loadCommandFiles(globalCommandContents);
+  });
+  commandsFolderWatcher.onDidCreate(() => {
+    globalCommandContents = {};
+    loadCommandFiles(globalCommandContents);
+  });
+  commandsFolderWatcher.onDidDelete(() => {
+    globalCommandContents = {};
+    loadCommandFiles(globalCommandContents);
+  });
 
   // Watch for changes in SPARQL Config JSON files
   sparqlConfigFolderWatcher.onDidChange(() => loadSparqlConfigFiles());
@@ -387,6 +443,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(sparqlFolderWatcher);
   context.subscriptions.push(viewpointsFolderWatcher);
+  context.subscriptions.push(commandsFolderWatcher);
   context.subscriptions.push(sparqlConfigFolderWatcher);
   /*** END Vision context creation ***/
 

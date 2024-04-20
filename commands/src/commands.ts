@@ -11,6 +11,7 @@ export enum Commands {
   ROW_CLICKED = 'rowClicked',
   HIDE_PROPERTIES = 'hideProperties',
   ASK_FOR_VIEWPOINTS = 'askForViewpoints',
+  ASK_FOR_COMMANDS = 'askForCommands',
   GENERATE_TABLE_DATA = 'generateTableData',
   UPDATE_CM_STATE = 'updateCmState',
   REFRESH_TABLE_DATA = 'refreshTableData',
@@ -38,6 +39,7 @@ export enum Commands {
   // Extension To Table Panel Commands
   UPDATE_LOCAL_VALUE = 'updateLocalValue',
   SEND_VIEWPOINTS = 'sendViewpoints',
+  SEND_COMMANDS = 'sendCommands',
   OPEN_WIZARD = 'openWizard',
   CREATE_FILTERED_DIAGRAM = 'createFilteredDiagram',
   LOADED_PROPERTY_SHEET = 'loadedPropertySheet',
@@ -47,6 +49,13 @@ export enum Commands {
   CREATED_ELEMENT = 'createdElement',
   CLONED_ELEMENTS = 'clonedElements',
   SHOW_PROPERTIES = 'showProperties',
+
+  // Context Menu to Triplestore.  All crud commands
+  CREATE_QUERY = 'createQuery',
+  READ_QUERY = 'readQuery',
+  UPDATE_QUERY = 'updateQuery',
+  DELETE_QUERY = 'deleteQuery',
+
 }
 
 export type CommandStructures = {
@@ -64,6 +73,7 @@ export type CommandStructures = {
   };
   [Commands.HIDE_PROPERTIES]: {};
   [Commands.ASK_FOR_VIEWPOINTS]: {};
+  [Commands.ASK_FOR_COMMANDS]: {};
   [Commands.GENERATE_TABLE_DATA]: {
     payload: { webviewPath: string; queries: Record<string, string> };
     wizardId?: string;
@@ -124,6 +134,9 @@ export type CommandStructures = {
   [Commands.SEND_VIEWPOINTS]: {
     payload: { [filename: string]: Record<string, string> | any[] }
   };
+  [Commands.SEND_COMMANDS]: {
+    payload: { [filename: string]: Record<string, string> | any[] }
+  };
   [Commands.OPEN_WIZARD]: {
     payload: {
       key: string;
@@ -175,6 +188,22 @@ export type CommandStructures = {
   };
   [Commands.SHOW_PROPERTIES]: {
     payload: IPropertyData;
+  };
+  [Commands.CREATE_QUERY]: {
+    query: string;
+    parameters: string[]
+  };
+  [Commands.READ_QUERY]: {
+    query: string;
+    parameters: string[]
+  };
+  [Commands.UPDATE_QUERY]: {
+    query: string;
+    parameters: string[]
+  };
+  [Commands.DELETE_QUERY]: {
+    query: string;
+    parameters: string[]
   };
 };
 

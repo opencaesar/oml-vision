@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, MouseEvent, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  MouseEvent,
+  useCallback,
+} from "react";
 import { postMessage } from "../utils/postMessage";
 import { CommandStructures, Commands } from "../../../commands/src/commands";
 import Tree from "../components/Tree/Tree";
@@ -11,8 +17,10 @@ import {
 import { TreeLayout } from "../interfaces/DataLayoutsType";
 import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
+import { useCommandData } from "../contexts/CommandProvider";
 
 const TreeView: React.FC = () => {
+  const { commands } = useCommandData();
   const { layouts, isLoadingLayoutContext } = useLayoutData();
   const [webviewPath, setWebviewPath] = useState<string>("");
   const [data, setData] = useState<{ [key: string]: ITableData[] }>({});
@@ -27,7 +35,7 @@ const TreeView: React.FC = () => {
     let treeLayouts: any = {};
 
     // layouts[LayoutPaths.Pages] comes from the pages.json file structure and key-value pairs
-    layouts[ViewpointPaths.Pages].forEach((layout: any) => {
+    layouts[ViewpointPaths.Pages]?.forEach((layout: any) => {
       layout.children?.forEach((page: any) => {
         if (page.type === "tree") {
           // Locally scoped variable which is used to set the key of the JSON object
@@ -38,7 +46,7 @@ const TreeView: React.FC = () => {
           treeLayouts = { ...treeLayouts, ...layouts[_path] };
         }
       });
-    })
+    });
 
     const root = document.getElementById("root");
     let webviewPath = root?.getAttribute("data-webview-path") || "";
@@ -116,6 +124,54 @@ const TreeView: React.FC = () => {
             },
           });
           break;
+
+        case Commands.CREATE_QUERY:
+          specificMessage = message as CommandStructures[Commands.CREATE_QUERY];
+          postMessage({
+            command: Commands.CREATE_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
+
+        case Commands.READ_QUERY:
+          specificMessage = message as CommandStructures[Commands.READ_QUERY];
+          postMessage({
+            command: Commands.READ_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
+
+        case Commands.UPDATE_QUERY:
+          specificMessage = message as CommandStructures[Commands.UPDATE_QUERY];
+          postMessage({
+            command: Commands.UPDATE_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
+
+        case Commands.DELETE_QUERY:
+          specificMessage = message as CommandStructures[Commands.DELETE_QUERY];
+          postMessage({
+            command: Commands.DELETE_QUERY,
+            query: message.query,
+            parameters: message.parameters,
+          });
+          postMessage({
+            command: Commands.REFRESH_TABLE_DATA,
+          });
+          break;
       }
     };
     window.addEventListener("message", handler);
@@ -182,6 +238,7 @@ const TreeView: React.FC = () => {
           className="w-auto"
           rowData={createPageContent}
           webviewPath={webviewPath}
+          modelCommands={commands}
           layout={treeLayout}
           onClickRow={handleClickRow}
         />

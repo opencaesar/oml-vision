@@ -43,6 +43,9 @@ import { getLayoutedElements, useCanvasInteractivity } from "./diagramUtils";
 import Legend from "./Legend";
 import "reactflow/dist/style.css";
 import "./Diagram.css";
+import useContextMenu from "../ContextMenu/useContextMenu";
+import ContextMenu from "../ContextMenu/ContextMenu";
+import { DiagramLayout } from "../../interfaces/DataLayoutsType";
 
 const nodeTypes = {
   overlay: OverlayNode,
@@ -53,6 +56,8 @@ function Diagram({
   webviewPath,
   hasFilter,
   clearFilter = () => {},
+  modelCommands,
+  layout,
   // TODO: Use onNodeSelected while node is highlighted/selected
   onNodeSelected = () => {},
   onNodeClicked = () => {},
@@ -65,10 +70,14 @@ function Diagram({
   webviewPath: string;
   hasFilter: boolean;
   clearFilter: Function;
+  modelCommands: Record<string, Record<string, any>>;
+  layout: DiagramLayout;
   onNodeSelected?: Function;
   onNodeClicked?: Function;
 }) {
   // Vanilla React Hooks
+  const { rightClick, setRightClick, coordinates, setCoordinates } =
+    useContextMenu();
   const [isLoading, setIsLoading] = useState(true);
   const [autoLayout, setAutoLayout] = useState("");
   const [algorithmLayout, setAlgorithmLayout] = useState("");
@@ -500,6 +509,14 @@ function Diagram({
         nodesConnectable={false}
         fitView={true}
         minZoom={0.01}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setRightClick(true);
+          setCoordinates({
+            x: e.pageX,
+            y: e.pageY,
+          });
+        }}
       >
         {initData.legendItems.length > 0 && (
           <Panel className="flow-panel" position="top-right">
@@ -612,6 +629,15 @@ function Diagram({
         />
         <Background gap={12} size={1} />
       </ReactFlow>
+      {rightClick && (
+        <ContextMenu
+          selectedElements={selectedNodes}
+          top={coordinates.y}
+          left={coordinates.x}
+          modelCommands={modelCommands}
+          layout={layout}
+        />
+      )}
     </div>
   );
 }

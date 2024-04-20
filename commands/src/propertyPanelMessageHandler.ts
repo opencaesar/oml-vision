@@ -34,6 +34,13 @@ export function handlePropertyPanelMessage(
       );
       return;
 
+    case Commands.ASK_FOR_COMMANDS:
+      vscode.commands.executeCommand(
+        "oml-vision.sendCommands",
+        PropertyPanelInstance
+      );
+      return;
+
     case Commands.RECEIVED_PROPERTIES:
       // Handshake to acknowledge properties
       // were received. This avoids a race condition
