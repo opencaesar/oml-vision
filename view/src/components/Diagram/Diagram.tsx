@@ -479,6 +479,8 @@ function Diagram({
     setShowDownloadMenu(!showDownloadMenu);
   };
 
+  const arrowIconSize = 16;
+
   return (
     <div
       className="w-screen h-screen"
@@ -560,7 +562,9 @@ function Diagram({
             {isInteractive ? <UnlockIcon /> : <LockIcon />}
           </ControlButton>
           <ControlButton
-            className="react-flow__controls-interactive"
+            className={`react-flow__controls-interactive flex flex-row gap-[${
+              arrowIconSize / 4
+            }]`}
             onPointerEnter={toggleDownloadMenu}
             onPointerLeave={toggleDownloadMenu}
             title="download diagram"
@@ -574,11 +578,22 @@ function Diagram({
             />
             <div className="">
               {/* TODO: Style so it looks like icon.png */}
-            {/* <div className="h-2 w-2 border-x-8 border-x-transparent border-b-[16px] border-b-[#CCCCCC] rotate-90"></div>
-             */}
-              <div className="w-16 overflow-hidden inline-block">
-                <div className=" h-11 w-11 bg-black rotate-45 transform origin-bottom-left"></div>
-              </div>
+              {/* <div className="h-2 w-2 border-x-8 border-x-transparent border-b-[16px] border-b-[#CCCCCC] rotate-90"></div>
+               */}
+              <svg
+                width={arrowIconSize / 4}
+                height={arrowIconSize}
+                viewBox={`0 0 ${arrowIconSize / 4} ${arrowIconSize}`}
+              >
+                <path
+                  d={`M 0 ${arrowIconSize} L ${
+                    arrowIconSize / 4
+                  } ${arrowIconSize} L ${arrowIconSize / 4} ${
+                    (arrowIconSize * 3) / 4
+                  } Z`}
+                  fill="var(--vscode-button-secondaryForeground)"
+                />
+              </svg>
             </div>
 
             {!showDownloadMenu && (
