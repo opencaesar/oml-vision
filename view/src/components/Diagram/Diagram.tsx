@@ -25,6 +25,8 @@ import ReactFlow, {
   getConnectedEdges,
 } from "reactflow";
 
+import InsertPanel from "./InsertPanel";
+
 // Icons
 import { IconDownload } from "@nasa-jpl/react-stellar";
 import LockIcon from "./Icons/Lock";
@@ -34,6 +36,7 @@ import { toPng, toSvg } from "html-to-image";
 import Loader from "../shared/Loader";
 import ITableData from "../../interfaces/ITableData";
 import { LegendItem } from "../../interfaces/LegendItemType";
+import { InsertItem } from "../../interfaces/InsertItemType";
 import {
   VSCodeButton,
   VSCodeDropdown,
@@ -479,7 +482,14 @@ function Diagram({
     setShowDownloadMenu(!showDownloadMenu);
   };
 
-  const arrowIconSize = 16;
+  const arrowIconSize = 16; // This constant sets the control button dropdown indicator arrow size.
+  var testInsertItem: InsertItem = {
+    label: "TestInsertItem",
+    onItemClicked: () => {console.log("Item was clicked!")},
+    icon: <LockIcon />
+  }
+
+  var insertItems: InsertItem[] = [testInsertItem];
 
   return (
     <div
@@ -642,6 +652,11 @@ function Diagram({
           pannable
           nodeColor={getNodeColor}
         />
+        <Panel position="top-left" className="flow-panel">
+          <InsertPanel
+          components={insertItems}
+          relationships={insertItems}/>
+        </Panel>
         <Background gap={12} size={1} />
       </ReactFlow>
       {rightClick && (
