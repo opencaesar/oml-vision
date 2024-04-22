@@ -121,25 +121,25 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       postMessage({
         command: Commands.CREATE_QUERY,
         query: command.query,
-        parameters: selectedIris,
+        selectedElements: selectedIris,
       });
     } else if (command.type === "read") {
       postMessage({
         command: Commands.READ_QUERY,
         query: command.query,
-        parameters: selectedIris,
+        selectedElements: selectedIris,
       });
     } else if (command.type === "update") {
       postMessage({
         command: Commands.UPDATE_QUERY,
         query: command.query,
-        parameters: selectedIris,
+        selectedElements: selectedIris,
       });
     } else if (command.type === "delete") {
       postMessage({
         command: Commands.DELETE_QUERY,
         query: command.query,
-        parameters: selectedIris,
+        selectedElements: selectedIris,
       });
     } else {
       postMessage({
