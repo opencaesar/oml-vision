@@ -8,6 +8,11 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 
 ## v0.3.0 - Venus
 
+### Added
+- Property View: execute commands from property sheet https://github.com/opencaesar/oml-vision/pull/57
+- Table, Tree, and Diagram Views: execute commands from a context/right click menu file https://github.com/opencaesar/oml-vision/pull/54
+
+
 ## v0.2.6 - Rembrandt Basin
 
 ### Added
