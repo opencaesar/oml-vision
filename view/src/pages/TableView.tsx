@@ -122,7 +122,7 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.CREATE_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,
@@ -134,7 +134,7 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.READ_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,
@@ -146,7 +146,9 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.UPDATE_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
+            before_parameters: message.parameters,
+            after_parameters: message.parameters,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,
@@ -158,7 +160,7 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.DELETE_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,

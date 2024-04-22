@@ -25,6 +25,7 @@ export type PropertyPage = {
   label: string,
   icon: string,
   sparqlQuery: string,
+  sparqlUpdate: string,
   domainClass: string,
   preconditionExpression: string,
   groups: PropertyGroup[]
