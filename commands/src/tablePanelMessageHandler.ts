@@ -116,30 +116,46 @@ export function handleTablePanelMessage(
 
     case Commands.CREATE_QUERY:
       specificMessage = message as CommandStructures[Commands.CREATE_QUERY];
-      specificMessage.parameters.forEach((param: any) => {
-        SparqlClient(specificMessage.query, "update", param);
-      });
+      if(specificMessage.selectedElements) {
+        specificMessage.selectedElements.forEach((param: any) => {
+          SparqlClient(specificMessage.query, "update", param);
+        });
+      } else {
+        SparqlClient(specificMessage.query, "update", specificMessage)
+      }
       break;
 
     case Commands.READ_QUERY:
       specificMessage = message as CommandStructures[Commands.READ_QUERY];
-      specificMessage.parameters.forEach((param: any) => {
-        SparqlClient(specificMessage.query, "query", param);
-      });
+      if(specificMessage.selectedElements) {
+        specificMessage.selectedElements.forEach((param: any) => {
+          SparqlClient(specificMessage.query, "query", param);
+        });
+      } else {
+        SparqlClient(specificMessage.query, "query", specificMessage)
+      }
       break;
 
     case Commands.UPDATE_QUERY:
       specificMessage = message as CommandStructures[Commands.UPDATE_QUERY];
-      specificMessage.parameters.forEach((param: any) => {
-        SparqlClient(specificMessage.query, "update", param);
-      });
+      if(specificMessage.selectedElements) {
+        specificMessage.selectedElements.forEach((param: any) => {
+          SparqlClient(specificMessage.query, "update", param);
+        });
+      } else {
+        SparqlClient(specificMessage.query, "update", specificMessage)
+      }
       break;
 
     case Commands.DELETE_QUERY:
       specificMessage = message as CommandStructures[Commands.DELETE_QUERY];
-      specificMessage.parameters.forEach((param: any) => {
-        SparqlClient(specificMessage.query, "update", param);
-      });
+      if(specificMessage.selectedElements) {
+        specificMessage.selectedElements.forEach((param: any) => {
+          SparqlClient(specificMessage.query, "update", param);
+        });
+      } else {
+        SparqlClient(specificMessage.query, "update", specificMessage)
+      }
       break;
 
     default:

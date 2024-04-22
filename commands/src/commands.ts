@@ -191,19 +191,21 @@ export type CommandStructures = {
   };
   [Commands.CREATE_QUERY]: {
     query: string;
-    parameters: string[]
+    selectedElements?: string[]
   };
   [Commands.READ_QUERY]: {
     query: string;
-    parameters: string[]
+    selectedElements?: string[]
   };
   [Commands.UPDATE_QUERY]: {
     query: string;
-    parameters: string[]
+    selectedElements?: string[]
+    before_parameters?: Object
+    after_parameters?: Object
   };
   [Commands.DELETE_QUERY]: {
     query: string;
-    parameters: string[]
+    selectedElements?: string[]
   };
 };
 
