@@ -1,17 +1,17 @@
-import { Commands, CommandStructures } from './commands';
-import * as vscode from 'vscode';
-import { PropertyPanelProvider } from '../../controller/src/panels/PropertyPanelProvider';
+import { Commands, CommandStructures } from "./commands";
+import * as vscode from "vscode";
+import { PropertyPanelProvider } from "../../controller/src/panels/PropertyPanelProvider";
+import { SparqlClient } from "../../controller/src/sparql/SparqlClient";
 
 /**
  * Handles commands that are sent to a Panel (Property Page)
  * https://code.visualstudio.com/api/ux-guidelines/overview#panel
  */
 export function handlePropertyPanelMessage(
-  message: CommandStructures[Commands] & { command: Commands; },
+  message: CommandStructures[Commands] & { command: Commands },
   PropertyPanelInstance: PropertyPanelProvider
 ) {
-
-  let specificMessage;
+  let specificMessage: any;
   switch (message.command) {
     case Commands.ALERT:
       const alertMessage = message as CommandStructures[Commands.ALERT];
@@ -55,6 +55,26 @@ export function handlePropertyPanelMessage(
         const pfdPayload = specificMessage.payload as any;
       }
       return;
+
+    case Commands.UPDATE_QUERY:
+      specificMessage = message as CommandStructures[Commands.UPDATE_QUERY];
+      if (
+        specificMessage.before_parameters &&
+        specificMessage.after_parameters
+      ) {
+        if (specificMessage.selectedElements) {
+          specificMessage.selectedElements.forEach((param: any) => {
+            SparqlClient(
+              specificMessage.query,
+              "update",
+              param,
+              specificMessage.before_parameters,
+              specificMessage.after_parameters
+            );
+          });
+        }
+      }
+      break;
 
     case Commands.GENERATE_PROPERTY_SHEET:
       specificMessage =
