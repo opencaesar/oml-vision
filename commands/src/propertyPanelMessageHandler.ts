@@ -1,6 +1,7 @@
 import { Commands, CommandStructures } from "./commands";
 import * as vscode from "vscode";
 import { PropertyPanelProvider } from "../../controller/src/panels/PropertyPanelProvider";
+import { TablePanel } from "../../controller/src/panels/TablePanel";
 import { SparqlClient } from "../../controller/src/sparql/SparqlClient";
 
 /**
@@ -84,6 +85,10 @@ export function handlePropertyPanelMessage(
         specificMessage.payload
       );
       return;
+
+    case Commands.REFRESH_TABLE_DATA:
+      TablePanel.updateTables();
+      break;
 
     default:
       throw new Error(`Unhandled command: ${message.command}`);

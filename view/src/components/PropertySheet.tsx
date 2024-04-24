@@ -168,6 +168,9 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
         before_parameters: currentData,
         after_parameters: data,
       });
+      postMessage({
+        command: Commands.REFRESH_TABLE_DATA
+      })
     }
     return false;
   };
