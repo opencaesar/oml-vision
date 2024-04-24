@@ -13,8 +13,9 @@ import ITableData from "../interfaces/ITableData";
 import { mapValueData } from "../components/Table/tableUtils";
 import { TableLayout } from "../interfaces/DataLayoutsType";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
-import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../providers/LayoutProvider";
 import { useCommandData } from "../contexts/CommandProvider";
+
 
 const TableView: React.FC = () => {
   const { commands } = useCommandData();

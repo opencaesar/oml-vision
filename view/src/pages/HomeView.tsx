@@ -1,12 +1,12 @@
 import React, { useEffect, useState, KeyboardEvent } from "react";
 import "@nasa-jpl/react-stellar/dist/esm/stellar.css";
-import ExpandingMenu from "../components/ExpandingMenu";
+import ExpandingMenu from "../components/Home/ExpandingMenu";
 import { postMessage } from "../utils/postMessage";
 import { Commands } from "../../../commands/src/commands";
 import { IconVisibleShow, IconSearch } from "@nasa-jpl/react-stellar";
 import Loader from "../components/shared/Loader";
 import { SubmenuData } from "../interfaces/SubmenuData";
-import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../providers/LayoutProvider";
 import packageJson from "../../../package.json"
 
 const MAX_SEARCH_SUGGESTIONS = 4;

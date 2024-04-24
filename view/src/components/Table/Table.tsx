@@ -15,17 +15,17 @@ import {
   ColumnSort,
   SortingState,
   flexRender,
-  Row,
-} from "@tanstack/react-table";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { useWizards } from "../../contexts/WizardController";
-import { getLifecycleStateStyles, getRowRange } from "./tableUtils";
-import ITableData from "../../interfaces/ITableData";
-import ITableDataQuery from "../../interfaces/ITableDataQuery";
-import { TableLayout } from "../../interfaces/DataLayoutsType";
-import TableFilter from "./TableFilter";
-import "./Table.css";
+  Row
+} from '@tanstack/react-table'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { useWizards } from '../../providers/WizardController'
+import { getLifecycleStateStyles, getRowRange } from './tableUtils'
+import ITableData from '../../interfaces/ITableData'
+import ITableDataQuery from '../../interfaces/ITableDataQuery'
+import { TableLayout } from '../../interfaces/DataLayoutsType'
+import TableFilter from './TableFilter'
+import './Table.css'
 import useContextMenu from "../ContextMenu/useContextMenu";
 import ContextMenu from "../ContextMenu/ContextMenu";
 

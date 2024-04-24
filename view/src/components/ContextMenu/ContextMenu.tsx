@@ -11,6 +11,7 @@ import { Commands } from "../../../../commands/src/commands";
 import { RowModel } from "@tanstack/react-table";
 import { NodeApi } from "react-arborist";
 import { Node } from "reactflow";
+import { useWizards } from "../../providers/WizardController";
 
 interface ContextMenuProps {
   layout: TableLayout | TreeLayout;
@@ -28,6 +29,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   top,
   left,
 }) => {
+  const { openWizard } = useWizards();
   const { contextMenuRef } = useContextMenu();
   const { handleSubmit } = useForm();
   
@@ -123,6 +125,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         query: command.query,
         selectedElements: selectedIris,
       });
+      openWizard("CreateElementWizard", { selectedIris });
     } else if (command.type === "read") {
       postMessage({
         command: Commands.READ_QUERY,
@@ -135,12 +138,14 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         query: command.query,
         selectedElements: selectedIris,
       });
+      openWizard("UpdateElementsWizard", { selectedIris });
     } else if (command.type === "delete") {
       postMessage({
         command: Commands.DELETE_QUERY,
         query: command.query,
         selectedElements: selectedIris,
       });
+      openWizard("DeleteElementsWizard", { selectedIris });
     } else {
       postMessage({
         command: Commands.ALERT,

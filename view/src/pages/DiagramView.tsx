@@ -7,7 +7,7 @@ import ITableData from "../interfaces/ITableData";
 import { mapDiagramValueData } from "../components/Diagram/diagramUtils";
 import { DiagramLayout } from "../interfaces/DataLayoutsType";
 import { ReactFlowProvider } from "reactflow";
-import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../providers/LayoutProvider";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import { useCommandData } from "../contexts/CommandProvider";
 

@@ -7,16 +7,16 @@ import {
 } from "@vscode/webview-ui-toolkit/react";
 import { useForm, FieldValues } from "react-hook-form";
 import { parse, EvalAstFactory } from "jexpr";
-import { postMessage } from "../utils/postMessage";
-import { usePropertiesData } from "../contexts/PropertyDataProvider";
-import ITableData from "../interfaces/ITableData";
-import { PropertyPage } from "../interfaces/PropertyLayoutsType";
-import { CMStatesArray } from "../interfaces/CMStates";
-import { IDisplayGroup } from "../interfaces/IDisplayGroup";
-import HelpIcon from "./shared/HelpIcon";
-import Loader from "./shared/Loader";
-import { CommandStructures, Commands } from "../../../commands/src/commands";
-import { VSCodeNumberField } from "./shared/VSCodeNumberField/VSCodeNumberField";
+import { postMessage } from "../../utils/postMessage";
+import { usePropertiesData } from "../../providers/PropertyDataProvider";
+import ITableData from "../../interfaces/ITableData";
+import { PropertyPage } from "../../interfaces/PropertyLayoutsType";
+import { CMStatesArray } from "../../interfaces/CMStates";
+import { IDisplayGroup } from "../../interfaces/IDisplayGroup";
+import HelpIcon from "../shared/HelpIcon";
+import Loader from "../shared/Loader";
+import { CommandStructures, Commands } from "../../../../commands/src/commands";
+import { VSCodeNumberField } from "../shared/VSCodeNumberField/VSCodeNumberField";
 
 const astFactory = new EvalAstFactory();
 const isDataEmpty = (obj: Object) => Object.keys(obj).length === 0;

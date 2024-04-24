@@ -15,7 +15,7 @@ import {
   areArraysOfObjectsEqual,
 } from "../components/Tree/treeUtils";
 import { TreeLayout } from "../interfaces/DataLayoutsType";
-import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../providers/LayoutProvider";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import { useCommandData } from "../contexts/CommandProvider";
 

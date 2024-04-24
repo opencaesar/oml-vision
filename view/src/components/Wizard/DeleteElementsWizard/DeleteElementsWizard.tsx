@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react"
-import Modal from "../../../shared/Modal"
+import Modal from "../../shared/Modal"
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 import { Tree as ArboristTree, NodeApi, NodeRendererProps } from "react-arborist"
-import { getLifecycleStateStyles } from "../../../Tree/treeUtils"
-import { useWizards } from "../../../../contexts/WizardController"
-import { postMessage } from "../../../../utils/postMessage"
-import { CommandStructures, Commands } from "../../../../../../commands/src/commands"
-import Loader from "../../../shared/Loader"
+import { getLifecycleStateStyles } from "../../Tree/treeUtils"
+import { useWizards } from "../../../providers/WizardController"
+import { postMessage } from "../../../utils/postMessage"
+import { CommandStructures, Commands } from "../../../../../commands/src/commands"
+import Loader from "../../shared/Loader"
 import { v4 as uuid } from 'uuid';
-import ITableData from "../../../../interfaces/ITableData"
+import ITableData from "../../../interfaces/ITableData"
 import "./DeleteWizard.css"
 import { IconChevronDown, IconChevronRight } from "@nasa-jpl/react-stellar"
-import { FillFlexParent } from "../../../Tree/FillFlexParent"
+import { FillFlexParent } from "../../Tree/FillFlexParent"
 
 const INDENT_STEP = 30
 
