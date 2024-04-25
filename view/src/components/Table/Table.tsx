@@ -529,7 +529,7 @@ function Table({
       </table>
       {rightClick && (
         <ContextMenu
-          selectedElements={selectedRowModel}
+          selectedElements={iriArray}
           top={coordinates.y}
           left={coordinates.x}
           modelCommands={modelCommands}

@@ -300,7 +300,7 @@ function Tree({
       </FillFlexParent>
       {rightClick && (
         <ContextMenu
-          selectedElements={selectedRows}
+          selectedElements={iriArray}
           top={coordinates.y}
           left={coordinates.x}
           modelCommands={modelCommands}

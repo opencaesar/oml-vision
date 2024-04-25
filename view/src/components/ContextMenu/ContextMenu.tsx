@@ -16,7 +16,7 @@ import { useWizards } from "../../providers/WizardController";
 interface ContextMenuProps {
   layout: TableLayout | TreeLayout;
   modelCommands: Record<string, Record<string, any>>;
-  selectedElements: RowModel<ITableData> | NodeApi<ITableData>[] | Node[];
+  selectedElements: string[];
   top: number;
   left: number;
 }
@@ -34,7 +34,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   const { handleSubmit } = useForm();
   
   // This array is used to store the selected IRIs from the webview.  These IRIs are usually fed into a SPARQL query
-  let selectedIris: string[] = [];
+  const selectedIris: string[] = selectedElements;
 
   // This string is used to check which type of webview the selected elements are coming from
   let webviewType = "";
@@ -54,6 +54,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
    * This method is inspired from the GeeksforGeeks article found {@link https://www.geeksforgeeks.org/how-to-check-interface-type-in-typescript/| here}
    *
    * @param selectedElements - The selected webview elements 
+   * @deprecated This method is deprecated and will be removed in the next major release
    *
    */
   const checkSelectedElements = (selectedElements: RowModel<ITableData> | NodeApi<ITableData>[] | Node[]) => {
@@ -76,6 +77,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
    * @param webviewType - The webview type (table, tree, or diagram) 
    * @param selectedElements - The selected webview elements 
    * @param selectedIris - The selected IRIs array 
+   * @deprecated This method is deprecated and will be removed in the next major release
    *
    */
   const addSelectedIris = (webviewType: string, selectedElements: RowModel<ITableData> | NodeApi<ITableData>[] | Node[], selectedIris: string[]) => {
@@ -164,15 +166,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
    *
    */
   const onSubmit = (command: CommandStructure) => {
-    // Clear the row parameters list before submitting
-    selectedIris.length = 0;
-
-    // Checks the type of the selected webview elements.
-    checkSelectedElements(selectedElements);
-
-    // Adds selected IRIs to an array
-    addSelectedIris(webviewType, selectedElements, selectedIris);
-
     // Post a CRUD message to the webview
     postCrudMessage(command);
   };
