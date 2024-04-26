@@ -42,7 +42,7 @@ For branch names, use convention `fix/ISSUE_NUMBER-<FIX_SUMMARY>` for bug fixes 
 
 ### Developer certificate of origin
 
-Contributions to this repository are subject to the [Developer Certificate of Origin](DCO). All commits should be signed off by either using `-s` or `--signed` flag while committing:
+Contributions to this repository are subject to the [Developer Certificate of Origin](DCO). All commits must be signed off by either using `-s` or `--signed` flag while committing:
 ```
 git commit -s -m "My commit message"
 ```
