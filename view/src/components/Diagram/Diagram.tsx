@@ -486,10 +486,15 @@ function Diagram({
   var testInsertItem: InsertItem = {
     label: "TestInsertItem",
     onItemClicked: () => {console.log("Item was clicked!")},
-    icon: <LockIcon />
+    icon: <IconDownload
+      className="flex-shrink-0 flex-grow-0"
+      color="var(--vscode-button-secondaryForeground)"
+      width="16"
+      height="16"
+    />
   }
 
-  var insertItems: InsertItem[] = [testInsertItem];
+  var insertItems: InsertItem[] = [testInsertItem, testInsertItem, testInsertItem];
 
   return (
     <div
