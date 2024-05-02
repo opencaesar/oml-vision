@@ -87,7 +87,7 @@ export type CommandStructures = {
     wizardId?: string;
   };
   [Commands.EXECUTE_DELETE_ELEMENTS]: {
-    payload: { webviewPath: string; IRIsToDelete: string[] };
+    payload: { webviewPath: string; IRIsToDelete: ITableData[] };
     wizardId?: string;
   };
   [Commands.CREATE_FCR]: {

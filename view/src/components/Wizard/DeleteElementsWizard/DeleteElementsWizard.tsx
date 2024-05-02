@@ -136,9 +136,7 @@ function DeleteElementsWizard({
       wizardId,
       payload: {
         webviewPath: webviewPath,
-        IRIsToDelete: ["test"],
-        // FIXME: IDataTable[] not assignable to string[]
-        // IRIsToDelete,
+        IRIsToDelete: IRIsToDelete,
       },
     });
   };

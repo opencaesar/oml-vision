@@ -4,6 +4,7 @@ import { generateTableData } from "../../controller/src/sparql/data-manager/gene
 import { TablePanel } from "../../controller/src/panels/TablePanel";
 import { SparqlClient } from "../../controller/src/sparql/SparqlClient";
 import { getElementRelations } from "../../controller/src/sparql/data-manager/getElementRelations";
+import { executeDeleteElements } from "../../controller/src/sparql/data-manager/executeDeleteElements";
 
 /**
  * Handles commands that are sent to a Editor (Table, Tree, or Diagram)
@@ -105,6 +106,13 @@ export function handleTablePanelMessage(
         message as CommandStructures[Commands.EXECUTE_DELETE_ELEMENTS];
       const { webviewPath: delWebviewPath, IRIsToDelete = [] } =
         specificMessage.payload;
+
+        // Refer to the CommandStructures[Commands.EXECUTE_DELETE_ELEMENTS] to see how the parameters are structured
+        executeDeleteElements(
+          specificMessage.payload.webviewPath,
+          specificMessage.wizardId,
+          specificMessage.payload.IRIsToDelete,
+        )
       break;
 
     case Commands.CREATE_FCR:
