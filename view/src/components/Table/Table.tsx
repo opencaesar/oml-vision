@@ -29,6 +29,9 @@ import "./Table.css";
 import useContextMenu from "../ContextMenu/useContextMenu";
 import ContextMenu from "../ContextMenu/ContextMenu";
 
+const MIN_SIZE = 100;
+const SIZE = 250;
+
 function Table({
   className,
   rowData,
@@ -56,6 +59,7 @@ function Table({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
   const lastSelectedId = React.useRef<string>();
@@ -142,8 +146,8 @@ function Table({
               </>
             </div>
           ),
-          minSize: 100,
-          size: 250,
+          minSize: MIN_SIZE,
+          size: SIZE,
         };
       }
 
@@ -152,7 +156,7 @@ function Table({
         accessorFn: (row) => row[item],
         header: () => (item === "_" ? "" : item),
         cell: (info) => info.getValue(),
-        minSize: 100,
+        minSize: MIN_SIZE,
       };
     }
   );
@@ -268,7 +272,9 @@ function Table({
       expanded,
       sorting,
       rowSelection,
+      columnVisibility,
     },
+    onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
     onExpandedChange: setExpanded,
@@ -381,6 +387,36 @@ function Table({
     >
       <table className={"vision-table"}>
         <thead className="text-left bg-opacity-gray rounded-md">
+          <div className="vision-table-visible">
+            <div className="">
+              <label>
+                <input
+                  {...{
+                    type: "checkbox",
+                    checked: table.getIsAllColumnsVisible(),
+                    onChange: table.getToggleAllColumnsVisibilityHandler(),
+                  }}
+                />{" "}
+                Toggle All
+              </label>
+            </div>
+            {table.getAllLeafColumns().map((column) => {
+              return (
+                <div key={column.id} className="px-1">
+                  <label>
+                    <input
+                      {...{
+                        type: "checkbox",
+                        checked: column.getIsVisible(),
+                        onChange: column.getToggleVisibilityHandler(),
+                      }}
+                    />{" "}
+                    {column.id}
+                  </label>
+                </div>
+              );
+            })}
+          </div>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
