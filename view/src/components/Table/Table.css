@@ -13,7 +13,7 @@
   padding: var(--st-table-th-padding);
   background: var(--vscode-input-background);
   font-family: var(--st-table-th-font-family);
-  font-size: var(--vscode-font-size);
+  font-size: var(--font-size);
   font-weight: 600;
   line-height: var(--st-table-th-line-height);
   letter-spacing: var(--st-table-th-letter-spacing);
@@ -45,7 +45,7 @@
   border: solid 1px var(--vscode-panel-border);
   padding: var(--st-table-th-padding);
   font-family: var(--st-table-td-font-family);
-  font-size: var(--vscode-font-size);
+  font-size: var(--font-size);
   font-weight: 400;
   line-height: var(--st-table-td-line-height);
   letter-spacing: var(--st-table-td-letter-spacing);
@@ -99,6 +99,32 @@
 .column-resizer.isResizing {
   background: var(--vscode-list-highlightForeground);
   opacity: 1;
+}
+
+.vision-table-visible {
+  border: solid 1px var(--vscode-panel-border);
+  padding: var(--st-table-th-padding);
+  background: var(--vscode-input-background);
+  font-family: var(--st-table-th-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: 600;
+  line-height: var(--st-table-th-line-height);
+  letter-spacing: var(--st-table-th-letter-spacing);
+  color: var(--vscode-foreground);
+  display: flex;
+  flex-direction: column;
+}
+
+.vision-table-visible-header {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.vision-table-visible-select {
+  padding: var(--st-table-th-padding);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 @media (hover: hover) {

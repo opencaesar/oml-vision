@@ -28,6 +28,8 @@ import TableFilter from "./TableFilter";
 import "./Table.css";
 import useContextMenu from "../ContextMenu/useContextMenu";
 import ContextMenu from "../ContextMenu/ContextMenu";
+import { TableFontSizeType } from "../../interfaces/TableFontSizeType";
+import { VSCodeDropdown, VSCodeOption } from "@vscode/webview-ui-toolkit/react";
 
 function Table({
   className,
@@ -57,8 +59,16 @@ function Table({
     []
   );
   const [rowSelection, setRowSelection] = React.useState({});
+  const [fontSize, setFontSize] = React.useState<TableFontSizeType>("medium");
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
   const lastSelectedId = React.useRef<string>();
+
+  // Set the Font Size
+  React.useEffect(() => {
+    if (tableContainerRef.current) {
+      tableContainerRef.current.style.setProperty("--font-size", `${fontSize}`);
+    }
+  }, [fontSize]);
 
   // We always have a predefined first "_" column for
   // the special labelFormat field in tableLayouts.json
@@ -381,6 +391,81 @@ function Table({
     >
       <table className={"vision-table"}>
         <thead className="text-left bg-opacity-gray rounded-md">
+          <div className="vision-table-visible">
+            <div className="">
+              <div className="vision-table-visible-header">Hide/Show Columns</div>
+              <div className="vision-table-visible-select">
+                <label>
+                  <input
+                    {...{
+                      type: "checkbox",
+                      checked: table.getIsAllColumnsVisible(),
+                      onChange: table.getToggleAllColumnsVisibilityHandler(),
+                    }}
+                  />{" "}
+                  Toggle All
+                </label>
+                {table.getAllLeafColumns().map((column) => {
+                  return (
+                    <div key={column.id} className="px-1">
+                      <label>
+                        <input
+                          {...{
+                            type: "checkbox",
+                            checked: column.getIsVisible(),
+                            onChange: column.getToggleVisibilityHandler(),
+                          }}
+                        />{" "}
+                        {column.id}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className={`flex flex-col`}>
+              <div className="font-bold mb-2">Font Size</div>
+              <VSCodeDropdown
+                className={``}
+              >
+                <VSCodeOption
+                  onClick={() => setFontSize("x-small")}
+                  value="x-small"
+                  selected={fontSize === "x-small"}
+                >
+                  Extra Small
+                </VSCodeOption>
+                <VSCodeOption
+                  onClick={() => setFontSize("small")}
+                  value="small"
+                  selected={fontSize === "small"}
+                >
+                  Small
+                </VSCodeOption>
+                <VSCodeOption
+                  onClick={() => setFontSize("medium")}
+                  value="medium"
+                  selected={fontSize === "medium"}
+                >
+                  Medium
+                </VSCodeOption>
+                <VSCodeOption
+                  onClick={() => setFontSize("large")}
+                  value="large"
+                  selected={fontSize === "large"}
+                >
+                  Large
+                </VSCodeOption>
+                <VSCodeOption
+                  onClick={() => setFontSize("x-large")}
+                  value="x-large"
+                  selected={fontSize === "x-large"}
+                >
+                  Extra Large
+                </VSCodeOption>
+              </VSCodeDropdown>
+            </div>
+          </div>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
