@@ -436,6 +436,7 @@ function Table({
                   <div
                     {...{
                       onClick: (e) => e.stopPropagation(),
+                      onDoubleClick: () => header.column.resetSize(),
                       onMouseDown: header.getResizeHandler(),
                       onTouchStart: header.getResizeHandler(),
                       className: `column-resizer ${
