@@ -593,6 +593,10 @@ const processNodes = (
       }
     }
 
+    if (node.type === "NA") {
+      node.type = "default";
+    }
+
     const processedNode: any = {
       id: node.id,
       data: node.data,
