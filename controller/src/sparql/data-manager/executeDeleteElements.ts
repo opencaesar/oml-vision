@@ -94,6 +94,13 @@ const deleteChildrenRecursively = async (iri: ITableData): Promise<void> => {
     // Execute the delete object query
     await SparqlClient(deleteObjectQuery, "update");
 
+    // Input the IRI name and formatted child graph into the delete subject query in the child graph
+    // This will delete any ref instances.  Refer to `ref instance` in the official OML docs http://www.opencaesar.io/oml/
+    const deleteSubjectChildQuery = deleteSubject(iri.name, formattedObjectGraph);
+
+    // Execute the delete subject child query
+    await SparqlClient(deleteSubjectChildQuery, "update");
+
     // Handles deletion of reified relations by recursively calling the delete function
     if (child.children) {
       await deleteChildrenRecursively(child);
