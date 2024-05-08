@@ -11,6 +11,7 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 ### Added
 - Property View: execute commands from property sheet https://github.com/opencaesar/oml-vision/pull/58
 - Table, Tree, and Diagram Views: execute commands from a context/right click menu file https://github.com/opencaesar/oml-vision/pull/54
+- Wizard View: Add deletion wizards and the ability to delete OML instances and relations https://github.com/opencaesar/oml-vision/pull/70
 
 
 ## v0.2.6 - Rembrandt Basin
