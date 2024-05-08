@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import Modal from "../../shared/Modal";
+import Modal from "../shared/Modal";
 import { VSCodeButton, VSCodeRadioGroup, VSCodeRadio } from "@vscode/webview-ui-toolkit/react";
-import { CMState, CMStatesArray } from "../../../interfaces/CMStates";
-import { useWizards } from "../../../contexts/WizardController";
-import { postMessage } from "../../../utils/postMessage";
-import { Commands } from "../../../../../commands/src/commands";
+import { CMState, CMStatesArray } from "../../interfaces/CMStates";
+import { useWizards } from "../../providers/WizardController";
+import { postMessage } from "../../utils/postMessage";
+import { Commands } from "../../../../commands/src/commands";
 
 
 function LifecycleStateWizard({

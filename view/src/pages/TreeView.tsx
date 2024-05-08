@@ -15,7 +15,7 @@ import {
   areArraysOfObjectsEqual,
 } from "../components/Tree/treeUtils";
 import { TreeLayout } from "../interfaces/DataLayoutsType";
-import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../providers/LayoutProvider";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import { useCommandData } from "../contexts/CommandProvider";
 
@@ -130,7 +130,7 @@ const TreeView: React.FC = () => {
           postMessage({
             command: Commands.CREATE_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,
@@ -142,7 +142,7 @@ const TreeView: React.FC = () => {
           postMessage({
             command: Commands.READ_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,
@@ -154,7 +154,9 @@ const TreeView: React.FC = () => {
           postMessage({
             command: Commands.UPDATE_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
+            before_parameters: message.parameters,
+            after_parameters: message.parameters,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,
@@ -166,7 +168,7 @@ const TreeView: React.FC = () => {
           postMessage({
             command: Commands.DELETE_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,

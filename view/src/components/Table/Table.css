@@ -101,6 +101,18 @@
   opacity: 1;
 }
 
+.vision-table-visible {
+  border: solid 1px var(--vscode-panel-border);
+  padding: var(--st-table-th-padding);
+  background: var(--vscode-input-background);
+  font-family: var(--st-table-th-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: 600;
+  line-height: var(--st-table-th-line-height);
+  letter-spacing: var(--st-table-th-letter-spacing);
+  color: var(--vscode-foreground);
+}
+
 @media (hover: hover) {
   .column-resizer {
     opacity: 0;

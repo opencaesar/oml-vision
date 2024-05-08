@@ -13,8 +13,9 @@ import ITableData from "../interfaces/ITableData";
 import { mapValueData } from "../components/Table/tableUtils";
 import { TableLayout } from "../interfaces/DataLayoutsType";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
-import { ViewpointPaths, useLayoutData } from "../contexts/LayoutProvider";
+import { ViewpointPaths, useLayoutData } from "../providers/LayoutProvider";
 import { useCommandData } from "../contexts/CommandProvider";
+
 
 const TableView: React.FC = () => {
   const { commands } = useCommandData();
@@ -122,7 +123,7 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.CREATE_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,
@@ -134,7 +135,7 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.READ_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,
@@ -146,7 +147,9 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.UPDATE_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
+            before_parameters: message.parameters,
+            after_parameters: message.parameters,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,
@@ -158,7 +161,7 @@ const TableView: React.FC = () => {
           postMessage({
             command: Commands.DELETE_QUERY,
             query: message.query,
-            parameters: message.parameters,
+            selectedElements: message.selectedElements,
           });
           postMessage({
             command: Commands.REFRESH_TABLE_DATA,

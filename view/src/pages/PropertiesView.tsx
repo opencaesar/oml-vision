@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import * as StellarIcons from '@nasa-jpl/react-stellar';
 import { parse, EvalAstFactory } from 'jexpr';
 import NavTab from '../components/shared/NavTab';
-import { usePropertiesData } from '../contexts/PropertyDataProvider';
+import { usePropertiesData } from '../providers/PropertyDataProvider';
 import { PropertyLayout, PropertyPage } from '../interfaces/PropertyLayoutsType';
 import { IDisplayGroup } from '../interfaces/IDisplayGroup';
 
