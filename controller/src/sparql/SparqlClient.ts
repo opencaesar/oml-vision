@@ -21,11 +21,6 @@ export async function SparqlClient(query: string, service: SparqlServiceType, ir
     throw new Error(`No SPARQL queries found in current model.`);
   }
 
-  if (!QUERY && !query) {
-    vscode.window.showErrorMessage(`Unknown SPARQL query: ${query}`);
-    throw new Error(`Unknown SPARQL query: ${query}`);
-  }
-  
   if (!QUERY) {
     QUERY = query
     // Uncomment to have VSCode notify users about SPARQL query not being defined in src/vision/sparql directory
@@ -36,6 +31,11 @@ export async function SparqlClient(query: string, service: SparqlServiceType, ir
 
   if (iri) {
     QUERY = QUERY.replace(/\$\{iri\}/g, iri);
+  }
+
+  if (!QUERY && !query) {
+    vscode.window.showErrorMessage(`Unknown SPARQL query: ${query}`);
+    throw new Error(`Unknown SPARQL query: ${query}`);
   }
 
   if (service === "query") {
