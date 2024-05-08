@@ -1,4 +1,4 @@
-import { addGraphToQuery } from "../../src/database/addGraphQuery";
+import { addGraphToQuery } from "../../../src/sparql/format/addGraphToQuery";
 
 let INFERENCE_QUERY_CASE_1 = `
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>

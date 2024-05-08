@@ -15,21 +15,24 @@ import {
   ColumnSort,
   SortingState,
   flexRender,
-  Row,
-} from "@tanstack/react-table";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { useWizards } from "../../contexts/WizardController";
-import { getLifecycleStateStyles, getRowRange } from "./tableUtils";
-import ITableData from "../../interfaces/ITableData";
-import ITableDataQuery from "../../interfaces/ITableDataQuery";
-import { TableLayout } from "../../interfaces/DataLayoutsType";
-import TableFilter from "./TableFilter";
-import "./Table.css";
+  Row
+} from '@tanstack/react-table'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { useWizards } from '../../providers/WizardController'
+import { getLifecycleStateStyles, getRowRange } from './tableUtils'
+import ITableData from '../../interfaces/ITableData'
+import ITableDataQuery from '../../interfaces/ITableDataQuery'
+import { TableLayout } from '../../interfaces/DataLayoutsType'
+import TableFilter from './TableFilter'
+import './Table.css'
 import useContextMenu from "../ContextMenu/useContextMenu";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { TableFontSizeType } from "../../interfaces/TableFontSizeType";
 import { VSCodeDropdown, VSCodeOption } from "@vscode/webview-ui-toolkit/react";
+
+const MIN_SIZE = 100;
+const SIZE = 250;
 
 function Table({
   className,
@@ -58,6 +61,7 @@ function Table({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [fontSize, setFontSize] = React.useState<TableFontSizeType>("medium");
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
@@ -152,8 +156,8 @@ function Table({
               </>
             </div>
           ),
-          minSize: 100,
-          size: 250,
+          minSize: MIN_SIZE,
+          size: SIZE,
         };
       }
 
@@ -162,7 +166,7 @@ function Table({
         accessorFn: (row) => row[item],
         header: () => (item === "_" ? "" : item),
         cell: (info) => info.getValue(),
-        minSize: 100,
+        minSize: MIN_SIZE,
       };
     }
   );
@@ -278,7 +282,9 @@ function Table({
       expanded,
       sorting,
       rowSelection,
+      columnVisibility,
     },
+    onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
     onExpandedChange: setExpanded,
@@ -614,7 +620,7 @@ function Table({
       </table>
       {rightClick && (
         <ContextMenu
-          selectedElements={selectedRowModel}
+          selectedElements={iriArray}
           top={coordinates.y}
           left={coordinates.x}
           modelCommands={modelCommands}

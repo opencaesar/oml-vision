@@ -3,11 +3,12 @@ import { useForm } from "react-hook-form";
 import Modal from "../../shared/Modal";
 import { VSCodeButton, VSCodeRadioGroup, VSCodeRadio, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import { FormField } from '@nasa-jpl/react-stellar';
-import { useWizards } from "../../../contexts/WizardController";
+import { useWizards } from "../../../providers/WizardController";
 import { CMStatesArray } from "../../../interfaces/CMStates";
 import { postMessage } from '../../../utils/postMessage';
 import { Commands } from "../../../../../commands/src/commands";
 import { v4 as uuid } from 'uuid';
+import { VSCodeNumberField } from "../../shared/VSCodeNumberField/VSCodeNumberField";
 
 const DEFAULTS: Record<string, string> = {
   rdfs_label: "New Assembly",
@@ -23,21 +24,40 @@ const propertyLayoutData = {
     {
       groups: [
         {
-          controls: ""
+          controls: [
+            {
+              helpExpression: "A label can provide a human-readable id for model objects that have assigned ids that might be less readable",
+              id: "id",
+              label: "Label",
+              type: "text"
+            },
+            {
+              helpExpression: "A label can provide a human-readable id for model objects that have assigned ids that might be less readable",
+              id: "id",
+              label: "Radio",
+              type: "radio"
+            },
+            {
+              helpExpression: "A label can provide a human-readable id for model objects that have assigned ids that might be less readable",
+              id: "id",
+              label: "Number",
+              type: "number"
+            },
+          ]
         }
       ]
     }
   ]
 }
 const properties = propertyLayoutData.pages.flatMap(page => page.groups.flatMap(group => group.controls)) as any[];
-const WIZARD_ID = "CreateElementWizard";
+const WIZARD_ID = "UpdateElementWizard";
 
 function getPropertyById(key: string) {
   const property = properties.filter(prop => prop.id === key);
   return property.length > 0 ? property[0] : {};
 }
 
-function CreateElementWizard({ iriArray }: { iriArray: string[] }) {
+function UpdateElementWizard({ iriArray }: { iriArray: string[] }) {
   const { closeWizard } = useWizards();
   const { register, handleSubmit, setValue } = useForm();
 
@@ -98,7 +118,7 @@ function CreateElementWizard({ iriArray }: { iriArray: string[] }) {
                 {property.type === "text" && (
                   <VSCodeTextField
                     className="vscode-input-rounded"
-                    id={`createElementWizard_${property.id}`}
+                    id={`updateElementWizard_${property.id}`}
                     {...register(property.id)}
                   />
                 )}
@@ -117,6 +137,22 @@ function CreateElementWizard({ iriArray }: { iriArray: string[] }) {
                     </VSCodeRadioGroup>
                   </FormField>
                 )}
+                {property.type === "number" && (
+                <FormField flow="vertical" className="basis-9/12">
+                  {/* FIXME: numberfield should render correct arrows */}
+                  {/* @ts-ignore */}
+                  <VSCodeNumberField
+                    className="vscode-input-rounded"
+                    readOnly={property.readOnly}
+                    step={1}
+                    pattern={/^\d*\.?\d{0,2}$/}
+                    {...register(property.id, {
+                      pattern: /^\d*\.?\d{0,2}$/,
+                      onChange: onSubmit,
+                    })}
+                  />
+                </FormField>
+              )}
               </FormField>
             );
           })}
@@ -133,4 +169,4 @@ function CreateElementWizard({ iriArray }: { iriArray: string[] }) {
   );
 }
 
-export default CreateElementWizard;
+export default UpdateElementWizard;

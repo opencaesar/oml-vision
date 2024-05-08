@@ -230,6 +230,9 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "oml-vision.showProperties",
       async (iri: string = "", webviewType: IWebviewType) => {
+        // Open the property panel immediately when showProperties command is called
+        provider.showPropertyPanel();
+
         let types: string[] = [];
         if (iri !== "") {
           const rawTypesQuery = getIriTypes(iri);
@@ -252,7 +255,6 @@ export function activate(context: vscode.ExtensionContext) {
           command: Commands.SHOW_PROPERTIES,
           payload: propertyData,
         });
-        provider.showPropertyPanel();
       }
     )
   );
@@ -512,3 +514,5 @@ export function activate(context: vscode.ExtensionContext) {
 function cloneSelectedRows(context: Record<string, any>) {
   throw new Error("Function not implemented.");
 }
+
+

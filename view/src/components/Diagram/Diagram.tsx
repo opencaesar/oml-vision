@@ -598,7 +598,7 @@ function Diagram({
       </ReactFlow>
       {rightClick && (
         <ContextMenu
-          selectedElements={selectedNodes}
+          selectedElements={iriArray}
           top={coordinates.y}
           left={coordinates.x}
           modelCommands={modelCommands}
