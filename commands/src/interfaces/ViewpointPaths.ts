@@ -9,6 +9,7 @@
 // TODO: Remove in v1.0.0 of OML Vision
 export enum ViewpointPaths {
   PropertyPanel = 'propertyLayouts.json',
+  WizardPanel = 'wizardLayouts.json',
   TablePanel = 'tableLayouts.json',
   TreePanel = 'treeLayouts.json',
   DiagramPanel = 'diagramLayouts.json',

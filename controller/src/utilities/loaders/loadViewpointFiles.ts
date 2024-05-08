@@ -27,6 +27,7 @@ export const loadViewpointFiles = async (viewpointContents: {
     loadTreeFiles(uri, viewpointContents);
     loadDiagramFiles(uri, viewpointContents);
     loadPropertyFiles(uri, viewpointContents);
+    loadWizardFiles(uri, viewpointContents);
   }
 };
 
@@ -283,6 +284,55 @@ const loadPropertyFiles = async (
     }
   } catch (err) {
     window.showErrorMessage(`Error reading property viewpoint files: ${err}`);
+  } finally {
+    // Send updated global viewpoints to TablePanels & PropertyPanel
+    TablePanel.updateViewpoints();
+    PropertyPanelProvider.updateViewpoints();
+  }
+};
+
+/**
+ * Loads wizard viewpoints from the wizards directory.
+ *
+ * @remarks
+ * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
+ * @param viewpointContents - content of the viewpoint object
+ *
+ */
+const loadWizardFiles = async (
+  uri: Uri,
+  viewpointContents: {
+    [file: string]: any;
+  }
+) => {
+  // Uri is required for VSCode extension to determine path to file or folder
+  const wizardFolderUri = Uri.joinPath(
+    uri,
+    "src",
+    "vision",
+    "viewpoints",
+    "wizards"
+  );
+
+  try {
+    const files = await workspace.fs.readDirectory(wizardFolderUri);
+    for (const [file, type] of files) {
+      if (file.endsWith(".json") && type === FileType.File) {
+        setViewpointContent(wizardFolderUri, file, viewpointContents);
+      }
+    }
+    if (files.length > 0) {
+      commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
+      window.showInformationMessage(
+        "Wizard viewpoint files loaded successfully."
+      );
+    } else {
+      window.showWarningMessage("Wizard viewpoint files not found.");
+    }
+  } catch (err) {
+    window.showErrorMessage(`Error reading wizard viewpoint files: ${err}`);
   } finally {
     // Send updated global viewpoints to TablePanels & PropertyPanel
     TablePanel.updateViewpoints();

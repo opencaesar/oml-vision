@@ -7,16 +7,16 @@ import {
 } from "@vscode/webview-ui-toolkit/react";
 import { useForm, FieldValues } from "react-hook-form";
 import { parse, EvalAstFactory } from "jexpr";
-import { postMessage } from "../utils/postMessage";
-import { usePropertiesData } from "../contexts/PropertyDataProvider";
-import ITableData from "../interfaces/ITableData";
-import { PropertyPage } from "../interfaces/PropertyLayoutsType";
-import { CMStatesArray } from "../interfaces/CMStates";
-import { IDisplayGroup } from "../interfaces/IDisplayGroup";
-import HelpIcon from "./shared/HelpIcon";
-import Loader from "./shared/Loader";
-import { CommandStructures, Commands } from "../../../commands/src/commands";
-import { VSCodeNumberField } from "./shared/VSCodeNumberField/VSCodeNumberField";
+import { postMessage } from "../../utils/postMessage";
+import { usePropertiesData } from "../../providers/PropertyDataProvider";
+import ITableData from "../../interfaces/ITableData";
+import { PropertyPage } from "../../interfaces/PropertyLayoutsType";
+import { CMStatesArray } from "../../interfaces/CMStates";
+import { IDisplayGroup } from "../../interfaces/IDisplayGroup";
+import HelpIcon from "../shared/HelpIcon";
+import Loader from "../shared/Loader";
+import { CommandStructures, Commands } from "../../../../commands/src/commands";
+import { VSCodeNumberField } from "../shared/VSCodeNumberField/VSCodeNumberField";
 
 const astFactory = new EvalAstFactory();
 const isDataEmpty = (obj: Object) => Object.keys(obj).length === 0;
@@ -33,7 +33,7 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
   } = useForm();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [data, setData] = useState<ITableData>({});
+  const [currentData, setCurrentData] = useState<ITableData>({});
   const [displayGroups, setDisplayGroups] = useState<IDisplayGroup[]>([]);
   // Initialize a state array with true for each section to default to open
   const [isOpen, setIsOpen] = useState<boolean[]>([]);
@@ -67,7 +67,7 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
 
           const sparqlData = results || [];
           const omlData = sparqlData.length > 0 ? sparqlData[0] : {};
-          setData(omlData);
+          setCurrentData(omlData);
         } catch (error) {
           let errorMessage = "";
           if (error instanceof SyntaxError) {
@@ -147,11 +147,11 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
       setIsOpen(Array(layoutData.groups.length).fill(true));
 
       // Prepopulate form fields
-      Object.keys(data).forEach((key) => {
-        setValue(key, data[key]);
+      Object.keys(currentData).forEach((key) => {
+        setValue(key, currentData[key]);
       });
     }
-  }, [layoutData, setValue, data]);
+  }, [layoutData, setValue, currentData]);
 
   const handleToggle = (index: number) => {
     const newIsOpen = [...isOpen];
@@ -160,7 +160,18 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
   };
 
   const onSubmit = (data: FieldValues) => {
-    postMessage({ command: Commands.PROPERTIES_FORM_DATA, payload: data });
+    if (page) {
+      postMessage({
+        command: Commands.UPDATE_QUERY,
+        selectedElements: [rowIri],
+        query: page.sparqlUpdate,
+        before_parameters: currentData,
+        after_parameters: data,
+      });
+      postMessage({
+        command: Commands.REFRESH_TABLE_DATA
+      })
+    }
     return false;
   };
 
@@ -190,7 +201,7 @@ const PropertySheet: React.FC<{ page: PropertyPage }> = ({ page }) => {
     <form className="w-full" ref={formRef} onSubmit={handleSubmit(onSubmit)}>
       {!layoutData ||
       !layoutData.groups.length ||
-      isDataEmpty(data) ||
+      isDataEmpty(currentData) ||
       errorMessage ? (
         <div className="h-screen flex justify-center items-center">
           <p className="text-[color:var(--vscode-foreground)]">

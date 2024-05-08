@@ -1,6 +1,6 @@
 import React, { SVGProps } from "react";
-import { postMessage } from "../utils/postMessage";
-import { Commands } from "../../../commands/src/commands";
+import { postMessage } from "../../utils/postMessage";
+import { Commands } from "../../../../commands/src/commands";
 
 export default function ExpandingMenu({ title, icon, buttons: links }: { title: string, icon: ((props: SVGProps<SVGSVGElement>) => any) | { url: string }, buttons: { text: string, redirect?: { title: string, path: string, type: string }, onClick?: Function }[] }): JSX.Element {
 

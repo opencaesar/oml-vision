@@ -11,15 +11,15 @@ import { Commands } from "../../../../commands/src/commands";
 import { RowModel } from "@tanstack/react-table";
 import { NodeApi } from "react-arborist";
 import { Node } from "reactflow";
+import { useWizards } from "../../providers/WizardController";
 
 interface ContextMenuProps {
   layout: TableLayout | TreeLayout;
   modelCommands: Record<string, Record<string, any>>;
-  selectedElements: RowModel<ITableData> | NodeApi<ITableData>[] | Node[];
+  selectedElements: string[];
   top: number;
   left: number;
 }
-
 
 const ContextMenu: React.FC<ContextMenuProps> = ({
   layout,
@@ -28,11 +28,12 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   top,
   left,
 }) => {
+  const { openWizard } = useWizards();
   const { contextMenuRef } = useContextMenu();
   const { handleSubmit } = useForm();
-  
+
   // This array is used to store the selected IRIs from the webview.  These IRIs are usually fed into a SPARQL query
-  let selectedIris: string[] = [];
+  const selectedIris: string[] = selectedElements;
 
   // This string is used to check which type of webview the selected elements are coming from
   let webviewType = "";
@@ -51,10 +52,13 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
    * @remarks
    * This method is inspired from the GeeksforGeeks article found {@link https://www.geeksforgeeks.org/how-to-check-interface-type-in-typescript/| here}
    *
-   * @param selectedElements - The selected webview elements 
+   * @param selectedElements - The selected webview elements
+   * @deprecated This method is deprecated and will be removed in the next major release
    *
    */
-  const checkSelectedElements = (selectedElements: RowModel<ITableData> | NodeApi<ITableData>[] | Node[]) => {
+  const checkSelectedElements = (
+    selectedElements: RowModel<ITableData> | NodeApi<ITableData>[] | Node[]
+  ) => {
     if ((selectedElements as RowModel<ITableData>).flatRows !== undefined)
       webviewType = "table";
     // @ts-ignore
@@ -71,12 +75,17 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
    * @remarks
    * This method is inspired from the GeeksforGeeks article found {@link https://www.geeksforgeeks.org/how-to-check-interface-type-in-typescript/| here}
    *
-   * @param webviewType - The webview type (table, tree, or diagram) 
-   * @param selectedElements - The selected webview elements 
-   * @param selectedIris - The selected IRIs array 
+   * @param webviewType - The webview type (table, tree, or diagram)
+   * @param selectedElements - The selected webview elements
+   * @param selectedIris - The selected IRIs array
+   * @deprecated This method is deprecated and will be removed in the next major release
    *
    */
-  const addSelectedIris = (webviewType: string, selectedElements: RowModel<ITableData> | NodeApi<ITableData>[] | Node[], selectedIris: string[]) => {
+  const addSelectedIris = (
+    webviewType: string,
+    selectedElements: RowModel<ITableData> | NodeApi<ITableData>[] | Node[],
+    selectedIris: string[]
+  ) => {
     if (webviewType === "table") {
       // Refer to https://tanstack.com/table/latest/docs/guide/row-models#row-model-data-structure for the data structure
       // @ts-ignore
@@ -105,8 +114,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     }
   };
 
-
-
   /**
    * Post a CRUD message to the webview.
    *
@@ -121,33 +128,31 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       postMessage({
         command: Commands.CREATE_QUERY,
         query: command.query,
-        parameters: selectedIris,
+        selectedElements: selectedIris,
       });
+      openWizard("CreateElementWizard", { selectedIris });
     } else if (command.type === "read") {
       postMessage({
         command: Commands.READ_QUERY,
         query: command.query,
-        parameters: selectedIris,
+        selectedElements: selectedIris,
       });
     } else if (command.type === "update") {
       postMessage({
         command: Commands.UPDATE_QUERY,
         query: command.query,
-        parameters: selectedIris,
+        selectedElements: selectedIris,
       });
+      openWizard("UpdateElementsWizard", { selectedIris });
     } else if (command.type === "delete") {
-      postMessage({
-        command: Commands.DELETE_QUERY,
-        query: command.query,
-        parameters: selectedIris,
-      });
+      openWizard("DeleteElementsWizard", { iriArray: selectedIris });
     } else {
       postMessage({
         command: Commands.ALERT,
         text: "Specify a command type!",
       });
     }
-  }
+  };
 
   /**
    * These are the available commands that come from the OML Model.
@@ -159,15 +164,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
    *
    */
   const onSubmit = (command: CommandStructure) => {
-    // Clear the row parameters list before submitting
-    selectedIris.length = 0;
-
-    // Checks the type of the selected webview elements.
-    checkSelectedElements(selectedElements);
-
-    // Adds selected IRIs to an array
-    addSelectedIris(webviewType, selectedElements, selectedIris);
-
     // Post a CRUD message to the webview
     postCrudMessage(command);
   };
