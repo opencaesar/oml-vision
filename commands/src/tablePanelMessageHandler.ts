@@ -5,6 +5,7 @@ import { TablePanel } from "../../controller/src/panels/TablePanel";
 import { SparqlClient } from "../../controller/src/sparql/SparqlClient";
 import { getElementRelations } from "../../controller/src/sparql/data-manager/getElementRelations";
 import { executeDeleteElements } from "../../controller/src/sparql/data-manager/executeDeleteElements";
+import { getElementRelationsTotal } from "../../controller/src/sparql/data-manager/getElementRelationsTotal";
 
 /**
  * Handles commands that are sent to a Editor (Table, Tree, or Diagram)
@@ -94,6 +95,19 @@ export function handleTablePanelMessage(
 
       // Refer to the CommandStructures[Commands.GET_ELEMENT_RELATIONS] to see how the parameters are structured
       getElementRelations(
+        specificMessage.payload.webviewPath,
+        specificMessage.wizardId,
+        specificMessage.payload.iriArray,
+        specificMessage.payload.labelArray
+      );
+      break;
+    
+    case Commands.GET_ELEMENT_RELATIONS_TOTAL:
+      specificMessage =
+        message as CommandStructures[Commands.GET_ELEMENT_RELATIONS_TOTAL];
+
+      // Refer to the CommandStructures[Commands.GET_ELEMENT_RELATIONS] to see how the parameters are structured
+      getElementRelationsTotal(
         specificMessage.payload.webviewPath,
         specificMessage.wizardId,
         specificMessage.payload.iriArray,

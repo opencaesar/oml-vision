@@ -12,6 +12,13 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 - Property View: execute commands from property sheet https://github.com/opencaesar/oml-vision/pull/58
 - Table, Tree, and Diagram Views: execute commands from a context/right click menu file https://github.com/opencaesar/oml-vision/pull/54
 - Wizard View: Add deletion wizards and the ability to delete OML instances and relations https://github.com/opencaesar/oml-vision/pull/70
+- Table View: hide/show columns https://github.com/opencaesar/oml-vision/pull/63
+- Table View: change font size https://github.com/opencaesar/oml-vision/pull/65
+- Table View: reset column size https://github.com/opencaesar/oml-vision/pull/67
+- Diagram View: show OML relations for selected node in wizard https://github.com/opencaesar/oml-vision/pull/73
+
+### Fixed
+- Property View: not opening immediately when clicking a row or node in the TableView, TreeView, or DiagramView https://github.com/opencaesar/oml-vision/issues/61
 
 
 ## v0.2.6 - Rembrandt Basin

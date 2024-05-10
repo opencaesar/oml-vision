@@ -16,6 +16,8 @@ export enum Commands {
   UPDATE_CM_STATE = 'updateCmState',
   REFRESH_TABLE_DATA = 'refreshTableData',
   GET_ELEMENT_RELATIONS = 'getElementRelations',
+  // This differs to the GET_ELEMENT_RELATIONS because it grabs the predicate/verb and object instead of the subject of the selected element
+  GET_ELEMENT_RELATIONS_TOTAL = 'getElementRelationsTotal',
   EXECUTE_CREATE_ELEMENTS = 'executeCreateElements',
   EXECUTE_DELETE_ELEMENTS = 'executeDeleteElements',
   CREATE_FCR = 'createFCR',
@@ -45,6 +47,8 @@ export enum Commands {
   LOADED_PROPERTY_SHEET = 'loadedPropertySheet',
   LOADED_TABLE_DATA = 'loadedTableData',
   LOADED_ELEMENT_RELATIONS = 'loadedElementRelations',
+  // This differs to the LOADED_ELEMENT_RELATIONS because it loads the predicate/verb and object instead of the subject of the selected element
+  LOADED_ELEMENT_RELATIONS_TOTAL = 'loadedElementRelationsTotal',
   DELETED_ELEMENTS = 'deletedElements',
   CREATED_ELEMENT = 'createdElement',
   CLONED_ELEMENTS = 'clonedElements',
@@ -83,6 +87,10 @@ export type CommandStructures = {
   };
   [Commands.REFRESH_TABLE_DATA]: {};
   [Commands.GET_ELEMENT_RELATIONS]: {
+    payload: { webviewPath: string; iriArray: string[]; labelArray?: string[] };
+    wizardId?: string;
+  };
+  [Commands.GET_ELEMENT_RELATIONS_TOTAL]: {
     payload: { webviewPath: string; iriArray: string[]; labelArray?: string[] };
     wizardId?: string;
   };
@@ -163,6 +171,13 @@ export type CommandStructures = {
     wizardId: string;
     payload: {
       IRIsToDelete?: Record<string, any>[];
+    };
+  };
+  [Commands.LOADED_ELEMENT_RELATIONS_TOTAL]: {
+    errorMessage?: string;
+    wizardId: string;
+    payload: {
+      relations?: Record<string, any>[];
     };
   };
   [Commands.DELETED_ELEMENTS]: {

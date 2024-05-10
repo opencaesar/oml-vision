@@ -10,8 +10,10 @@ import { ReactFlowProvider } from "reactflow";
 import { ViewpointPaths, useLayoutData } from "../providers/LayoutProvider";
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import { useCommandData } from "../contexts/CommandProvider";
+import { useWizards } from "../providers/WizardController";
 
 const DiagramView: React.FC = () => {
+  const { openWizard } = useWizards();
   const { commands } = useCommandData();
   const { layouts, isLoadingLayoutContext } = useLayoutData();
   const [webviewPath, setWebviewPath] = useState<string>("");
@@ -217,6 +219,23 @@ const DiagramView: React.FC = () => {
     });
   }, []);
 
+  /**  
+    This function handles when a node is double clicked in the Diagram View.  
+    @remarks This method uses the {@link https://react.dev/reference/react/useCallback | useCallback} React hook
+    @param node - The node and its data that is clicked
+  */
+    const handleDoubleClickNode = useCallback((node: ITableData) => {
+      // If there is a iri in the node's data then execute the command to open the modal.
+      if (node.data.iri) {
+        openWizard("RelationElementsWizard", { iriArray: [node.data.iri] });
+        // UI indication to users
+        postMessage({
+          command: Commands.INFORM,
+          text: "Opening Relations Wizard...",
+        });
+      };
+    }, []);
+
   const refreshData = () => {
     setIsLoading(true);
 
@@ -251,6 +270,7 @@ const DiagramView: React.FC = () => {
             hasFilter={filter.iris.length > 0}
             clearFilter={() => setFilter({ iris: [], filterObject: null })}
             onNodeClicked={handleClickNode}
+            onNodeDoubleClicked={handleDoubleClickNode}
             // TODO: Use onNodeSelected while node is highlighted/selected
             onNodeSelected={handleClickNode}
             modelCommands={commands}
