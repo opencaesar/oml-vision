@@ -61,6 +61,7 @@ function Diagram({
   // TODO: Use onNodeSelected while node is highlighted/selected
   onNodeSelected = () => {},
   onNodeClicked = () => {},
+  onNodeDoubleClicked = () => {},
 }: {
   initData: {
     nodes: ITableData[];
@@ -74,6 +75,7 @@ function Diagram({
   layout: DiagramLayout;
   onNodeSelected?: Function;
   onNodeClicked?: Function;
+  onNodeDoubleClicked?: Function;
 }) {
   // Vanilla React Hooks
   const { rightClick, setRightClick, coordinates, setCoordinates } =
@@ -104,6 +106,11 @@ function Diagram({
   // Handles when a node is clicked.  Note accessing properties is handled in DiagramView.tsx
   const onNodeClick = (event: any, node: any) => {
     onNodeClicked(node);
+  };
+
+  // Handles when a node is double clicked.  Note accessing properties is handled in DiagramView.tsx
+  const onNodeDoubleClick = (event: any, node: any) => {
+    onNodeDoubleClicked(node);
   };
 
   const highlightPath = (
@@ -475,6 +482,7 @@ function Diagram({
         "iri": ${JSON.stringify(iriArray)}
       }`}
     >
+      {/* Refer to the ReactFlow API for a full list of commands https://reactflow.dev/api-reference/react-flow */}
       <ReactFlow
         ref={diagramRef}
         nodes={nodes}
@@ -491,6 +499,9 @@ function Diagram({
           unHighlightPath(edges);
         }}
         onNodeClick={onNodeClick}
+        onNodeDoubleClick={onNodeDoubleClick}
+        // We need to disable zoom on double click so the onNodeDoubleClick doesn't have a race condition
+        zoomOnDoubleClick={false}
         proOptions={{ hideAttribution: true }}
         nodeTypes={nodeTypes}
         nodesConnectable={false}

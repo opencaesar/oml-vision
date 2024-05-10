@@ -11,7 +11,8 @@
 .vision-table th {
   border: solid 1px var(--vscode-panel-border);
   padding: var(--st-table-th-padding);
-  background: var(--vscode-input-background);
+  /* By default https://github.com/microsoft/vscode-webview-ui-toolkit/blob/main/src/dropdown/README.md styles with --vscode-input-background for the background color */
+  background: var(--vscode-badge-background);
   font-family: var(--st-table-th-font-family);
   font-size: var(--font-size);
   font-weight: 600;
@@ -104,7 +105,8 @@
 .vision-table-visible {
   border: solid 1px var(--vscode-panel-border);
   padding: var(--st-table-th-padding);
-  background: var(--vscode-input-background);
+  /* By default https://github.com/microsoft/vscode-webview-ui-toolkit/blob/main/src/dropdown/README.md styles with --vscode-input-background for the background color */
+  background: var(--vscode-badge-background);
   font-family: var(--st-table-th-font-family);
   font-size: var(--vscode-font-size);
   font-weight: 600;

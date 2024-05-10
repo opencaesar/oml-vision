@@ -1,0 +1,45 @@
+.relation-table {
+  border: solid 1px var(--vscode-panel-border);
+}
+
+.relation-table th {
+  border: solid 1px var(--vscode-panel-border);
+  padding: var(--st-table-th-padding);
+  /* By default https://github.com/microsoft/vscode-webview-ui-toolkit/blob/main/src/dropdown/README.md styles with --vscode-input-background for the background color */
+  background: var(--vscode-badge-background);
+  font-family: var(--st-table-th-font-family);
+  font-size: var(--font-size);
+  font-weight: 600;
+  line-height: var(--st-table-th-line-height);
+  letter-spacing: var(--st-table-th-letter-spacing);
+  color: var(--vscode-foreground);
+  position: relative;
+  user-select: none;
+}
+
+.relation-table th,
+.relation-table td {
+  text-align: left;
+  vertical-align: top;
+  min-width: 100px;
+  word-break: break-all;
+}
+
+.relation-table td,
+.relation-table-buttons,
+.relation-filter,
+.relation-table-go-to,
+.relation-table-dropdown {
+  border: solid 1px var(--vscode-panel-border);
+  padding: var(--st-table-th-padding);
+  font-family: var(--st-table-td-font-family);
+  font-size: var(--font-size);
+  font-weight: 400;
+  line-height: var(--st-table-td-line-height);
+  letter-spacing: var(--st-table-td-letter-spacing);
+  color: var(--vscode-editorCodeLens-foreground);
+}
+
+.relation-table-go-to:focus {
+  outline-color: var(--focus-border);
+}

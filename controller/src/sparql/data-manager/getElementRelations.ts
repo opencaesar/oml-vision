@@ -3,7 +3,6 @@ import { TablePanel } from "../../panels/TablePanel";
 import { Commands } from "../../../../commands/src/commands";
 import { SparqlClient } from "../SparqlClient";
 import { v4 as uuid } from "uuid";
-import { uniqBy } from "lodash";
 import { getIriRelations } from "../queries/getIriRelations";
 import { getIriReifiedRelations } from "../queries/getIriReifiedRelations";
 import ITableData from "../../../../view/src/interfaces/ITableData";
@@ -50,38 +49,43 @@ export const getElementRelations = async (
 
           // Add relation to relations
           relations.push(children_relations_data);
-        });
 
-        // Filter unique relations by IRI name
-        // https://lodash.com/docs#uniqBy
-        let unique_relations = uniqBy(relations, "name");
+          // Reset children data
+          children_relations_data = {
+            id: "",
+            name: "",
+          }
+        });
 
         // Use object to store instance and its relations data.  Relations are children.
         // ID and name are required.  Refer to https://github.com/brimdata/react-arborist?tab=readme-ov-file#node-api-reference
         data = {
           id: uuid(),
           name: iri,
-          children: unique_relations,
+          children: relations,
         };
 
         // Add the new data to the results record
         results.push(data);
+
+        // Reset data
+        data = {
+          id: "",
+          name: "",
+          children: ""
+        }
       })
     );
 
-    // Filter unique results by IRI name
-    // https://lodash.com/docs#uniqBy
-    let unique_results = uniqBy(results, "name");
+    checkForCircularReferences(results);
 
-    checkForCircularReferences(unique_results);
-
-    await addReifiedRelations(unique_results);
+    await addReifiedRelations(results);
 
     // Send data to current webview
     TablePanel.currentPanels.get(webviewPath)?.sendMessage({
       command: Commands.LOADED_ELEMENT_RELATIONS,
       payload: {
-        IRIsToDelete: unique_results,
+        IRIsToDelete: results,
       },
       wizardId: wizardId,
     });
