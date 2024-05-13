@@ -1,5 +1,6 @@
 const fs = require('fs');
 const childProcess = require('child_process');
+const core = require('@actions/core');
 
 /**
  * This function grabs the latest tag for the repo.
@@ -82,6 +83,7 @@ const release_notes = () => {
 
   const latestTagSection = extractLatestTagSection(changelogContent, latestTag);
   if (latestTagSection) {
+    core.setOutput('release_notes', latestTagSection.trim());
     console.log(`${latestTagSection}`.trim());
     return latestTagSection;
   } else {
