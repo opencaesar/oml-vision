@@ -39,12 +39,13 @@ jobs:
         run: |
           output=$(node .github/workflows/release_notes.js)
           echo "::set-output name=release_notes::$output"
-      - uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is supplied by Github
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+        # Name defaults to tag name
+        # Tag defaults to latest tag
+        # Read more here https://github.com/softprops/action-gh-release
           body: ${{ steps.get_release_notes.outputs.release_notes }} # Use the captured output as the body
+          files: oml-vision-${{ github.ref }}.vsix # Find the newest release of OML Vision
           draft: false
           prerelease: false
