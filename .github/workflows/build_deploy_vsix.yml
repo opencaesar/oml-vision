@@ -1,0 +1,50 @@
+name: Build and Deploy VSIX File
+
+on:
+  push:
+    tags:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  build_vsix_file:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '18.x'
+      - name: Build VSIX File
+        run: npm run package
+        timeout-minutes: 1
+      - uses: actions/upload-artifact@v3
+        with:
+          name: vsix-file
+          path: |
+            *.vsix
+
+  deploy_vsix_file:
+    needs: build_vsix_file
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '18.x'
+      - uses: actions/download-artifact@v3
+        with:
+          name: vsix-file
+      - name: Get Release Notes
+        id: get_release_notes
+        run: |
+          output=$(node .github/workflows/release_notes.js)
+          echo "::set-output name=release_notes::$output"
+      - uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is supplied by Github
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.get_release_notes.outputs.release_notes }} # Use the captured output as the body
+          draft: false
+          prerelease: false

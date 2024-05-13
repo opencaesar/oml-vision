@@ -8,6 +8,8 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 
 ## v0.3.0 - Venus
 
+Blog: http://www.opencaesar.io/oml-vision-docs/changelog/venus
+
 ### Added
 - Property View: execute commands from property sheet https://github.com/opencaesar/oml-vision/pull/58
 - Table, Tree, and Diagram Views: execute commands from a context/right click menu file https://github.com/opencaesar/oml-vision/pull/54
@@ -16,12 +18,15 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 - Table View: change font size https://github.com/opencaesar/oml-vision/pull/65
 - Table View: reset column size https://github.com/opencaesar/oml-vision/pull/67
 - Diagram View: show OML relations for selected node in wizard https://github.com/opencaesar/oml-vision/pull/73
+- CICD: Added pipeline to build and release new versions to Github Releases https://github.com/opencaesar/oml-vision/pull/77
 
 ### Fixed
 - Property View: not opening immediately when clicking a row or node in the TableView, TreeView, or DiagramView https://github.com/opencaesar/oml-vision/issues/61
 
 
 ## v0.2.6 - Rembrandt Basin
+
+Blog: http://www.opencaesar.io/oml-vision-docs/changelog/rembrandt-basin
 
 ### Added
 - Property View: Allows users to see the properties of elements selected in the webview https://github.com/opencaesar/oml-vision/pull/42
@@ -32,6 +37,8 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 
 ## v0.2.5 - Caloris Basin
 
+Blog: http://www.opencaesar.io/oml-vision-docs/changelog/caloris-basin
+
 ### Fixed
 - Table, Tree, and Diagram Views: cannot generate a view when there are more than 2 sets of layouts objects that contain the "children" attribute in the pages.json file https://github.com/opencaesar/oml-vision/pull/37
 
@@ -41,6 +48,8 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 - Tree View: add ability to specify and edits columns https://github.com/opencaesar/oml-vision/pull/36
 
 ## v0.2.0 - Mercury
+
+Blog: http://www.opencaesar.io/oml-vision-docs/changelog/mercury
 
 ### Fixed
 - Tree View: shows VSCode error popup with Tree UI bugs https://github.com/opencaesar/oml-vision/pull/5
@@ -55,6 +64,8 @@ Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs
 - Diagram View: Add ability to apply a layout algorithm to nodes and edges https://github.com/opencaesar/oml-vision/pull/27
 
 ## 0.1.0
+
+Blog: http://www.opencaesar.io/oml-vision-docs/changelog/initial-release
 
 ### Added
 - Initial release
