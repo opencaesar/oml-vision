@@ -82,7 +82,7 @@ const release_notes = () => {
 
   const latestTagSection = extractLatestTagSection(changelogContent, latestTag);
   if (latestTagSection) {
-    console.log(`${latestTagSection}`);
+    console.log(`${latestTagSection}`.trim());
     return latestTagSection;
   } else {
     console.error(`No section found for the latest tag (${latestTag}) in CHANGELOG.md.`);
