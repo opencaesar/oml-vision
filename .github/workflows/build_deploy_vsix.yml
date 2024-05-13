@@ -36,7 +36,9 @@ jobs:
           name: vsix-file
       - name: Get Release Notes
         id: get_release_notes
-        run: node .github/workflows/release_notes.js
+        run: |
+          npm install 
+          node .github/workflows/release_notes.js
       - name: Get Tag Name
         id: get_tag_name
         # Strip the 'refs/tags/' prefix from the ref
