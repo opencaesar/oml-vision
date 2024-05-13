@@ -43,7 +43,7 @@ jobs:
         id: get_tag_name
         # Strip the 'refs/tags/' prefix from the ref
         run: |
-          TAG_NAME="${{ github.ref##refs/tags/ }}"
+          TAG_NAME="${{ github.ref }}"
           echo "::set-output name=tag_name::$TAG_NAME"
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
