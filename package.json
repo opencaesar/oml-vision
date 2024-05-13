@@ -289,6 +289,7 @@
     "@types/vscode-webview": "^1.57.4",
     "@vscode/codicons": "^0.0.33",
     "@vscode/test-electron": "^2.3.2",
+    "@vscode/vsce": "^2.26.1",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "elkjs": "^0.8.2",
     "esbuild": "^0.19.5",
