@@ -607,7 +607,8 @@ function Diagram({
         />
         <Background gap={12} size={1} />
       </ReactFlow>
-      {rightClick && (
+      {/* Check if rightClick and if layout.contextMenu exists */}
+      {rightClick && layout.contextMenu &&(
         <ContextMenu
           selectedElements={iriArray}
           top={coordinates.y}
