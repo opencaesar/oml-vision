@@ -619,7 +619,7 @@ function Table({
           )}
         </tbody>
       </table>
-      {rightClick && (
+      {rightClick && layout.contextMenu && (
         <ContextMenu
           selectedElements={iriArray}
           top={coordinates.y}

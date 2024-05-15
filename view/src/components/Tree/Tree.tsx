@@ -298,7 +298,7 @@ function Tree({
           </ArboristTree>
         )}
       </FillFlexParent>
-      {rightClick && (
+      {rightClick && layout.contextMenu && (
         <ContextMenu
           selectedElements={iriArray}
           top={coordinates.y}
