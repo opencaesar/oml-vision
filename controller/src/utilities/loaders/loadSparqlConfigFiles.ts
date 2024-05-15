@@ -1,5 +1,7 @@
 import { workspace, Uri, commands, window, FileType } from "vscode";
 import { TreeDataProvider } from "../../sidebar/TreeDataProvider";
+import { validateSchema } from "../../schemas/validator";
+import { sparqlConfigSchema } from "../../schemas/sparqlConfigSchema";
 
 export let globalQueryEndpoint: string = "";
 export let globalPingEndpoint: string = "";
@@ -7,63 +9,58 @@ export let globalUpdateAssertionEndpoint: string = "";
 export let globalUpdateInferenceEndpoint: string = "";
 
 export async function loadSparqlConfigFiles() {
-    commands.executeCommand("setContext", "vision:hasSparqlConfig", false);
-    TreeDataProvider.getInstance().updateHasSparqlConfig(false);
-  
-    const workspaceFolders = workspace.workspaceFolders;
-    if (workspaceFolders) {
-      const uri = workspaceFolders[0].uri;
-      const configFolderUri = Uri.joinPath(
-        uri,
-        "src",
-        "vision",
-        "config"
-      );
-  
-      try {
-        const files = await workspace.fs.readDirectory(configFolderUri);
-  
-        for (const [file, type] of files) {
-          if (file.endsWith(".json") && type === FileType.File) {
-            const fileUri = Uri.joinPath(configFolderUri, file);
-            const buffer = await workspace.fs.readFile(fileUri);
-            try {
-              const content: Record<string,string> = JSON.parse(buffer.toString());
-              if (file === "sparqlConfig.json") {
-                globalQueryEndpoint = content.queryEndpoint;
-                globalPingEndpoint = content.pingEndpoint;
-                globalUpdateAssertionEndpoint = content.updateAssertionEndpoint;
-                globalUpdateInferenceEndpoint = content.updateInferenceEndpoint;
-                TreeDataProvider.getInstance().updateHasSparqlConfig(true);
-              }
-            } catch (parseErr) {
-              throw new Error(`Error parsing ${file}: ${parseErr}`);
+  commands.executeCommand("setContext", "vision:hasSparqlConfig", false);
+  TreeDataProvider.getInstance().updateHasSparqlConfig(false);
+
+  const workspaceFolders = workspace.workspaceFolders;
+  if (workspaceFolders) {
+    const uri = workspaceFolders[0].uri;
+    const configFolderUri = Uri.joinPath(uri, "src", "vision", "config");
+
+    try {
+      const files = await workspace.fs.readDirectory(configFolderUri);
+
+      for (const [file, type] of files) {
+        if (file.endsWith(".json") && type === FileType.File) {
+          const fileUri = Uri.joinPath(configFolderUri, file);
+          const buffer = await workspace.fs.readFile(fileUri);
+          try {
+            const content: Record<string, string> = JSON.parse(
+              buffer.toString()
+            );
+            // Validate if the content matches the SPARQL Config Schema
+            const validate = validateSchema(sparqlConfigSchema, content);
+            if (files.length > 0 && file === "sparqlConfig.json" && validate) {
+              globalQueryEndpoint = content.queryEndpoint;
+              globalPingEndpoint = content.pingEndpoint;
+              globalUpdateAssertionEndpoint = content.updateAssertionEndpoint;
+              globalUpdateInferenceEndpoint = content.updateInferenceEndpoint;
+              commands.executeCommand(
+                "setContext",
+                "vision:hasSparqlConfig",
+                true
+              );
+              window.showInformationMessage(
+                "Sparql Config files loaded successfully."
+              );
+              TreeDataProvider.getInstance().updateHasSparqlConfig(true);
+            } else {
+              window.showErrorMessage("Invalid or missing sparqlConfig.json.");
             }
+          } catch (parseErr) {
+            throw new Error(`Error parsing ${file}: ${parseErr}`);
           }
         }
-        if (files.length > 0) {
-          commands.executeCommand(
-            "setContext",
-            "vision:hasSparqlConfig",
-            true
-          );
-          window.showInformationMessage(
-            "Sparql Config files loaded successfully."
-          );
-        } else {
-          window.showWarningMessage("Sparql Config files not found.");
-        }
-      } catch (err) {
-        if (
-          err instanceof Error &&
-          err.message.startsWith("Error parsing Sparql Config file")
-        )
-          window.showErrorMessage(err.message);
-        else {
-          window.showErrorMessage(
-            `Error reading Sparql Config files: ${err}`
-          );
-        }
+      }
+    } catch (err) {
+      if (
+        err instanceof Error &&
+        err.message.startsWith("Error parsing Sparql Config file")
+      )
+        window.showErrorMessage(err.message);
+      else {
+        window.showErrorMessage(`Error reading Sparql Config files: ${err}`);
       }
     }
   }
+}
