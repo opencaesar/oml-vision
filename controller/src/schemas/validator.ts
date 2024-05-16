@@ -1,5 +1,6 @@
 import Ajv, { JSONSchemaType } from "ajv";
 import ISparqlConfigSchema from "../interfaces/ISparqlConfigSchema";
+import ICommandSchema from "../interfaces/ICommandSchema";
 
 /**
  * This schema validator uses AJV to validate JSON data based on a schema interface.
@@ -11,9 +12,12 @@ import ISparqlConfigSchema from "../interfaces/ISparqlConfigSchema";
  *
  * @param schema: The JSON schema that will be used to validate the data
  * @param data: The JSON data that will be validated against a schema
- * 
+ *
  */
-export const validateSchema = (schema: JSONSchemaType<ISparqlConfigSchema>, data: Object) => {
+export const validateSchema = (
+  schema: JSONSchemaType<ISparqlConfigSchema | ICommandSchema[]>,
+  data: Object
+) => {
   const ajv = new Ajv();
 
   // Validates the provided schema

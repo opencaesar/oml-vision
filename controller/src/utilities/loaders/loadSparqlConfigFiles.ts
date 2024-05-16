@@ -8,6 +8,14 @@ export let globalPingEndpoint: string = "";
 export let globalUpdateAssertionEndpoint: string = "";
 export let globalUpdateInferenceEndpoint: string = "";
 
+/**
+ * Loads JSON files that are stored in the config folder of the model.
+ *
+ * @remarks
+ * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ *
+ */
 export async function loadSparqlConfigFiles() {
   commands.executeCommand("setContext", "vision:hasSparqlConfig", false);
   TreeDataProvider.getInstance().updateHasSparqlConfig(false);
@@ -45,7 +53,7 @@ export async function loadSparqlConfigFiles() {
               );
               TreeDataProvider.getInstance().updateHasSparqlConfig(true);
             } else {
-              window.showErrorMessage("Invalid or missing sparqlConfig.json.");
+              window.showErrorMessage(`Invalid or missing ${file}.`);
             }
           } catch (parseErr) {
             throw new Error(`Error parsing ${file}: ${parseErr}`);

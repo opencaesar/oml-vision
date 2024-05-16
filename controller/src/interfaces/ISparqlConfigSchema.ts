@@ -1,5 +1,5 @@
 /**
- * Defines the structure of the object that is received from the sparqlConfig.json file.
+ * Defines the structure of the JSON object that is received from the sparqlConfig.json file.
  *
  * @remarks
  * This interface relates to {@link https://jena.apache.org/documentation/fuseki2/fuseki-server-info.html | Fuseki endpoints}.
@@ -8,7 +8,6 @@
  * @field updateAssertionEndpoint - The update endpoint for assertions
  * @field updateInferenceEndpoint - The update endpoint for inferences
  * @field pingEndpoint - The ping endpoint
- *
  *
  */
 export default interface ISparqlConfigSchema {
