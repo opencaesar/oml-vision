@@ -36,35 +36,33 @@ const InsertItem: React.FC<InsertItemProps> = ({
 };
 
 interface InsertPanelProps {
-  components: InsertItemProps[];
-  relationships: InsertItemProps[];
+  instances: InsertItemProps[];
+  relations: InsertItemProps[];
 }
 
 const InsertPanel: React.FC<InsertPanelProps> = ({
-  components,
-  relationships,
+  instances,
+  relations,
 }) => {
-  // TODO: Remame components to instances
-  // TODO: Remame relationships to relations
   // Refer to http://www.opencaesar.io/oml-tutorials/#tutorial1-create-oml-vocabulary
   return (
     <div className="w-48 flex flex-col {`z-10 p-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
-      <span className="font-bold">Components</span>
+      <span className="font-bold">Instances</span>
       <div className="pl-4 h-24 flex flex-col flex-grow {`z-10 p-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
-        {relationships.map((component, index) => (
+        {relations.map((instance, index) => (
             <InsertItem
-            label={component.label}
-            onItemClicked={component.onItemClicked}
-            icon={component.icon}
+            label={instance.label}
+            onItemClicked={instance.onItemClicked}
+            icon={instance.icon}
             />
         ))}
       </div>
       <span className="font-bold">Relationships</span>
-      {relationships.map((relationship, index) => (
+      {relations.map((relation, index) => (
         <InsertItem
-          label={relationship.label}
-          onItemClicked={relationship.onItemClicked}
-          icon={relationship.icon}
+          label={relation.label}
+          onItemClicked={relation.onItemClicked}
+          icon={relation.icon}
         />
       ))}
     </div>
