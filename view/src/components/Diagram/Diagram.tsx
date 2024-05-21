@@ -501,7 +501,7 @@ function Diagram({
     />
   }
 
-  var insertItems: InsertItem[] = [testInsertItem, testInsertItem, testInsertItem];
+  var insertItems: InsertItem[] = [testInsertItem, testInsertItem, testInsertItem, testInsertItem, testInsertItem, testInsertItem];
 
   return (
     <div
@@ -670,8 +670,8 @@ function Diagram({
         />
         <Panel position="top-left" className="flow-panel">
           <InsertPanel
-          components={insertItems}
-          relationships={insertItems}/>
+          instances={insertItems}
+          relations={insertItems}/>
         </Panel>
         <Background gap={12} size={1} />
       </ReactFlow>

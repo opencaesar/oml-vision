@@ -46,27 +46,36 @@ const InsertPanel: React.FC<InsertPanelProps> = ({
 }) => {
   // Refer to http://www.opencaesar.io/oml-tutorials/#tutorial1-create-oml-vocabulary
   return (
-    <div className="w-48 flex flex-col {`z-10 p-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
-      <span className="font-bold">Instances</span>
-      <div className="pl-4 h-24 flex flex-col flex-grow {`z-10 p-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
-        {relations.map((instance, index) => (
-            <InsertItem
-            label={instance.label}
-            onItemClicked={instance.onItemClicked}
-            icon={instance.icon}
-            />
-        ))}
-      </div>
-      <span className="font-bold">Relationships</span>
-      {relations.map((relation, index) => (
-        <InsertItem
-          label={relation.label}
-          onItemClicked={relation.onItemClicked}
-          icon={relation.icon}
-        />
-      ))}
+    <div>
+      <SubPanel label="Instances" items={instances}/>
+      <SubPanel label="Relations" items={relations}/>
     </div>
   );
 };
+
+const SubPanel: React.FC<any> = ({
+  label,
+  items
+}) => {
+  // Refer to http://www.opencaesar.io/oml-tutorials/#tutorial1-create-oml-vocabulary
+  return (
+    <div className="w-48 flex flex-col {`z-10 px-2 pt-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
+      <div className="p-2 rounded shadow-md bg-white/5 max-h-[9rem]">
+        <span className="font-bold">{label}</span>
+        <div className="pl-2 h-24 flex flex-col flex-grow {`z-10 p-2 space-y-2 overflow-y-auto max-h-[9rem]`}">
+          {items.map((item: InsertItemProps) => (
+              <InsertItem
+              label={item.label}
+              onItemClicked={item.onItemClicked}
+              icon={item.icon}
+              />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 
 export default InsertPanel;
