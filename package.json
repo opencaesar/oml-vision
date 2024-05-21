@@ -264,6 +264,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.10.1",
+    "@atlaskit/pragmatic-drag-and-drop": "^1.1.9",
     "@comunica/query-sparql": "^2.10.0",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
@@ -322,7 +323,8 @@
     "use-resize-observer": "^9.1.0",
     "uuid": "^9.0.0",
     "uuidv4": "^6.2.13",
-    "vscode-gradle": "^3.10.1"
+    "vscode-gradle": "^3.10.1",
+    "yarn": "^1.22.22"
   },
   "overrides": {
     "react-scripts": {
