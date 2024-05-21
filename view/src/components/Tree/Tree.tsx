@@ -13,7 +13,7 @@ import ITableData from '../../interfaces/ITableData'
 import './Tree.css'
 import { FillFlexParent } from './FillFlexParent';
 import { TreeLayout } from '../../interfaces/DataLayoutsType';
-import { useWizards } from '../../contexts/WizardController';
+import { useWizards } from '../../providers/WizardController';
 import { useVisionTree } from './use-vision-tree';
 import useContextMenu from '../ContextMenu/useContextMenu';
 import ContextMenu from '../ContextMenu/ContextMenu';
@@ -298,9 +298,9 @@ function Tree({
           </ArboristTree>
         )}
       </FillFlexParent>
-      {rightClick && (
+      {rightClick && layout.contextMenu && (
         <ContextMenu
-          selectedElements={selectedRows}
+          selectedElements={iriArray}
           top={coordinates.y}
           left={coordinates.x}
           modelCommands={modelCommands}

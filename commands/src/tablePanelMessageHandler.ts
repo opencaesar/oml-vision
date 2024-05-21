@@ -3,6 +3,9 @@ import * as vscode from "vscode";
 import { generateTableData } from "../../controller/src/sparql/data-manager/generateDataUtils";
 import { TablePanel } from "../../controller/src/panels/TablePanel";
 import { SparqlClient } from "../../controller/src/sparql/SparqlClient";
+import { getElementRelations } from "../../controller/src/sparql/data-manager/getElementRelations";
+import { executeDeleteElements } from "../../controller/src/sparql/data-manager/executeDeleteElements";
+import { getElementRelationsTotal } from "../../controller/src/sparql/data-manager/getElementRelationsTotal";
 
 /**
  * Handles commands that are sent to a Editor (Table, Tree, or Diagram)
@@ -86,14 +89,30 @@ export function handleTablePanelMessage(
       TablePanel.updateTables();
       break;
 
-    case Commands.GET_ELEMENT_DEPENDENCIES:
+    case Commands.GET_ELEMENT_RELATIONS:
       specificMessage =
-        message as CommandStructures[Commands.GET_ELEMENT_DEPENDENCIES];
-      const {
-        webviewPath: depWebviewPath,
-        iriArray = [],
-        labelArray = [],
-      } = specificMessage.payload;
+        message as CommandStructures[Commands.GET_ELEMENT_RELATIONS];
+
+      // Refer to the CommandStructures[Commands.GET_ELEMENT_RELATIONS] to see how the parameters are structured
+      getElementRelations(
+        specificMessage.payload.webviewPath,
+        specificMessage.wizardId,
+        specificMessage.payload.iriArray,
+        specificMessage.payload.labelArray
+      );
+      break;
+    
+    case Commands.GET_ELEMENT_RELATIONS_TOTAL:
+      specificMessage =
+        message as CommandStructures[Commands.GET_ELEMENT_RELATIONS_TOTAL];
+
+      // Refer to the CommandStructures[Commands.GET_ELEMENT_RELATIONS] to see how the parameters are structured
+      getElementRelationsTotal(
+        specificMessage.payload.webviewPath,
+        specificMessage.wizardId,
+        specificMessage.payload.iriArray,
+        specificMessage.payload.labelArray
+      );
       break;
 
     case Commands.EXECUTE_DELETE_ELEMENTS:
@@ -101,6 +120,13 @@ export function handleTablePanelMessage(
         message as CommandStructures[Commands.EXECUTE_DELETE_ELEMENTS];
       const { webviewPath: delWebviewPath, IRIsToDelete = [] } =
         specificMessage.payload;
+
+        // Refer to the CommandStructures[Commands.EXECUTE_DELETE_ELEMENTS] to see how the parameters are structured
+        executeDeleteElements(
+          specificMessage.payload.webviewPath,
+          specificMessage.wizardId,
+          specificMessage.payload.IRIsToDelete,
+        )
       break;
 
     case Commands.CREATE_FCR:
@@ -116,30 +142,46 @@ export function handleTablePanelMessage(
 
     case Commands.CREATE_QUERY:
       specificMessage = message as CommandStructures[Commands.CREATE_QUERY];
-      specificMessage.parameters.forEach((param: any) => {
-        SparqlClient(specificMessage.query, "update", param);
-      });
+      if (specificMessage.selectedElements) {
+        specificMessage.selectedElements.forEach((param: any) => {
+          SparqlClient(specificMessage.query, "update", param);
+        });
+      } else {
+        SparqlClient(specificMessage.query, "update", specificMessage);
+      }
       break;
 
     case Commands.READ_QUERY:
       specificMessage = message as CommandStructures[Commands.READ_QUERY];
-      specificMessage.parameters.forEach((param: any) => {
-        SparqlClient(specificMessage.query, "query", param);
-      });
+      if (specificMessage.selectedElements) {
+        specificMessage.selectedElements.forEach((param: any) => {
+          SparqlClient(specificMessage.query, "query", param);
+        });
+      } else {
+        SparqlClient(specificMessage.query, "query", specificMessage);
+      }
       break;
 
     case Commands.UPDATE_QUERY:
       specificMessage = message as CommandStructures[Commands.UPDATE_QUERY];
-      specificMessage.parameters.forEach((param: any) => {
-        SparqlClient(specificMessage.query, "update", param);
-      });
+      if (specificMessage.selectedElements) {
+        specificMessage.selectedElements.forEach((param: any) => {
+          SparqlClient(specificMessage.query, "update", param);
+        });
+      } else {
+        SparqlClient(specificMessage.query, "update", specificMessage);
+      }
       break;
 
     case Commands.DELETE_QUERY:
       specificMessage = message as CommandStructures[Commands.DELETE_QUERY];
-      specificMessage.parameters.forEach((param: any) => {
-        SparqlClient(specificMessage.query, "update", param);
-      });
+      if (specificMessage.selectedElements) {
+        specificMessage.selectedElements.forEach((param: any) => {
+          SparqlClient(specificMessage.query, "update", param);
+        });
+      } else {
+        SparqlClient(specificMessage.query, "update", specificMessage);
+      }
       break;
 
     default:

@@ -15,7 +15,9 @@ export enum Commands {
   GENERATE_TABLE_DATA = 'generateTableData',
   UPDATE_CM_STATE = 'updateCmState',
   REFRESH_TABLE_DATA = 'refreshTableData',
-  GET_ELEMENT_DEPENDENCIES = 'getElementDependencies',
+  GET_ELEMENT_RELATIONS = 'getElementRelations',
+  // This differs to the GET_ELEMENT_RELATIONS because it grabs the predicate/verb and object instead of the subject of the selected element
+  GET_ELEMENT_RELATIONS_TOTAL = 'getElementRelationsTotal',
   EXECUTE_CREATE_ELEMENTS = 'executeCreateElements',
   EXECUTE_DELETE_ELEMENTS = 'executeDeleteElements',
   CREATE_FCR = 'createFCR',
@@ -44,7 +46,9 @@ export enum Commands {
   CREATE_FILTERED_DIAGRAM = 'createFilteredDiagram',
   LOADED_PROPERTY_SHEET = 'loadedPropertySheet',
   LOADED_TABLE_DATA = 'loadedTableData',
-  LOADED_ELEMENT_DEPENDENCIES = 'loadedElementDependencies',
+  LOADED_ELEMENT_RELATIONS = 'loadedElementRelations',
+  // This differs to the LOADED_ELEMENT_RELATIONS because it loads the predicate/verb and object instead of the subject of the selected element
+  LOADED_ELEMENT_RELATIONS_TOTAL = 'loadedElementRelationsTotal',
   DELETED_ELEMENTS = 'deletedElements',
   CREATED_ELEMENT = 'createdElement',
   CLONED_ELEMENTS = 'clonedElements',
@@ -82,12 +86,16 @@ export type CommandStructures = {
     payload: { aIri: string; fse_lifecycleState: string }[];
   };
   [Commands.REFRESH_TABLE_DATA]: {};
-  [Commands.GET_ELEMENT_DEPENDENCIES]: {
-    payload: { webviewPath: string; iriArray: string[]; labelArray: string[] };
+  [Commands.GET_ELEMENT_RELATIONS]: {
+    payload: { webviewPath: string; iriArray: string[]; labelArray?: string[] };
+    wizardId?: string;
+  };
+  [Commands.GET_ELEMENT_RELATIONS_TOTAL]: {
+    payload: { webviewPath: string; iriArray: string[]; labelArray?: string[] };
     wizardId?: string;
   };
   [Commands.EXECUTE_DELETE_ELEMENTS]: {
-    payload: { webviewPath: string; IRIsToDelete: string[] };
+    payload: { webviewPath: string; IRIsToDelete: ITableData[] };
     wizardId?: string;
   };
   [Commands.CREATE_FCR]: {
@@ -158,12 +166,18 @@ export type CommandStructures = {
     errorMessage?: string;
     payload?: Record<string, ITableData[]>;
   };
-  [Commands.LOADED_ELEMENT_DEPENDENCIES]: {
+  [Commands.LOADED_ELEMENT_RELATIONS]: {
     errorMessage?: string;
     wizardId: string;
     payload: {
-      relationIRIs?: Record<string, any>[];
-      IRIsToDelete?: string[];
+      IRIsToDelete?: Record<string, any>[];
+    };
+  };
+  [Commands.LOADED_ELEMENT_RELATIONS_TOTAL]: {
+    errorMessage?: string;
+    wizardId: string;
+    payload: {
+      relations?: Record<string, any>[];
     };
   };
   [Commands.DELETED_ELEMENTS]: {
@@ -191,19 +205,21 @@ export type CommandStructures = {
   };
   [Commands.CREATE_QUERY]: {
     query: string;
-    parameters: string[]
+    selectedElements?: string[]
   };
   [Commands.READ_QUERY]: {
     query: string;
-    parameters: string[]
+    selectedElements?: string[]
   };
   [Commands.UPDATE_QUERY]: {
     query: string;
-    parameters: string[]
+    selectedElements?: string[]
+    before_parameters?: Object
+    after_parameters?: Object
   };
   [Commands.DELETE_QUERY]: {
     query: string;
-    parameters: string[]
+    selectedElements?: string[]
   };
 };
 

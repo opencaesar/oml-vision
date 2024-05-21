@@ -6,7 +6,8 @@ import {
   globalUpdateInferenceEndpoint,
 } from "../utilities/loaders/loadSparqlConfigFiles";
 import ITriplestoreStatus from "../interfaces/ITriplestoreStatus";
-import { addGraphToQuery } from "./addGraphQuery";
+import { addGraphToQuery } from "../sparql/format/addGraphToQuery";
+import { removeGraphFromQuery } from "../sparql/format/removeGraphFromQuery";
 
 /**  
     This async function creates a new query engine.  
@@ -46,14 +47,14 @@ export const queryEngine = async (query: string): Promise<any> => {
     // UPDATE, DELETE, or CREATE query is executed to named (assertions) and default (inferences) graphs
     // globalUpdateAssertionEndpoint & globalUpdateInferenceEndpoint are fetched from sparqlConfig.json file in OML Model
     // Refer to controller/src/utilities/loaders/loadSparqlConfigFiles.ts
-    const inferenceQuery = query;
+    const inferenceQuery = removeGraphFromQuery(query);
     await qe.queryVoid(inferenceQuery, {
       sources: [globalUpdateInferenceEndpoint],
       // timeout in ms
       httpTimeout: 6000,
     });
 
-    const assertionQuery = addGraphToQuery(query);
+    const assertionQuery = query;
     await qe.queryVoid(assertionQuery, {
       sources: [globalUpdateAssertionEndpoint],
       // timeout in ms

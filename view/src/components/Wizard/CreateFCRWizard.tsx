@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form";
 import { VSCodeButton, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import { FormField } from "@nasa-jpl/react-stellar";
 import { v4 as uuidv4 } from "uuid";
-import Modal from "../../shared/Modal";
-import { useWizards } from "../../../contexts/WizardController";
-import { postMessage } from "../../../utils/postMessage";
-import { CommandStructures, Commands } from "../../../../../commands/src/commands";
+import Modal from "../shared/Modal";
+import { useWizards } from "../../providers/WizardController";
+import { postMessage } from "../../utils/postMessage";
+import { CommandStructures, Commands } from "../../../../commands/src/commands";
 
 function CreateFaultContainmentRegionWizard({
   iriArray,

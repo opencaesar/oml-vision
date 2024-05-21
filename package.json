@@ -2,7 +2,7 @@
   "name": "oml-vision",
   "displayName": "OML Vision",
   "description": "VSCode based workbench to edit OML models",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "engines": {
     "vscode": "^1.78.2"
   },
@@ -199,7 +199,7 @@
           "visibility": "visible"
         },
         {
-          "type":"webview",
+          "type": "webview",
           "id": "vision-triplestore-status",
           "name": "RDF Triplestore Status",
           "when": "workbenchState != empty",
@@ -263,6 +263,7 @@
     "test": "jest --coverage"
   },
   "dependencies": {
+    "@actions/core": "^1.10.1",
     "@comunica/query-sparql": "^2.10.0",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
@@ -289,6 +290,7 @@
     "@types/vscode-webview": "^1.57.4",
     "@vscode/codicons": "^0.0.33",
     "@vscode/test-electron": "^2.3.2",
+    "@vscode/vsce": "^2.26.1",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "elkjs": "^0.8.2",
     "esbuild": "^0.19.5",
@@ -310,6 +312,7 @@
     "react-markdown": "^5.0.3",
     "react-router-dom": "^6.12.1",
     "reactflow": "^11.7.4",
+    "sparql-formatter": "^0.7.6",
     "stream": "^0.0.2",
     "tailwindcss": "^3.3.2",
     "terser": "^5.17.7",

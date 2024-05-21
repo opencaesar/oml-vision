@@ -1,0 +1,53 @@
+.delete-tree-container {
+  border: solid 1px var(--vscode-panel-border);
+}
+
+.delete-tree .node {
+  position: relative;
+  border: solid 1px var(--vscode-panel-border);
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  font-family: var(--st-table-td-font-family);
+  font-size: var(--vscode-font-size);
+  font-weight: 400;
+  line-height: var(--st-table-td-line-height);
+  letter-spacing: var(--st-table-td-letter-spacing);
+}
+
+.delete-tree .node {
+  text-align: left;
+  vertical-align: top;
+  flex: 1; /* Updated */
+  word-break: break-all;
+}
+
+.delete-tree .node * {
+  word-break: break-all;
+}
+
+[role="treeitem"][aria-selected="false"]:has(.node):not(:has(.highlighted-text)):hover {
+  background: var(--vscode-list-hoverBackground);
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+[role="treeitem"][aria-selected="true"]:has(.node) {
+  background: var(--vscode-editor-selectionBackground);
+  color: var(--vscode-list-activeSelectionForeground);
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+.row:focus-visible [role="treeitem"][aria-selected="false"]:has(.node),
+.row:focus [role="treeitem"][aria-selected="false"]:has(.node),
+.row:active [role="treeitem"][aria-selected="false"]:has(.node) {
+  background: var(--vscode-list-activeSelectionBackground);
+}
+
+.row .node:focus-visible ::slotted(*),
+.row .node:focus ::slotted(*),
+.row .node:hover ::slotted(*) {
+  color: var(--vscode-list-activeSelectionForeground) !important;
+}

@@ -1,0 +1,28 @@
+# Workflow to run backend/controller tests 
+
+name: Run Controller Tests
+
+# Runs on push to any branch
+on:
+  push:
+  # Runs on pull request to master branch
+  pull_request:
+    branches:
+    - master
+  # Workflow can be triggered manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # Run backend tests
+  backend_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - name: Run backend tests
+        run: |
+          npm install
+          npm run test -- controller/tests/
+        timeout-minutes: 1
