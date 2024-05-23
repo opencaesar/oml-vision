@@ -5,13 +5,11 @@ import { Button } from "@nasa-jpl/react-stellar";
 interface InsertItemProps {
   label: string;
   icon: ReactElement<any>;
-  onItemClicked(): void;
 }
 
 const InsertItem: React.FC<InsertItemProps> = ({
   label,
   icon,
-  onItemClicked,
 }) => {
   // TODO: handle onDrag Look at react-beautiful-dnd
   // TODO: handle cloning object after dragging
@@ -19,8 +17,6 @@ const InsertItem: React.FC<InsertItemProps> = ({
   let handleItemClick;
   return (
     <div
-      onDrag={onItemClicked}
-      onClick={onItemClicked}
       className="flex flex-row flex-grow justify-between"
     >
       <Button className="flex-grow" variant="secondary" onClick={() => console.log("Click")}>
@@ -66,7 +62,6 @@ const SubPanel: React.FC<any> = ({
           {items.map((item: InsertItemProps) => (
               <InsertItem
               label={item.label}
-              onItemClicked={item.onItemClicked}
               icon={item.icon}
               />
           ))}
