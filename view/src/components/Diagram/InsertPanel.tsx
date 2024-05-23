@@ -1,6 +1,8 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect, useRef } from "react";
 import "@nasa-jpl/react-stellar/dist/esm/stellar.css";
 import { Button } from "@nasa-jpl/react-stellar";
+import invariant from "tiny-invariant"
+import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 
 interface InsertItemProps {
   label: string;
@@ -11,22 +13,31 @@ const InsertItem: React.FC<InsertItemProps> = ({
   label,
   icon,
 }) => {
+  // TODO: Use model's node color property instead of hard-coded color
   // TODO: handle onDrag Look at react-beautiful-dnd
   // TODO: handle cloning object after dragging
   // TODO: handle dropping object after letting go of the mouse
-  let handleItemClick;
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    invariant(el);
+
+    return draggable({
+      element: el,
+    });
+  }, []);
   return (
     <div
-      className="flex flex-row flex-grow justify-between"
+      className="flex flex-row flex-grow justify-between rounded p-1 bg-[#ff0000]"
+      ref={ref}
     >
-      <Button className="flex-grow" variant="secondary" onClick={() => console.log("Click")}>
-        <div className="flex-auto w-24 text-left">
-            {label}
-        </div>
-        <div className="grow-0">
-            {icon}
-        </div>
-      </Button>
+      <div className="flex-auto w-24 text-left text-nowrap">
+        {label}
+      </div>
+      <div className="grow-0">
+        {icon}
+      </div>
     </div>
   );
 };
