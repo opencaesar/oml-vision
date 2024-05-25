@@ -25,7 +25,7 @@ import ReactFlow, {
   getConnectedEdges,
 } from "reactflow";
 
-import { InsertPanel, InstancePane, InstanceItem } from "./InsertPanel";
+import { InsertPanel, InsertPane, InstanceItem, RelationItem } from "./InsertPanel";
 
 // Icons
 import { IconDownload } from "@nasa-jpl/react-stellar";
@@ -661,20 +661,16 @@ function Diagram({
         />
         <Panel position="top-left" className="flow-panel">
           <InsertPanel>
-            <InstancePane>
+            <InsertPane label="Instance">
               {insertItems.map((item) => {
               return <InstanceItem label={item}/>
               })}
-            </InstancePane>
-            <InstancePane>
-              <ul>
-                <li>Test</li>
-                <li>Test</li>
-                <li>Test</li>
-                <li>Test</li>
-                <li>Test</li>
-              </ul>
-            </InstancePane>
+            </InsertPane>
+            <InsertPane label="Relation">
+            {insertItems.map((item) => {
+              return <RelationItem label={item}/>
+              })}
+            </InsertPane>
           </InsertPanel>
         </Panel>
         <Background gap={12} size={1} />
