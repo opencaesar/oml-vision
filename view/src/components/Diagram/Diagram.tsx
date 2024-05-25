@@ -25,7 +25,12 @@ import ReactFlow, {
   getConnectedEdges,
 } from "reactflow";
 
-import { InsertPanel, InsertPane, InstanceItem, RelationItem } from "./InsertPanel";
+import {
+  InsertPanel,
+  InsertPane,
+  InstanceItem,
+  RelationItem,
+} from "./InsertPanel";
 
 // Icons
 import { IconDownload } from "@nasa-jpl/react-stellar";
@@ -492,7 +497,17 @@ function Diagram({
   // This constant sets the control button dropdown indicator arrow size.
   const arrowIconSize = 16;
 
-  var insertItems: string[] = ["Label 1", "Label 2", "Label 3", "Label 4", "Label 5", "Label 6", "Label 7", "Label 8", "Label 9"];
+  var insertItems: string[] = [
+    "Label 1",
+    "Label 2",
+    "Label 3",
+    "Label 4",
+    "Label 5",
+    "Label 6",
+    "Label 7",
+    "Label 8",
+    "Label 9",
+  ];
 
   return (
     <div
@@ -663,12 +678,12 @@ function Diagram({
           <InsertPanel>
             <InsertPane label="Instance">
               {insertItems.map((item) => {
-              return <InstanceItem label={item}/>
+                return <InstanceItem label={item} />;
               })}
             </InsertPane>
             <InsertPane label="Relation">
-            {insertItems.map((item) => {
-              return <RelationItem label={item}/>
+              {insertItems.map((item) => {
+                return <RelationItem label={item} />;
               })}
             </InsertPane>
           </InsertPanel>
@@ -676,7 +691,7 @@ function Diagram({
         <Background gap={12} size={1} />
       </ReactFlow>
       {/* Check if rightClick and if layout.contextMenu exists */}
-      {rightClick && layout.contextMenu &&(
+      {rightClick && layout.contextMenu && (
         <ContextMenu
           selectedElements={iriArray}
           top={coordinates.y}
