@@ -25,7 +25,7 @@ import ReactFlow, {
   getConnectedEdges,
 } from "reactflow";
 
-import InsertPanel from "./InsertPanel";
+import { InsertPanel, InstancePane, InstanceItem } from "./InsertPanel";
 
 // Icons
 import { IconDownload } from "@nasa-jpl/react-stellar";
@@ -489,19 +489,10 @@ function Diagram({
     setShowDownloadMenu(!showDownloadMenu);
   };
 
-  const arrowIconSize = 16; // This constant sets the control button dropdown indicator arrow size.
-  var testInsertItem: InsertItem = {
-    label: "TestInsertItem",
-    onItemClicked: () => {console.log("Item was clicked!")},
-    icon: <IconDownload
-      className="flex-shrink-0 flex-grow-0"
-      color="var(--vscode-button-secondaryForeground)"
-      width="16"
-      height="16"
-    />
-  }
+  // This constant sets the control button dropdown indicator arrow size.
+  const arrowIconSize = 16;
 
-  var insertItems: InsertItem[] = [testInsertItem, testInsertItem, testInsertItem, testInsertItem, testInsertItem, testInsertItem];
+  var insertItems: string[] = ["Label 1", "Label 2", "Label 3", "Label 4", "Label 5", "Label 6", "Label 7", "Label 8", "Label 9"];
 
   return (
     <div
@@ -669,9 +660,22 @@ function Diagram({
           nodeColor={getNodeColor}
         />
         <Panel position="top-left" className="flow-panel">
-          <InsertPanel
-          instances={insertItems}
-          relations={insertItems}/>
+          <InsertPanel>
+            <InstancePane>
+              {insertItems.map((item) => {
+              return <InstanceItem label={item}/>
+              })}
+            </InstancePane>
+            <InstancePane>
+              <ul>
+                <li>Test</li>
+                <li>Test</li>
+                <li>Test</li>
+                <li>Test</li>
+                <li>Test</li>
+              </ul>
+            </InstancePane>
+          </InsertPanel>
         </Panel>
         <Background gap={12} size={1} />
       </ReactFlow>
