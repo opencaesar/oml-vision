@@ -28,8 +28,9 @@ import ReactFlow, {
 import {
   InsertPanel,
   InsertPane,
-  InstanceItem,
-  RelationItem,
+  InstanceInsertItem,
+  RelationInsertItem,
+  DefaultRelationIcon,
 } from "./InsertPanel";
 
 // Icons
@@ -41,7 +42,6 @@ import { toPng, toSvg } from "html-to-image";
 import Loader from "../shared/Loader";
 import ITableData from "../../interfaces/ITableData";
 import { LegendItem } from "../../interfaces/LegendItemType";
-import { InsertItem } from "../../interfaces/InsertItemType";
 import {
   VSCodeButton,
   VSCodeDropdown,
@@ -678,12 +678,12 @@ function Diagram({
           <InsertPanel>
             <InsertPane label="Instance">
               {insertItems.map((item) => {
-                return <InstanceItem label={item} />;
+                return <InstanceInsertItem label={item} />;
               })}
             </InsertPane>
             <InsertPane label="Relation">
               {insertItems.map((item) => {
-                return <RelationItem label={item} />;
+                return <RelationInsertItem label={item} icon={DefaultRelationIcon}/>;
               })}
             </InsertPane>
           </InsertPanel>

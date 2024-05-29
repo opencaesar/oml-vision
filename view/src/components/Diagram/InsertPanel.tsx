@@ -4,22 +4,34 @@ import invariant from "tiny-invariant";
 import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import Node from "reactflow";
 
-interface InsertItemProps {
+interface InstanceInsertItemProps {
   label: string;
-  style?: any;
+  style?: string;
 }
 
-const InstanceNode: React.FC<any> = (style) => {
-  return <div className="h-4 rounded "></div>;
-};
+interface RelationInsertItemProps {
+  label: string;
+  icon: React.ReactElement
+}
 
-export const InstanceItem: React.FC<InsertItemProps> = ({ label, style }) => {
+// A default icon for a RelationInsertItem
+export const DefaultRelationIcon: React.ReactElement = <span className="codicon codicon-arrow-right mr-2 text-[20px]" />
+
+/*
+ * React component `InstanceInsertItem` is a visual representation of an insertable instance that a user can drag from the instance pane of the instance panel and drop into the diagram view.
+ *
+ * @param {string} label - String label for the instance
+ * @param {string} style - TailwindCSS style to specify style attributes for the InstanceNode
+ */
+export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({ label, style }) => {
   // TODO: Use model's node color property instead of hard-coded color
   // TODO: handle onDrag Look at react-beautiful-dnd
   // TODO: handle cloning object after dragging
   // TODO: handle dropping object after letting go of the mouse
-  const ref = useRef(null);
+  const ref = useRef(null); // ref for dragging
+  const defaultNodeStyle = "bg-[#ff0000]"
 
+  // Enable dragging of element
   useEffect(() => {
     const el = ref.current;
     invariant(el);
@@ -30,7 +42,7 @@ export const InstanceItem: React.FC<InsertItemProps> = ({ label, style }) => {
     <div className="flex flex-row items-center">
       <div className="relative left-[1px] z-10 h-2 w-2 border-[1px] rounded-full bg-black border-white "></div>
       <div
-        className="flex flex-none justify-center items-center rounded h-11 w-24 bg-[#ff0000] z-0 "
+        className={`flex flex-none justify-center items-center rounded h-11 w-24 z-0 ${style ?? defaultNodeStyle}`}
         ref={ref}
       >
         <span className="text-center text-nowrap text-white text-[12px]">
@@ -42,12 +54,10 @@ export const InstanceItem: React.FC<InsertItemProps> = ({ label, style }) => {
   );
 };
 
-export const RelationItem: React.FC<InsertItemProps> = ({ label, style }) => {
-  // TODO: handle onDrag Look at react-beautiful-dnd
-  // TODO: handle cloning object after dragging
-  // TODO: handle dropping object after letting go of the mouse
+export const RelationInsertItem: React.FC<RelationInsertItemProps> = ({ label, icon }) => {
+  // TODO: Find a better way to handle icons
   const ref = useRef(null);
-
+  
   useEffect(() => {
     const el = ref.current;
     invariant(el);
@@ -63,7 +73,7 @@ export const RelationItem: React.FC<InsertItemProps> = ({ label, style }) => {
         <span className="text-center text-nowrap text-white text-[12px]">
           {label}
         </span>
-        <span className="codicon codicon-arrow-right mr-2 text-[20px]" />
+        {icon}
       </div>
     </div>
   );
@@ -84,7 +94,6 @@ export const InsertPane: React.FC<any> = ({ label, children }) => {
 };
 
 export const InsertPanel: React.FC<any> = ({ children }) => {
-  // Refer to http://www.opencaesar.io/oml-tutorials/#tutorial1-create-oml-vocabulary
   return (
     <div className="w-48 flex flex-col {`z-10 p-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
       {children}
