@@ -39,7 +39,7 @@ export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({ label, s
   }, []);
 
   return (
-    <div className="flex flex-row items-center hover:brightness-200">
+    <div className="flex flex-row items-center hover:backdrop-brightness-200">
       <div className="relative left-[1px] z-10 h-2 w-2 border-[1px] rounded-full bg-black border-white "></div>
       <div
         className={`flex flex-none justify-center items-center rounded h-11 w-24 z-0 ${style ?? defaultNodeStyle}`}
