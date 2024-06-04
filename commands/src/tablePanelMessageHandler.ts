@@ -6,6 +6,7 @@ import { SparqlClient } from "../../controller/src/sparql/SparqlClient";
 import { getElementRelations } from "../../controller/src/sparql/data-manager/getElementRelations";
 import { executeDeleteElements } from "../../controller/src/sparql/data-manager/executeDeleteElements";
 import { getElementRelationsTotal } from "../../controller/src/sparql/data-manager/getElementRelationsTotal";
+import { getAllElementRelations } from "../../controller/src/sparql/data-manager/getAllElementRelations";
 
 /**
  * Handles commands that are sent to a Editor (Table, Tree, or Diagram)
@@ -128,6 +129,13 @@ export function handleTablePanelMessage(
           specificMessage.payload.IRIsToDelete,
         )
       break;
+
+    case Commands.GET_ALL_ELEMENT_RELATIONS:
+      specificMessage = message as CommandStructures[Commands.GET_ALL_ELEMENT_RELATIONS];
+      const { webviewPath: relationWebviewPath } = specificMessage.payload;
+
+      // Refer to the CommandStructures[Commands.GET_ALL_ELEMENT_RELATIONS] to see how the parameters are structured
+      getAllElementRelations(specificMessage.payload.webviewPath);
 
     case Commands.CREATE_FCR:
       specificMessage = message as CommandStructures[Commands.CREATE_FCR];

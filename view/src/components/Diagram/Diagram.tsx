@@ -61,6 +61,8 @@ const nodeTypes = {
 
 function Diagram({
   initData,
+  instances,
+  relations,
   webviewPath,
   hasFilter,
   clearFilter = () => {},
@@ -76,6 +78,8 @@ function Diagram({
     edges: Edge[];
     legendItems: LegendItem[];
   };
+  instances: string[];
+  relations: string[];
   webviewPath: string;
   hasFilter: boolean;
   clearFilter: Function;
@@ -677,13 +681,13 @@ function Diagram({
         <Panel position="top-left" className="flow-panel">
           <InsertPanel>
             <InsertPane label="Instance">
-              {insertItems.map((item) => {
-                return <InstanceInsertItem label={item} />;
+              {instances.map((instance: string) => {
+                return <InstanceInsertItem label={instance} />;
               })}
             </InsertPane>
             <InsertPane label="Relation">
-              {insertItems.map((item) => {
-                return <RelationInsertItem label={item} icon={DefaultRelationIcon}/>;
+              {relations.map((relation: string) => {
+                return <RelationInsertItem label={relation} icon={DefaultRelationIcon}/>;
               })}
             </InsertPane>
           </InsertPanel>

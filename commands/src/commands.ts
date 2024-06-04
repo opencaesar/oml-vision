@@ -18,6 +18,8 @@ export enum Commands {
   GET_ELEMENT_RELATIONS = 'getElementRelations',
   // This differs to the GET_ELEMENT_RELATIONS because it grabs the predicate/verb and object instead of the subject of the selected element
   GET_ELEMENT_RELATIONS_TOTAL = 'getElementRelationsTotal',
+  // This differs from GET_ELEMENT_RELANTIONS_TOTAL because it gets all relations in OML Model not just a selected element
+  GET_ALL_ELEMENT_RELATIONS = 'getAllElementRelations',
   EXECUTE_CREATE_ELEMENTS = 'executeCreateElements',
   EXECUTE_DELETE_ELEMENTS = 'executeDeleteElements',
   CREATE_FCR = 'createFCR',
@@ -49,6 +51,8 @@ export enum Commands {
   LOADED_ELEMENT_RELATIONS = 'loadedElementRelations',
   // This differs to the LOADED_ELEMENT_RELATIONS because it loads the predicate/verb and object instead of the subject of the selected element
   LOADED_ELEMENT_RELATIONS_TOTAL = 'loadedElementRelationsTotal',
+  // This differs from LOADED_ELEMENT_RELATIONS_TOTAL because it loads all relations in OML Model not just a selected element
+  LOADED_ALL_ELEMENT_RELATIONS = 'loadedAllElementRelations',
   DELETED_ELEMENTS = 'deletedElements',
   CREATED_ELEMENT = 'createdElement',
   CLONED_ELEMENTS = 'clonedElements',
@@ -93,6 +97,9 @@ export type CommandStructures = {
   [Commands.GET_ELEMENT_RELATIONS_TOTAL]: {
     payload: { webviewPath: string; iriArray: string[]; labelArray?: string[] };
     wizardId?: string;
+  };
+  [Commands.GET_ALL_ELEMENT_RELATIONS]: {
+    payload: { webviewPath: string };
   };
   [Commands.EXECUTE_DELETE_ELEMENTS]: {
     payload: { webviewPath: string; IRIsToDelete: ITableData[] };
@@ -178,6 +185,12 @@ export type CommandStructures = {
     wizardId: string;
     payload: {
       relations?: Record<string, any>[];
+    };
+  };
+  [Commands.LOADED_ALL_ELEMENT_RELATIONS]: {
+    errorMessage?: string;
+    payload: {
+      relations?: string[];
     };
   };
   [Commands.DELETED_ELEMENTS]: {
