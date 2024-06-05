@@ -350,7 +350,7 @@ export function activate(context: vscode.ExtensionContext) {
     "**/src/vision/sparql/*.sparql"
   );
   let viewpointsFolderWatcher = vscode.workspace.createFileSystemWatcher(
-    "**/src/vision/viewpoints/*.json"
+    "**/src/vision/viewpoints/**/*.json"
   );
   let commandsFolderWatcher = vscode.workspace.createFileSystemWatcher(
     "**/src/vision/commands/*.json"

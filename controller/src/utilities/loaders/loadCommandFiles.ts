@@ -2,7 +2,7 @@ import { workspace, Uri, commands, window, FileType } from "vscode";
 import { TablePanel } from "../../panels/TablePanel";
 import { PropertyPanelProvider } from "../../panels/PropertyPanelProvider";
 import { validateSchema } from "../../schemas/validator";
-import { commandSchema } from "../../schemas/commandSchema";
+import { commandSchema } from "../../schemas/commands/commandSchema";
 // TODO: handle multiple workspaces (currently assumes model is in the 1st)
 
 /**
@@ -41,7 +41,7 @@ export const loadCommandFiles = async (
           const validate = validateSchema(commandSchema, content);
           if (files.length > 0 && validate) {
             commands.executeCommand("setContext", "vision:hasCommand", true);
-            window.showInformationMessage("Command files loaded successfully.");
+            window.showInformationMessage(`${file} loaded successfully.`);
           } else {
             window.showErrorMessage(`Invalid or missing ${file}.`);
           }

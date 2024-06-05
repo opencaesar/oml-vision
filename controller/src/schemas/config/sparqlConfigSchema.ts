@@ -1,4 +1,4 @@
-import ISparqlConfigSchema from '../interfaces/ISparqlConfigSchema';
+import ISparqlConfigSchema from '../../interfaces/ISparqlConfigSchema';
 import { JSONSchemaType } from "ajv";
 
 /**

@@ -1,7 +1,7 @@
 import { workspace, Uri, commands, window, FileType } from "vscode";
 import { TreeDataProvider } from "../../sidebar/TreeDataProvider";
 import { validateSchema } from "../../schemas/validator";
-import { sparqlConfigSchema } from "../../schemas/sparqlConfigSchema";
+import { sparqlConfigSchema } from "../../schemas/config/sparqlConfigSchema";
 
 export let globalQueryEndpoint: string = "";
 export let globalPingEndpoint: string = "";
@@ -49,7 +49,7 @@ export async function loadSparqlConfigFiles() {
                 true
               );
               window.showInformationMessage(
-                "Sparql Config files loaded successfully."
+                `${file} loaded successfully.`
               );
               TreeDataProvider.getInstance().updateHasSparqlConfig(true);
             } else {
