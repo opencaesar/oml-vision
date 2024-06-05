@@ -7,6 +7,7 @@ import { getElementRelations } from "../../controller/src/sparql/data-manager/ge
 import { executeDeleteElements } from "../../controller/src/sparql/data-manager/executeDeleteElements";
 import { getElementRelationsTotal } from "../../controller/src/sparql/data-manager/getElementRelationsTotal";
 import { getAllElementRelations } from "../../controller/src/sparql/data-manager/getAllElementRelations";
+import { getAllInstanceCategories } from "../../controller/src/sparql/data-manager/getAllInstanceCategories";
 
 /**
  * Handles commands that are sent to a Editor (Table, Tree, or Diagram)
@@ -102,7 +103,7 @@ export function handleTablePanelMessage(
         specificMessage.payload.labelArray
       );
       break;
-    
+
     case Commands.GET_ELEMENT_RELATIONS_TOTAL:
       specificMessage =
         message as CommandStructures[Commands.GET_ELEMENT_RELATIONS_TOTAL];
@@ -122,20 +123,29 @@ export function handleTablePanelMessage(
       const { webviewPath: delWebviewPath, IRIsToDelete = [] } =
         specificMessage.payload;
 
-        // Refer to the CommandStructures[Commands.EXECUTE_DELETE_ELEMENTS] to see how the parameters are structured
-        executeDeleteElements(
-          specificMessage.payload.webviewPath,
-          specificMessage.wizardId,
-          specificMessage.payload.IRIsToDelete,
-        )
+      // Refer to the CommandStructures[Commands.EXECUTE_DELETE_ELEMENTS] to see how the parameters are structured
+      executeDeleteElements(
+        specificMessage.payload.webviewPath,
+        specificMessage.wizardId,
+        specificMessage.payload.IRIsToDelete
+      );
       break;
 
     case Commands.GET_ALL_ELEMENT_RELATIONS:
-      specificMessage = message as CommandStructures[Commands.GET_ALL_ELEMENT_RELATIONS];
+      specificMessage =
+        message as CommandStructures[Commands.GET_ALL_ELEMENT_RELATIONS];
       const { webviewPath: relationWebviewPath } = specificMessage.payload;
 
       // Refer to the CommandStructures[Commands.GET_ALL_ELEMENT_RELATIONS] to see how the parameters are structured
       getAllElementRelations(specificMessage.payload.webviewPath);
+
+    case Commands.GET_ALL_INSTANCE_CATEGORIES:
+      specificMessage =
+        message as CommandStructures[Commands.GET_ALL_INSTANCE_CATEGORIES];
+      const { webviewPath: instanceWebviewPath } = specificMessage.payload;
+
+      // Refer to the CommandStructures[Commands.GET_ALL_ELEMENT_RELATIONS] to see how the parameters are structured
+      getAllInstanceCategories(specificMessage.payload.webviewPath);
 
     case Commands.CREATE_FCR:
       specificMessage = message as CommandStructures[Commands.CREATE_FCR];

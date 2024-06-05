@@ -81,6 +81,13 @@ const DiagramView: React.FC = () => {
     });
 
     postMessage({
+      command: Commands.GET_ALL_INSTANCE_CATEGORIES,
+      payload: {
+        webviewPath: webviewPath,
+      },
+    });
+
+    postMessage({
       command: Commands.GENERATE_TABLE_DATA,
       payload: {
         webviewPath: webviewPath,
@@ -189,8 +196,14 @@ const DiagramView: React.FC = () => {
           break;
 
         case Commands.LOADED_ALL_ELEMENT_RELATIONS:
-          specificMessage = message as CommandStructures[Commands.LOADED_ALL_ELEMENT_RELATIONS];
-          setRelations(message.payload.relations)
+          specificMessage =
+            message as CommandStructures[Commands.LOADED_ALL_ELEMENT_RELATIONS];
+          setRelations(message.payload.relations);
+
+        case Commands.LOADED_ALL_INSTANCE_CATEGORIES:
+          specificMessage =
+            message as CommandStructures[Commands.LOADED_ALL_INSTANCE_CATEGORIES];
+          setInstances(message.payload.instances);
       }
     };
     window.addEventListener("message", handler);
@@ -237,17 +250,17 @@ const DiagramView: React.FC = () => {
     @remarks This method uses the {@link https://react.dev/reference/react/useCallback | useCallback} React hook
     @param node - The node and its data that is clicked
   */
-    const handleDoubleClickNode = useCallback((node: ITableData) => {
-      // If there is a iri in the node's data then execute the command to open the modal.
-      if (node.data.iri) {
-        openWizard("RelationElementsWizard", { iriArray: [node.data.iri] });
-        // UI indication to users
-        postMessage({
-          command: Commands.INFORM,
-          text: "Opening Relations Wizard...",
-        });
-      };
-    }, []);
+  const handleDoubleClickNode = useCallback((node: ITableData) => {
+    // If there is a iri in the node's data then execute the command to open the modal.
+    if (node.data.iri) {
+      openWizard("RelationElementsWizard", { iriArray: [node.data.iri] });
+      // UI indication to users
+      postMessage({
+        command: Commands.INFORM,
+        text: "Opening Relations Wizard...",
+      });
+    }
+  }, []);
 
   const refreshData = () => {
     setIsLoading(true);

@@ -11,25 +11,29 @@ interface InstanceInsertItemProps {
 
 interface RelationInsertItemProps {
   label: string;
-  icon: React.ReactElement
+  icon: React.ReactElement;
 }
 
 // A default icon for a RelationInsertItem
-export const DefaultRelationIcon: React.ReactElement = <span className="codicon codicon-arrow-right mr-2 text-[20px]" />
+export const DefaultRelationIcon: React.ReactElement = (
+  <span className="codicon codicon-arrow-right mr-2 text-[20px]" />
+);
 
+// TODO: Wrap text so that it fits within node. Resize dynamically?
 /*
  * React component `InstanceInsertItem` is a visual representation of an insertable instance that a user can drag from the instance pane of the instance panel and drop into the diagram view.
  *
  * @param {string} label - String label for the instance
  * @param {string} style - TailwindCSS style to specify style attributes for the InstanceNode
  */
-export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({ label, style }) => {
+export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({
+  label,
+  style,
+}) => {
   // TODO: Use model's node color property instead of hard-coded color
-  // TODO: handle onDrag Look at react-beautiful-dnd
-  // TODO: handle cloning object after dragging
   // TODO: handle dropping object after letting go of the mouse
   const ref = useRef(null); // ref for dragging
-  const defaultNodeStyle = "bg-[#ff0000]"
+  const defaultNodeStyle = "bg-[#ff0000]";
 
   // Enable dragging of element
   useEffect(() => {
@@ -42,7 +46,9 @@ export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({ label, s
     <div className="flex flex-row items-center">
       <div className="relative left-[1px] z-10 h-2 w-2 border-[1px] rounded-full bg-black border-white hover:backdrop-brightness-200"></div>
       <div
-        className={`flex flex-none justify-center items-center rounded h-11 w-24 z-0 ${style ?? defaultNodeStyle}`}
+        className={`flex flex-none justify-center items-center rounded h-11 w-24 z-0 ${
+          style ?? defaultNodeStyle
+        }`}
         ref={ref}
       >
         <span className="text-center text-nowrap text-white text-[12px]">
@@ -54,10 +60,14 @@ export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({ label, s
   );
 };
 
-export const RelationInsertItem: React.FC<RelationInsertItemProps> = ({ label, icon }) => {
+// TODO: Dynamically resize pane/panel on relation name size
+export const RelationInsertItem: React.FC<RelationInsertItemProps> = ({
+  label,
+  icon,
+}) => {
   // TODO: Find a better way to handle icons
   const ref = useRef(null);
-  
+
   useEffect(() => {
     const el = ref.current;
     invariant(el);

@@ -687,7 +687,12 @@ function Diagram({
             </InsertPane>
             <InsertPane label="Relation">
               {relations.map((relation: string) => {
-                return <RelationInsertItem label={relation} icon={DefaultRelationIcon}/>;
+                return (
+                  <RelationInsertItem
+                    label={relation}
+                    icon={DefaultRelationIcon}
+                  />
+                );
               })}
             </InsertPane>
           </InsertPanel>
