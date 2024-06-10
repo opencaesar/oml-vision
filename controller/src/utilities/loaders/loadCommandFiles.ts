@@ -1,6 +1,8 @@
 import { workspace, Uri, commands, window, FileType } from "vscode";
 import { TablePanel } from "../../panels/TablePanel";
 import { PropertyPanelProvider } from "../../panels/PropertyPanelProvider";
+import { validateSchema } from "../../schemas/validator";
+import { commandSchema } from "../../schemas/commands/commandSchema";
 // TODO: handle multiple workspaces (currently assumes model is in the 1st)
 
 /**
@@ -35,7 +37,14 @@ export const loadCommandFiles = async (
           const fileUri = Uri.joinPath(commandFolderUri, file);
           const buffer = await workspace.fs.readFile(fileUri);
           const content = JSON.parse(buffer.toString());
-          
+          // Validate if the content matches the JSON Command Schema
+          const validate = validateSchema(commandSchema, content);
+          if (files.length > 0 && validate) {
+            commands.executeCommand("setContext", "vision:hasCommand", true);
+            window.showInformationMessage(`${file} loaded successfully.`);
+          } else {
+            window.showErrorMessage(`Invalid or missing ${file}.`);
+          }
           try {
             TablePanel.updateCommands();
             PropertyPanelProvider.updateCommands();
@@ -45,12 +54,6 @@ export const loadCommandFiles = async (
             throw new Error(`Error parsing command file ${file}: ${parseErr}`);
           }
         } 
-      }
-      if (files.length > 0) {
-        commands.executeCommand("setContext", "vision:hasCommand", true);
-          window.showInformationMessage("Command files loaded successfully.");
-      } else {
-        window.showWarningMessage("Command files not found.");
       }
     } catch (err) {
       if (
