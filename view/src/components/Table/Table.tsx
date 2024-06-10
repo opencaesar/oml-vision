@@ -552,7 +552,6 @@ function Table({
               <tr
                 className={`select-none border-0
                   ${
-                    row.original.maturity &&
                     layout.rowMapping.fontStyle &&
                     setFontStyle(
                       layout.rowMapping.fontStyle.styles,
