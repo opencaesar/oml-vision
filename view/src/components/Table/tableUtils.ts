@@ -84,7 +84,13 @@ export const mapValueData = (layout: TableLayout, data: {[key: string]: ITableDa
   return recursiveMapper(layout.rowMapping);
 }
 
-// Each returned string is a concatenation of Tailwind CSS classes
+/**
+ * Styles the font color as a tailwind class.  Each returned string is a concatenation of Tailwind CSS classes 
+ *
+ * @deprecated
+ * This function is not generic for all OML models.  Remove after v1.0.0.
+ *
+ */
 export const getLifecycleStateStyles = (state: CMState) => {
   switch (state) {
     case CMState.Proposed:
@@ -103,6 +109,27 @@ export const getLifecycleStateStyles = (state: CMState) => {
       return '';
   }
 }
+
+/**
+ * Sets the font style based on a conditional for a given row.
+ *
+ * @remarks
+ * This method uses styles from {@link https://tailwindcss.com/ | TailwindCSS}.
+ *
+ * @param styles - The styles that come from the OML model.
+ * @param conditional - The conditional that determines which style to apply.
+ * @param row - The row on which to set the font style.
+ *
+ */
+export const setFontStyle = (
+  styles: Record<string, Record<string, string>>,
+  conditional: string,
+  row: Row<ITableData>
+) => {
+  // Remove redundant double quotes from string
+  const formattedConditional = row.original[conditional].slice(1, -1)
+  return styles[formattedConditional];
+};
 
 // Helper to get row range on Shift + Click to select multiple rows
 export function getRowRange<ITableData>(rows: Array<Row<ITableData>>, idA: string, idB: string) {

@@ -2,9 +2,16 @@ export interface IRowMapping {
   id: string;
   name: string;
   labelFormat: string;
+  // Example of Record<string, Record<string, string>>: { "outerKey1": {"innerKey1": "innerValue1"} } 
+  fontStyle?: FontStyle;
   isRecursive?: boolean;
   canDeleteElements?: boolean;
   subRowMappings?: IRowMapping[];
+}
+
+interface FontStyle {
+  conditional: string;
+  styles: Record<string, Record<string, string>>;
 }
 
 export interface IDiagramRowMapping extends IRowMapping {
