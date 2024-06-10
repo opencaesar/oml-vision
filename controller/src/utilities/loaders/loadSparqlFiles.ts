@@ -1,5 +1,16 @@
 import { workspace, Uri, window, FileType } from "vscode";
 // TODO: handle multiple workspaces (currently assumes model is in the 1st)
+
+/**
+ * Loads SPARQL files that are stored in the sparql folder of the model.
+ *
+ * @remarks
+ * This method uses the workspace class from the {@link https://code.visualstudio.com/api/references/vscode-api | VSCode API}.
+ *
+ * @param uri - A universal resource identifier representing either a file on disk or another resource, like untitled resources.
+ * @param globalSparqlContents - content of the sparql contents object
+ *
+ */
 export async function loadSparqlFiles(globalSparqlContents: { [file: string]: string; }) {
 
 	const workspaceFolders = workspace.workspaceFolders;

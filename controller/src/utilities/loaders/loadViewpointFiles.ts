@@ -2,6 +2,8 @@ import { workspace, Uri, commands, window, FileType } from "vscode";
 import { TreeDataProvider } from "../../sidebar/TreeDataProvider";
 import { TablePanel } from "../../panels/TablePanel";
 import { PropertyPanelProvider } from "../../panels/PropertyPanelProvider";
+import { validateSchema } from "../../schemas/validator";
+import { pagesSchema } from "../../schemas/viewpoints/pagesSchema";
 // TODO: handle multiple workspaces (currently assumes model is in the 1st)
 
 /**
@@ -20,6 +22,7 @@ export const loadViewpointFiles = async (viewpointContents: {
   TreeDataProvider.getInstance().updateHasPageViewpoint(false);
 
   const workspaceFolders = workspace.workspaceFolders;
+
   if (workspaceFolders) {
     const uri = workspaceFolders[0].uri;
     loadPageFile(uri, viewpointContents);
@@ -57,15 +60,25 @@ const loadPageFile = async (
         const fileUri = Uri.joinPath(pageFolderUri, file);
         const buffer = await workspace.fs.readFile(fileUri);
         const content = JSON.parse(buffer.toString());
-        try {
-          TreeDataProvider.getInstance().updateViewpoints(content);
-          TreeDataProvider.getInstance().updateHasPageViewpoint(true);
-          viewpointContents[file] = content;
-        } catch (parseErr) {
-          viewpointContents = {};
-          throw new Error(
-            `Error parsing table viewpoint file ${file}: ${parseErr}`
-          );
+        // Validate if the content matches the JSON Command Schema
+        const validate = validateSchema(pagesSchema, content);
+        if (files.length > 0 && validate) {
+          commands.executeCommand("setContext", "vision:hasCommand", true);
+          console.log(`${file} loaded successfully.`);
+          window.showInformationMessage(`${file} loaded successfully.`);
+          try {
+            TreeDataProvider.getInstance().updateViewpoints(content);
+            TreeDataProvider.getInstance().updateHasPageViewpoint(true);
+            viewpointContents[file] = content;
+          } catch (parseErr) {
+            viewpointContents = {};
+            throw new Error(
+              `Error parsing table viewpoint file ${file}: ${parseErr}`
+            );
+          }
+        } else {
+          console.error(`Invalid or missing ${file}.`);
+          window.showErrorMessage(`Invalid or missing ${file}.`);
         }
       }
     }
@@ -73,9 +86,12 @@ const loadPageFile = async (
     if (
       err instanceof Error &&
       err.message.startsWith("Error parsing viewpoint file")
-    )
+    ) {
+      console.error(err.message);
       window.showErrorMessage(err.message);
+    }
     else {
+      console.error(`Error reading viewpoint files: ${err}`);
       window.showErrorMessage(`Error reading viewpoint files: ${err}`);
     }
   }
@@ -115,19 +131,24 @@ const loadTableFiles = async (
     }
     if (files.length > 0) {
       commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
+      console.log("Table viewpoint files loaded successfully.");
       window.showInformationMessage(
         "Table viewpoint files loaded successfully."
       );
     } else {
+      console.warn("Table viewpoint files not found.");
       window.showWarningMessage("Table viewpoint files not found.");
     }
   } catch (err) {
     if (
       err instanceof Error &&
       err.message.startsWith("Error parsing table viewpoint file")
-    )
+    ) {
+      console.error(err.message);
       window.showErrorMessage(err.message);
+    }
     else {
+      console.error(`Error reading table viewpoint files: ${err}`);
       window.showErrorMessage(`Error reading table viewpoint files: ${err}`);
     }
   } finally {
@@ -171,19 +192,24 @@ const loadTreeFiles = async (
     }
     if (files.length > 0) {
       commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
+      console.log("Tree viewpoint files loaded successfully.");
       window.showInformationMessage(
         "Tree viewpoint files loaded successfully."
       );
     } else {
+      console.warn("Tree viewpoint files not found.");
       window.showWarningMessage("Tree viewpoint files not found.");
     }
   } catch (err) {
     if (
       err instanceof Error &&
       err.message.startsWith("Error parsing tree viewpoint file")
-    )
+    ) {
+      console.error(err.message);
       window.showErrorMessage(err.message);
+    }
     else {
+      console.error(`Error reading tree viewpoint files: ${err}`);
       window.showErrorMessage(`Error reading tree viewpoint files: ${err}`);
     }
   } finally {
@@ -227,13 +253,16 @@ const loadDiagramFiles = async (
     }
     if (files.length > 0) {
       commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
+      console.log("Diagram viewpoint files loaded successfully.");
       window.showInformationMessage(
         "Diagram viewpoint files loaded successfully."
       );
     } else {
+      console.warn("Diagram viewpoint files not found.");
       window.showWarningMessage("Diagram viewpoint files not found.");
     }
   } catch (err) {
+    console.error(`Error reading diagram viewpoint files: ${err}`);
     window.showErrorMessage(`Error reading diagram viewpoint files: ${err}`);
   } finally {
     // Send updated global viewpoints to TablePanels & PropertyPanel
@@ -276,13 +305,16 @@ const loadPropertyFiles = async (
     }
     if (files.length > 0) {
       commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
+      console.log("Property viewpoint files loaded successfully.");
       window.showInformationMessage(
         "Property viewpoint files loaded successfully."
       );
     } else {
+      console.warn("Property viewpoint files not found.");
       window.showWarningMessage("Property viewpoint files not found.");
     }
   } catch (err) {
+    console.error(`Error reading property viewpoint files: ${err}`);
     window.showErrorMessage(`Error reading property viewpoint files: ${err}`);
   } finally {
     // Send updated global viewpoints to TablePanels & PropertyPanel
@@ -325,13 +357,16 @@ const loadWizardFiles = async (
     }
     if (files.length > 0) {
       commands.executeCommand("setContext", "vision:hasPageViewpoint", true);
+      console.log("Wizard viewpoint files loaded successfully.");
       window.showInformationMessage(
         "Wizard viewpoint files loaded successfully."
       );
     } else {
+      console.warn("Wizard viewpoint files not found.");
       window.showWarningMessage("Wizard viewpoint files not found.");
     }
   } catch (err) {
+    console.error(`Error reading wizard viewpoint files: ${err}`);
     window.showErrorMessage(`Error reading wizard viewpoint files: ${err}`);
   } finally {
     // Send updated global viewpoints to TablePanels & PropertyPanel

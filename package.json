@@ -293,6 +293,7 @@
     "@vscode/test-electron": "^2.3.2",
     "@vscode/vsce": "^2.26.1",
     "@vscode/webview-ui-toolkit": "^1.2.2",
+    "ajv": "^8.13.0",
     "elkjs": "^0.8.2",
     "esbuild": "^0.19.5",
     "fetch-sparql-endpoint": "^3.3.2",
