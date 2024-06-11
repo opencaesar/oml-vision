@@ -2,6 +2,12 @@ import ITableData from "../../interfaces/ITableData";
 import { CMState } from "../../interfaces/CMStates";
 import { TableLayout, IRowMapping } from "../../interfaces/DataLayoutsType";
 import { Row } from "@tanstack/table-core";
+import { Commands } from "../../../../commands/src/commands";
+import { postParentMessage } from "../../utils/postMessage";
+
+// This variable is used to only have an error reported once. This allows vscode.window to show popups
+// FIXME: Use a better technique than a flag.
+let errorReported = false;
 
 // Process the json data into content
 // that React-Table can render.
@@ -134,10 +140,54 @@ export const setFontStyle = (
   conditional: string,
   row: Row<ITableData>
 ) => {
-  // Remove redundant double quotes from string
-  const formattedConditional = row.original[conditional].slice(1, -1);
-  return styles[formattedConditional];
+  let formattedConditional;
+  try {
+    if (
+      row.original[conditional].startsWith('"') &&
+      row.original[conditional].endsWith('"')
+    ) {
+      // Remove redundant double quotes from string in present
+      formattedConditional = row.original[conditional].slice(1, -1);
+    } else {
+      formattedConditional = row.original[conditional];
+    }
+    return styles[formattedConditional];
+  } catch (error) {
+    reportError(error, conditional);
+  }
 };
+
+/**
+ * Reports an error to the parent window.
+ *
+ * @remarks
+ * This function sends a message to the parent window using the `postParentMessage` function.
+ * It ensures that the error is reported only once by tracking whether an error has already been reported.
+ *
+ * @param error - The error to be reported.
+ * @param conditional - The conditional string used in error reporting.
+ *
+ * @returns void
+ */
+function reportError(error: unknown, conditional: string): void {
+  if (errorReported) {
+    return;
+  }
+
+  if (error instanceof Error) {
+    postParentMessage({
+      command: Commands.ALERT,
+      text: `Error: Invalid/Undefined fontStyle.conditional ${conditional}`,
+    });
+  } else {
+    postParentMessage({
+      command: Commands.ALERT,
+      text: `Unknown error: ${error}`,
+    });
+  }
+
+  errorReported = true;
+}
 
 // Helper to get row range on Shift + Click to select multiple rows
 export function getRowRange<ITableData>(

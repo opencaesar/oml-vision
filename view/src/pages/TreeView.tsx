@@ -174,6 +174,14 @@ const TreeView: React.FC = () => {
             command: Commands.REFRESH_TABLE_DATA,
           });
           break;
+
+        case Commands.ALERT:
+          specificMessage = message as CommandStructures[Commands.ALERT];
+          postMessage({
+            command: Commands.ALERT,
+            text: specificMessage.text,
+          });
+          break;
       }
     };
     window.addEventListener("message", handler);
