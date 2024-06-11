@@ -670,14 +670,22 @@ function Diagram({
           <InsertPanel>
             <InsertPane label="Instance">
               {instances.map((instance: string) => {
-                return <InstanceInsertItem label={instance} />;
+                var split = instance.split("#");
+                return (
+                  <InstanceInsertItem
+                    instanceLabel={split.pop() ?? ""} // empty string if no instance label
+                    categoryLabel={split.pop() ?? ""} // empty string if no category label
+                  />
+                );
               })}
             </InsertPane>
             <InsertPane label="Relation">
               {relations.map((relation: string) => {
+                var split = relation.split("#");
                 return (
                   <RelationInsertItem
-                    label={relation}
+                    relationLabel={split.pop() ?? ""} // empty string if no relation label
+                    categoryLabel={split.pop() ?? ""} // empty string if no category label
                     icon={DefaultRelationIcon}
                   />
                 );

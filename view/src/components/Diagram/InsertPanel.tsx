@@ -5,12 +5,14 @@ import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import Node from "reactflow";
 
 interface InstanceInsertItemProps {
-  label: string;
+  categoryLabel: string;
+  instanceLabel: string;
   style?: string;
 }
 
 interface RelationInsertItemProps {
-  label: string;
+  categoryLabel: string;
+  relationLabel: string;
   icon: React.ReactElement;
 }
 
@@ -27,13 +29,14 @@ export const DefaultRelationIcon: React.ReactElement = (
  * @param {string} style - TailwindCSS style to specify style attributes for the InstanceNode
  */
 export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({
-  label,
+  instanceLabel,
+  categoryLabel,
   style,
 }) => {
   // TODO: Use model's node color property instead of hard-coded color
   // TODO: handle dropping object after letting go of the mouse
   const ref = useRef(null); // ref for dragging
-  const defaultNodeStyle = "bg-[#ff0000]";
+  const defaultNodeStyle = "bg-[#ff0000]"; // red background by default
 
   // Enable dragging of element
   useEffect(() => {
@@ -46,13 +49,14 @@ export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({
     <div className="flex flex-row items-center">
       <div className="relative left-[1px] z-10 h-2 w-2 border-[1px] rounded-full bg-black border-white hover:backdrop-brightness-200"></div>
       <div
-        className={`flex flex-none justify-center items-center rounded h-11 w-24 z-0 ${
+        className={`flex flex-none justify-center items-center rounded h-11 min-w-24 z-0 p-2 ${
           style ?? defaultNodeStyle
         }`}
         ref={ref}
       >
-        <span className="text-center text-nowrap text-white text-[12px]">
-          {label}
+        <span className="text-center text-nowrap text-white text-[8px]">
+          <p>{categoryLabel}</p>
+          <p>{instanceLabel}</p>
         </span>
       </div>
       <div className="relative right-[1px] z-10 h-2 w-2 border-[1px] rounded-full bg-black border-white"></div>
@@ -62,7 +66,8 @@ export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({
 
 // TODO: Dynamically resize pane/panel on relation name size
 export const RelationInsertItem: React.FC<RelationInsertItemProps> = ({
-  label,
+  categoryLabel,
+  relationLabel,
   icon,
 }) => {
   // TODO: Find a better way to handle icons
@@ -81,7 +86,8 @@ export const RelationInsertItem: React.FC<RelationInsertItemProps> = ({
         ref={ref}
       >
         <span className="text-center text-nowrap text-white text-[12px]">
-          {label}
+          {categoryLabel}
+          {relationLabel}
         </span>
         {icon}
       </div>
@@ -105,7 +111,7 @@ export const InsertPane: React.FC<any> = ({ label, children }) => {
 
 export const InsertPanel: React.FC<any> = ({ children }) => {
   return (
-    <div className="w-48 flex flex-col {`z-10 p-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
+    <div className="min-w-48 max-w-64 flex flex-col {`z-10 p-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
       {children}
     </div>
   );
