@@ -6,6 +6,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 Look at the OML Vision Docs [Changelog](http://www.opencaesar.io/oml-vision-docs/changelog)
 
+## v0.4.0 - Mars
+
+Blog: http://www.opencaesar.io/oml-vision-docs/changelog/mars
+
+### Added
+- Table and Tree Views: https://github.com/opencaesar/oml-vision/pull/86
+- JSON Validator: https://github.com/opencaesar/oml-vision/issues/74
+
 ## v0.3.0 - Venus
 
 Blog: http://www.opencaesar.io/oml-vision-docs/changelog/venus
