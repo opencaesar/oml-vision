@@ -20,7 +20,7 @@ import {
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useWizards } from '../../providers/WizardController'
-import { getLifecycleStateStyles, getRowRange } from './tableUtils'
+import { getLifecycleStateStyles, getRowRange, setFontStyle } from './tableUtils'
 import ITableData from '../../interfaces/ITableData'
 import ITableDataQuery from '../../interfaces/ITableDataQuery'
 import { TableLayout } from '../../interfaces/DataLayoutsType'
@@ -552,8 +552,12 @@ function Table({
               <tr
                 className={`select-none border-0
                   ${
-                    row.original.maturity &&
-                    getLifecycleStateStyles(row.original.maturity)
+                    layout.rowMapping.fontStyle &&
+                    setFontStyle(
+                      layout.rowMapping.fontStyle.styles,
+                      layout.rowMapping.fontStyle.conditional,
+                      row
+                    )
                   }
                   ${row.getIsSelected() && "row-selected"}`}
                 data-index={virtualRow.index}
