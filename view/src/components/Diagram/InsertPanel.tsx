@@ -46,12 +46,11 @@ export const InstanceInsertItem: React.FC<InstanceInsertItemProps> = ({
   }, []);
 
   return (
-    <div className="flex flex-row items-center">
-      <div className="relative left-[1px] z-10 h-2 w-2 border-[1px] rounded-full bg-black border-white hover:backdrop-brightness-200"></div>
+    <div className="flex flex-row items-center hover:cursor-grab active:cursor-grabbing pl-[2px]">
+      <div className="relative left-[1px] z-10 h-2 w-2 border-[1px] rounded-full bg-black border-white"></div>
       <div
-        className={`flex flex-none justify-center items-center rounded h-11 min-w-24 z-0 p-2 ${
-          style ?? defaultNodeStyle
-        }`}
+        className={`flex flex-none justify-center items-center rounded h-11 min-w-24 z-0 p-2 hover:bg-opacity-80 active:bg-opacity-100 ${style ?? defaultNodeStyle
+          }`}
         ref={ref}
       >
         <span className="text-center text-nowrap text-white text-[8px]">
@@ -80,16 +79,26 @@ export const RelationInsertItem: React.FC<RelationInsertItemProps> = ({
   }, []);
 
   return (
-    <div className="flex flex-col items-start w-full pl-4">
+    <div className="flex flex-col items-start w-auto pl-4 py-2 rounded hover:cursor-grab active:cursor-grabbing pl-[2px] hover:bg-white hover:bg-opacity-5 active:bg-transparent">
       <div
-        className="flex flex-row justify-between bg-clip-text w-24 hover:backdrop-brightness-100"
+        className="flex flex-row justify-between bg-clip-text w-auto"
         ref={ref}
       >
-        <span className="text-center text-nowrap text-white text-[12px]">
-          {categoryLabel}
-          {relationLabel}
-        </span>
-        {icon}
+        <div>
+          <div className="flex flex-row items-center">
+            <div className="text-white text-[10px]">{icon}</div>
+            <div>
+              <div className="text-white text-[10px]">
+                {categoryLabel}
+              </div>
+              <div className="text-white text-[10px]">
+                {relationLabel}
+              </div>
+            </div>
+          </div>
+          <div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -98,11 +107,11 @@ export const RelationInsertItem: React.FC<RelationInsertItemProps> = ({
 export const InsertPane: React.FC<any> = ({ label, children }) => {
   // Refer to http://www.opencaesar.io/oml-tutorials/#tutorial1-create-oml-vocabulary
   return (
-    <div className="p-2 rounded shadow-md bg-white/5 h-36">
+    <div className="w-auto p-2 rounded shadow-md bg-white/5 h-36">
       <div className="pb-2">
         <span className="font-bold">{label}</span>
       </div>
-      <div className="flex flex-col h-24 items-center space-y-2 overflow-y-auto">
+      <div className="flex flex-col h-24 items-center space-y-2 overflow-y-auto w-auto">
         {children}
       </div>
     </div>
@@ -111,7 +120,7 @@ export const InsertPane: React.FC<any> = ({ label, children }) => {
 
 export const InsertPanel: React.FC<any> = ({ children }) => {
   return (
-    <div className="min-w-48 max-w-64 flex flex-col {`z-10 p-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
+    <div className="w-auto flex flex-col {`z-10 p-2 space-y-2 rounded shadow-md bg-[var(--vscode-banner-background)] overflow-y-auto max-h-[9rem]`}">
       {children}
     </div>
   );

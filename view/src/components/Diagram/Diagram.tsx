@@ -65,13 +65,13 @@ function Diagram({
   relations,
   webviewPath,
   hasFilter,
-  clearFilter = () => {},
+  clearFilter = () => { },
   modelCommands,
   layout,
   // TODO: Use onNodeSelected while node is highlighted/selected
-  onNodeSelected = () => {},
-  onNodeClicked = () => {},
-  onNodeDoubleClicked = () => {},
+  onNodeSelected = () => { },
+  onNodeClicked = () => { },
+  onNodeDoubleClicked = () => { },
 }: {
   initData: {
     nodes: ITableData[];
@@ -586,9 +586,8 @@ function Diagram({
             {isInteractive ? <UnlockIcon /> : <LockIcon />}
           </ControlButton>
           <ControlButton
-            className={`react-flow__controls-interactive flex flex-row gap-[${
-              arrowIconSize / 4
-            }]`}
+            className={`react-flow__controls-interactive flex flex-row gap-[${arrowIconSize / 4
+              }]`}
             onPointerEnter={toggleDownloadMenu}
             onPointerLeave={toggleDownloadMenu}
             title="download diagram"
@@ -610,11 +609,9 @@ function Diagram({
                 viewBox={`0 0 ${arrowIconSize / 4} ${arrowIconSize}`}
               >
                 <path
-                  d={`M 0 ${arrowIconSize} L ${
-                    arrowIconSize / 4
-                  } ${arrowIconSize} L ${arrowIconSize / 4} ${
-                    (arrowIconSize * 3) / 4
-                  } Z`}
+                  d={`M 0 ${arrowIconSize} L ${arrowIconSize / 4
+                    } ${arrowIconSize} L ${arrowIconSize / 4} ${(arrowIconSize * 3) / 4
+                    } Z`}
                   fill="var(--vscode-button-secondaryForeground)"
                 />
               </svg>
@@ -680,16 +677,18 @@ function Diagram({
               })}
             </InsertPane>
             <InsertPane label="Relation">
-              {relations.map((relation: string) => {
-                var split = relation.split("#");
-                return (
-                  <RelationInsertItem
-                    relationLabel={split.pop() ?? ""} // empty string if no relation label
-                    categoryLabel={split.pop() ?? ""} // empty string if no category label
-                    icon={DefaultRelationIcon}
-                  />
-                );
-              })}
+              <div className="items-left">
+                {relations.map((relation: string) => {
+                  var split = relation.split("#");
+                  return (
+                    <RelationInsertItem
+                      relationLabel={split.pop() ?? ""} // empty string if no relation label
+                      categoryLabel={split.pop() ?? ""} // empty string if no category label
+                      icon={DefaultRelationIcon}
+                    />
+                  );
+                })}
+              </div>
             </InsertPane>
           </InsertPanel>
         </Panel>
