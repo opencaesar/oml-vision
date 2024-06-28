@@ -25,6 +25,14 @@ import ReactFlow, {
   getConnectedEdges,
 } from "reactflow";
 
+import {
+  InsertPanel,
+  InsertPane,
+  InstanceInsertItem,
+  RelationInsertItem,
+  DefaultRelationIcon,
+} from "./InsertPanel";
+
 // Icons
 import { IconDownload } from "@nasa-jpl/react-stellar";
 import LockIcon from "./Icons/Lock";
@@ -53,21 +61,25 @@ const nodeTypes = {
 
 function Diagram({
   initData,
+  instances,
+  relations,
   webviewPath,
   hasFilter,
-  clearFilter = () => {},
+  clearFilter = () => { },
   modelCommands,
   layout,
   // TODO: Use onNodeSelected while node is highlighted/selected
-  onNodeSelected = () => {},
-  onNodeClicked = () => {},
-  onNodeDoubleClicked = () => {},
+  onNodeSelected = () => { },
+  onNodeClicked = () => { },
+  onNodeDoubleClicked = () => { },
 }: {
   initData: {
     nodes: ITableData[];
     edges: Edge[];
     legendItems: LegendItem[];
   };
+  instances: string[];
+  relations: string[];
   webviewPath: string;
   hasFilter: boolean;
   clearFilter: Function;
@@ -91,6 +103,7 @@ function Diagram({
   const { fitView } = useReactFlow();
   const { isInteractive, setInteractivity, toggleInteractivity } =
     useCanvasInteractivity();
+  const [showDownloadMenu, setShowDownloadMenu] = useState<boolean>(true); // Using negative logic here
 
   // FIXME: useOnSelectionChange occurs after a selection occurs and will continously running when clicking a node or edge
   // useOnSelectionChange({
@@ -473,6 +486,21 @@ function Diagram({
     return dropDownOptions;
   };
 
+  /**
+   * This function toggles the download menu.
+   *
+   * @remarks
+   *
+   * @param
+   *
+   */
+  const toggleDownloadMenu = () => {
+    setShowDownloadMenu(!showDownloadMenu);
+  };
+
+  // This constant sets the control button dropdown indicator arrow size.
+  const arrowIconSize = 16;
+
   return (
     <div
       className="w-screen h-screen"
@@ -517,11 +545,11 @@ function Diagram({
         }}
       >
         {initData.legendItems.length > 0 && (
-          <Panel className="flow-panel" position="top-left">
+          <Panel className="flow-panel" position="top-right">
             <Legend items={initData.legendItems} />
           </Panel>
         )}
-        <Panel className="flow-panel" position="top-right">
+        {/*<Panel className="flow-panel" position="top-right">
           <div className="flex-col items-center z-10 space-y-2 space-x-2 p-2 rounded shadow-md bg-[var(--vscode-banner-background)]">
             <VSCodeButton appearance="secondary" onClick={() => fitView()}>
               Fit View
@@ -536,7 +564,7 @@ function Diagram({
                 <span slot="start" className="codicon codicon-filter"></span>
               </VSCodeButton>
             ) : (
-              /* TODO: Implement Add Filter functionality */
+              //TODO: Implement Add Filter functionality
               <VSCodeButton onClick={() => {}}>
                 Add Filter
                 <span slot="start" className="codicon codicon-filter"></span>
@@ -545,7 +573,8 @@ function Diagram({
             {selectedAutoLayout(autoLayout)}
             {selectedAlgorithmLayout(algorithmLayout)}
           </div>
-        </Panel>
+        </Panel>*/}
+
         <Controls className="flow-controls" showInteractive={false}>
           {/* Implemented custom interactive button to avoid disabling selection in diagram */}
           <ControlButton
@@ -557,46 +586,75 @@ function Diagram({
             {isInteractive ? <UnlockIcon /> : <LockIcon />}
           </ControlButton>
           <ControlButton
-            onClick={pngDownloadDiagram}
+            className={`react-flow__controls-interactive flex flex-row gap-[${arrowIconSize / 4
+              }]`}
+            onPointerEnter={toggleDownloadMenu}
+            onPointerLeave={toggleDownloadMenu}
             title="download diagram"
             aria-label="download diagram"
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <IconDownload
-                className="flex-shrink-0 flex-grow-0"
-                color="var(--vscode-button-secondaryForeground)"
-                width="16"
-                height="16"
-              />
-              <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>PNG</span>
+            <IconDownload
+              className="flex-shrink-0 flex-grow-0"
+              color="var(--vscode-button-secondaryForeground)"
+              width="16"
+              height="16"
+            />
+            <div className="">
+              {/* TODO: Style so it looks like icon.png */}
+              {/* <div className="h-2 w-2 border-x-8 border-x-transparent border-b-[16px] border-b-[#CCCCCC] rotate-90"></div>
+               */}
+              <svg
+                width={arrowIconSize / 4}
+                height={arrowIconSize}
+                viewBox={`0 0 ${arrowIconSize / 4} ${arrowIconSize}`}
+              >
+                <path
+                  d={`M 0 ${arrowIconSize} L ${arrowIconSize / 4
+                    } ${arrowIconSize} L ${arrowIconSize / 4} ${(arrowIconSize * 3) / 4
+                    } Z`}
+                  fill="var(--vscode-button-secondaryForeground)"
+                />
+              </svg>
             </div>
-          </ControlButton>
-          <ControlButton
-            onClick={svgDownloadDiagram}
-            title="download diagram"
-            aria-label="download diagram"
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <IconDownload
-                className="flex-shrink-0 flex-grow-0"
-                color="var(--vscode-button-secondaryForeground)"
-                width="16"
-                height="16"
-              />
-              <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>SVG</span>
-            </div>
+
+            {!showDownloadMenu && (
+              <div className="absolute left-[1.65rem]">
+                <ControlButton
+                  onClick={pngDownloadDiagram}
+                  title="download diagram"
+                  aria-label="download diagram"
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>
+                      PNG
+                    </span>
+                  </div>
+                </ControlButton>
+                <ControlButton
+                  onClick={svgDownloadDiagram}
+                  title="download diagram"
+                  aria-label="download diagram"
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span style={{ marginTop: "0.25px", fontSize: 9.5 }}>
+                      SVG
+                    </span>
+                  </div>
+                </ControlButton>
+              </div>
+            )}
           </ControlButton>
         </Controls>
         <MiniMap
@@ -605,10 +663,39 @@ function Diagram({
           pannable
           nodeColor={getNodeColor}
         />
+        <Panel position="top-left" className="flow-panel">
+          <InsertPanel>
+            <InsertPane label="Instance">
+              {instances.map((instance: string) => {
+                var split = instance.split("#");
+                return (
+                  <InstanceInsertItem
+                    instanceLabel={split.pop() ?? ""} // empty string if no instance label
+                    categoryLabel={split.pop() ?? ""} // empty string if no category label
+                  />
+                );
+              })}
+            </InsertPane>
+            <InsertPane label="Relation">
+              <div className="items-left">
+                {relations.map((relation: string) => {
+                  var split = relation.split("#");
+                  return (
+                    <RelationInsertItem
+                      relationLabel={split.pop() ?? ""} // empty string if no relation label
+                      categoryLabel={split.pop() ?? ""} // empty string if no category label
+                      icon={DefaultRelationIcon}
+                    />
+                  );
+                })}
+              </div>
+            </InsertPane>
+          </InsertPanel>
+        </Panel>
         <Background gap={12} size={1} />
       </ReactFlow>
       {/* Check if rightClick and if layout.contextMenu exists */}
-      {rightClick && layout.contextMenu &&(
+      {rightClick && layout.contextMenu && (
         <ContextMenu
           selectedElements={iriArray}
           top={coordinates.y}

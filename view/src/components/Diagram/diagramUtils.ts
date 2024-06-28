@@ -774,3 +774,20 @@ export const getLayoutedElements = (
     })
     .catch(console.error);
 };
+
+export const combineByCategory = (entities: string[]) => {
+  let combined: Record<string, string[]> = {} // stores the combined entities by category
+  entities.forEach(entity => {
+    var split = entity.split("#");
+    var value = split.pop() ?? "";
+    var category = split.pop() ?? "";
+
+    if (!combined[category]) { // key is not already in combined
+      combined[category] = [] // initialize key
+    }
+
+    combined[category].push(value) // append value to the key's list of entities
+  })
+
+  return combined
+}

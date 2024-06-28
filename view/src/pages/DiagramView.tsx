@@ -27,6 +27,8 @@ const DiagramView: React.FC = () => {
   }>({ iris: [], filterObject: null });
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [instances, setInstances] = useState<string[]>([""]);
+  const [relations, setRelations] = useState<string[]>([""]);
 
   useEffect(() => {
     // Only start fetching data when context is loaded
@@ -70,6 +72,20 @@ const DiagramView: React.FC = () => {
     const layout = diagramLayouts[webviewPath] as DiagramLayout;
     setDiagramLayout(layout);
     setWebviewPath(webviewPath);
+
+    postMessage({
+      command: Commands.GET_ALL_ELEMENT_RELATIONS,
+      payload: {
+        webviewPath: webviewPath,
+      },
+    });
+
+    postMessage({
+      command: Commands.GET_ALL_INSTANCE_CATEGORIES,
+      payload: {
+        webviewPath: webviewPath,
+      },
+    });
 
     postMessage({
       command: Commands.GENERATE_TABLE_DATA,
@@ -178,6 +194,16 @@ const DiagramView: React.FC = () => {
             command: Commands.REFRESH_TABLE_DATA,
           });
           break;
+
+        case Commands.LOADED_ALL_ELEMENT_RELATIONS:
+          specificMessage =
+            message as CommandStructures[Commands.LOADED_ALL_ELEMENT_RELATIONS];
+          setRelations(message.payload.relations);
+
+        case Commands.LOADED_ALL_INSTANCE_CATEGORIES:
+          specificMessage =
+            message as CommandStructures[Commands.LOADED_ALL_INSTANCE_CATEGORIES];
+          setInstances(message.payload.instances);
       }
     };
     window.addEventListener("message", handler);
@@ -224,17 +250,17 @@ const DiagramView: React.FC = () => {
     @remarks This method uses the {@link https://react.dev/reference/react/useCallback | useCallback} React hook
     @param node - The node and its data that is clicked
   */
-    const handleDoubleClickNode = useCallback((node: ITableData) => {
-      // If there is a iri in the node's data then execute the command to open the modal.
-      if (node.data.iri) {
-        openWizard("RelationElementsWizard", { iriArray: [node.data.iri] });
-        // UI indication to users
-        postMessage({
-          command: Commands.INFORM,
-          text: "Opening Relations Wizard...",
-        });
-      };
-    }, []);
+  const handleDoubleClickNode = useCallback((node: ITableData) => {
+    // If there is a iri in the node's data then execute the command to open the modal.
+    if (node.data.iri) {
+      openWizard("RelationElementsWizard", { iriArray: [node.data.iri] });
+      // UI indication to users
+      postMessage({
+        command: Commands.INFORM,
+        text: "Opening Relations Wizard...",
+      });
+    }
+  }, []);
 
   const refreshData = () => {
     setIsLoading(true);
@@ -266,6 +292,8 @@ const DiagramView: React.FC = () => {
         <ReactFlowProvider>
           <Diagram
             initData={createPageContent}
+            instances={instances}
+            relations={relations}
             webviewPath={webviewPath}
             hasFilter={filter.iris.length > 0}
             clearFilter={() => setFilter({ iris: [], filterObject: null })}

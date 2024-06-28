@@ -514,5 +514,3 @@ export function activate(context: vscode.ExtensionContext) {
 function cloneSelectedRows(context: Record<string, any>) {
   throw new Error("Function not implemented.");
 }
-
-
