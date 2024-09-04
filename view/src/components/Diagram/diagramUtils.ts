@@ -197,7 +197,7 @@ export const mapDiagramValueData = (
           if (parentIri) {
             return row[`${parentId}Iri`] === parentIri;
           } else {
-            return !row["parentIri"];
+            return !row["undefinedIri"];
           }
         })
         // .slice(0, 5)

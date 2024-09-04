@@ -62,7 +62,7 @@ export const mapTreeValueData = (
         if (parentIri) {
           return row[`${parentId}Iri`] === parentIri;
         } else {
-          return !row["parentIri"];
+          return !row["undefinedIri"];
         }
       })
       .map((row: ITableData, index: number) => {
