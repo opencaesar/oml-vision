@@ -7,20 +7,23 @@ export enum Commands {
   INFORM = "inform",
 
   // Table Panel Commands
-  CREATE_TABLE = 'createTable',
-  ROW_CLICKED = 'rowClicked',
-  HIDE_PROPERTIES = 'hideProperties',
-  ASK_FOR_VIEWPOINTS = 'askForViewpoints',
-  ASK_FOR_COMMANDS = 'askForCommands',
-  GENERATE_TABLE_DATA = 'generateTableData',
-  UPDATE_CM_STATE = 'updateCmState',
-  REFRESH_TABLE_DATA = 'refreshTableData',
-  GET_ELEMENT_RELATIONS = 'getElementRelations',
+  CREATE_TABLE = "createTable",
+  ROW_CLICKED = "rowClicked",
+  HIDE_PROPERTIES = "hideProperties",
+  ASK_FOR_VIEWPOINTS = "askForViewpoints",
+  ASK_FOR_COMMANDS = "askForCommands",
+  GENERATE_TABLE_DATA = "generateTableData",
+  UPDATE_CM_STATE = "updateCmState",
+  REFRESH_TABLE_DATA = "refreshTableData",
+  GET_ELEMENT_RELATIONS = "getElementRelations",
   // This differs to the GET_ELEMENT_RELATIONS because it grabs the predicate/verb and object instead of the subject of the selected element
-  GET_ELEMENT_RELATIONS_TOTAL = 'getElementRelationsTotal',
-  EXECUTE_CREATE_ELEMENTS = 'executeCreateElements',
-  EXECUTE_DELETE_ELEMENTS = 'executeDeleteElements',
-  CREATE_FCR = 'createFCR',
+  GET_ELEMENT_RELATIONS_TOTAL = "getElementRelationsTotal",
+  // This differs from GET_ELEMENT_RELANTIONS_TOTAL because it gets all relations in OML Model not just a selected element
+  GET_ALL_ELEMENT_RELATIONS = "getAllElementRelations",
+  GET_ALL_INSTANCE_CATEGORIES = "getAllInstanceCategories",
+  EXECUTE_CREATE_ELEMENTS = "executeCreateElements",
+  EXECUTE_DELETE_ELEMENTS = "executeDeleteElements",
+  CREATE_FCR = "createFCR",
 
   // Property Panel Commands
   ASK_FOR_PROPERTIES = "askForProperties",
@@ -39,27 +42,29 @@ export enum Commands {
   PING_TRIPLESTORE_TASK = "pingTriplestoreTask",
 
   // Extension To Table Panel Commands
-  UPDATE_LOCAL_VALUE = 'updateLocalValue',
-  SEND_VIEWPOINTS = 'sendViewpoints',
-  SEND_COMMANDS = 'sendCommands',
-  OPEN_WIZARD = 'openWizard',
-  CREATE_FILTERED_DIAGRAM = 'createFilteredDiagram',
-  LOADED_PROPERTY_SHEET = 'loadedPropertySheet',
-  LOADED_TABLE_DATA = 'loadedTableData',
-  LOADED_ELEMENT_RELATIONS = 'loadedElementRelations',
+  UPDATE_LOCAL_VALUE = "updateLocalValue",
+  SEND_VIEWPOINTS = "sendViewpoints",
+  SEND_COMMANDS = "sendCommands",
+  OPEN_WIZARD = "openWizard",
+  CREATE_FILTERED_DIAGRAM = "createFilteredDiagram",
+  LOADED_PROPERTY_SHEET = "loadedPropertySheet",
+  LOADED_TABLE_DATA = "loadedTableData",
+  LOADED_ELEMENT_RELATIONS = "loadedElementRelations",
   // This differs to the LOADED_ELEMENT_RELATIONS because it loads the predicate/verb and object instead of the subject of the selected element
-  LOADED_ELEMENT_RELATIONS_TOTAL = 'loadedElementRelationsTotal',
-  DELETED_ELEMENTS = 'deletedElements',
-  CREATED_ELEMENT = 'createdElement',
-  CLONED_ELEMENTS = 'clonedElements',
-  SHOW_PROPERTIES = 'showProperties',
+  LOADED_ELEMENT_RELATIONS_TOTAL = "loadedElementRelationsTotal",
+  // This differs from LOADED_ELEMENT_RELATIONS_TOTAL because it loads all relations in OML Model not just a selected element
+  LOADED_ALL_ELEMENT_RELATIONS = "loadedAllElementRelations",
+  LOADED_ALL_INSTANCE_CATEGORIES = "loadedAllInstanceCategories",
+  DELETED_ELEMENTS = "deletedElements",
+  CREATED_ELEMENT = "createdElement",
+  CLONED_ELEMENTS = "clonedElements",
+  SHOW_PROPERTIES = "showProperties",
 
   // Context Menu to Triplestore.  All crud commands
-  CREATE_QUERY = 'createQuery',
-  READ_QUERY = 'readQuery',
-  UPDATE_QUERY = 'updateQuery',
-  DELETE_QUERY = 'deleteQuery',
-
+  CREATE_QUERY = "createQuery",
+  READ_QUERY = "readQuery",
+  UPDATE_QUERY = "updateQuery",
+  DELETE_QUERY = "deleteQuery",
 }
 
 export type CommandStructures = {
@@ -93,6 +98,12 @@ export type CommandStructures = {
   [Commands.GET_ELEMENT_RELATIONS_TOTAL]: {
     payload: { webviewPath: string; iriArray: string[]; labelArray?: string[] };
     wizardId?: string;
+  };
+  [Commands.GET_ALL_ELEMENT_RELATIONS]: {
+    payload: { webviewPath: string };
+  };
+  [Commands.GET_ALL_INSTANCE_CATEGORIES]: {
+    payload: { webviewPath: string };
   };
   [Commands.EXECUTE_DELETE_ELEMENTS]: {
     payload: { webviewPath: string; IRIsToDelete: ITableData[] };
@@ -140,10 +151,10 @@ export type CommandStructures = {
   };
   [Commands.UPDATE_LOCAL_VALUE]: {};
   [Commands.SEND_VIEWPOINTS]: {
-    payload: { [filename: string]: Record<string, string> | any[] }
+    payload: { [filename: string]: Record<string, string> | any[] };
   };
   [Commands.SEND_COMMANDS]: {
-    payload: { [filename: string]: Record<string, string> | any[] }
+    payload: { [filename: string]: Record<string, string> | any[] };
   };
   [Commands.OPEN_WIZARD]: {
     payload: {
@@ -180,6 +191,18 @@ export type CommandStructures = {
       relations?: Record<string, any>[];
     };
   };
+  [Commands.LOADED_ALL_ELEMENT_RELATIONS]: {
+    errorMessage?: string;
+    payload: {
+      relations?: string[];
+    };
+  };
+  [Commands.LOADED_ALL_INSTANCE_CATEGORIES]: {
+    errorMessage?: string;
+    payload: {
+      instances?: string[];
+    };
+  };
   [Commands.DELETED_ELEMENTS]: {
     errorMessage?: string;
     wizardId: string;
@@ -205,21 +228,21 @@ export type CommandStructures = {
   };
   [Commands.CREATE_QUERY]: {
     query: string;
-    selectedElements?: string[]
+    selectedElements?: string[];
   };
   [Commands.READ_QUERY]: {
     query: string;
-    selectedElements?: string[]
+    selectedElements?: string[];
   };
   [Commands.UPDATE_QUERY]: {
     query: string;
-    selectedElements?: string[]
-    before_parameters?: Object
-    after_parameters?: Object
+    selectedElements?: string[];
+    before_parameters?: Object;
+    after_parameters?: Object;
   };
   [Commands.DELETE_QUERY]: {
     query: string;
-    selectedElements?: string[]
+    selectedElements?: string[];
   };
 };
 
