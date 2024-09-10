@@ -60,16 +60,22 @@ export const mapTreeValueData = (
         // If there's no parentIri specified, we're looking for root nodes
         // If there is a parentIri, we're looking for children of a specific parent
         if (parentIri) {
-          return row[`${parentId}Iri`] === parentIri;
+          // If there is a parentId key in the layout file then attach the row to that parentId
+          if (row[`${parentId}Iri`]) return row[`${parentId}Iri`] === parentIri;
+          // Else have a default parentIri
+          else return row[`parentIri`] === parentIri;
         } else {
-          return !row["parentIri"];
+          return !row["undefinedIri"];
         }
       })
       .map((row: ITableData, index: number) => {
+        // Random uuid as an identifer for row
+        let uuid = crypto.randomUUID();
+
         let identifier = recursiveIdentifier
           ? `${recursiveIdentifier}-${index}`
           : `${index}`;
-        let processedRow = processEntry(row, rowMapping, identifier);
+        let processedRow = processEntry(row, rowMapping, uuid);
 
         // Save the rowType for row-specific actions in the Table
         // such as right click context menus, etc.
@@ -81,11 +87,21 @@ export const mapTreeValueData = (
         // Otherwise, check for subRowMappings
         if (rowMapping.isRecursive) {
           children = recursiveMapper(rowMapping, "parent", row.iri, identifier);
+          // Check to make sure subRowMappings exists
         } else if (rowMapping.subRowMappings) {
-          children = rowMapping.subRowMappings.flatMap(
-            (subMapping: IRowMapping) =>
-              recursiveMapper(subMapping, rowMapping.id, row.iri, identifier)
-          );
+          if (rowMapping.subRowMappings[0].id !== rowMapping.id) {
+            // Handles case where children nodes come from a different query than the parent
+            children = rowMapping.subRowMappings.flatMap(
+              (subMapping: IRowMapping) =>
+                recursiveMapper(subMapping, rowMapping.id, row.iri, identifier)
+            );
+          } else {
+            // Handles case where children nodes come from the same query than the parent
+            children = rowMapping.subRowMappings.flatMap(
+              (subMapping: IRowMapping) =>
+                recursiveMapper(subMapping, (identifier = identifier))
+            );
+          }
         }
 
         if (children.length > 0) {

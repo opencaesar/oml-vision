@@ -14,6 +14,9 @@ Blog: http://www.opencaesar.io/oml-vision-docs/changelog/mars
 - Table and Tree Views: https://github.com/opencaesar/oml-vision/pull/86
 - JSON Validator: https://github.com/opencaesar/oml-vision/issues/74
 
+### Fixed
+- Tree View: https://github.com/opencaesar/oml-vision/pull/89
+
 ## v0.3.0 - Venus
 
 Blog: http://www.opencaesar.io/oml-vision-docs/changelog/venus

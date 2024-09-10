@@ -195,9 +195,12 @@ export const mapDiagramValueData = (
           // If there's no parentIri specified, we're looking for root nodes
           // If there is a parentIri, we're looking for children of a specific parent
           if (parentIri) {
-            return row[`${parentId}Iri`] === parentIri;
+            // If there is a parentId key in the layout file then attach the row to that parentId
+            if (row[`${parentId}Iri`]) return row[`${parentId}Iri`] === parentIri;
+            // Else have a default parentIri
+            else return row[`parentIri`] === parentIri;
           } else {
-            return !row["parentIri"];
+            return !row["undefinedIri"];
           }
         })
         // .slice(0, 5)
