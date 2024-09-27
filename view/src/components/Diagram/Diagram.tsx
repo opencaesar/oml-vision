@@ -47,6 +47,9 @@ import useContextMenu from "../ContextMenu/useContextMenu";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { DiagramLayout } from "../../interfaces/DataLayoutsType";
 
+//Cursors
+import { handlePointerMove } from "./Cursor/Cursor"
+
 const nodeTypes = {
   overlay: OverlayNode,
 };
@@ -481,6 +484,7 @@ function Diagram({
         "hasSelection": ${selectedNodes.length > 0},
         "iri": ${JSON.stringify(iriArray)}
       }`}
+      onPointerMove={handlePointerMove}
     >
       {/* Refer to the ReactFlow API for a full list of commands https://reactflow.dev/api-reference/react-flow */}
       <ReactFlow
